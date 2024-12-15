@@ -11,20 +11,64 @@
 #include "Job.h"
 #include "Room.h"
 #include "Player.h"
+#include "Enum.h"
 
-enum
-{
-	WORKER_TICK = 64
-};
-
-void DoWorkerJob(ServerServiceRef& service)
+atomic<int>	g_nPacketCount = 0;
+void DoMainJob(ServerServiceRef& service)
 {
 	while (true)
 	{
+		if (LSecondTickCount < GetTickCount64())
+		{
+			LSecondTickCount = GetTickCount64() + SECOND_TICK;
+
+
+			cout << "전체 초당 패킷 처리량:" << g_nPacketCount << endl;
+
+			g_nPacketCount.store(0);
+		}
+
 		LEndTickCount = ::GetTickCount64() + WORKER_TICK;
 
 		// 네트워크 입출력 처리 -> 인게임 로직까지 (패킷 핸들러에 의해)
-		service->GetIocpCore()->Dispatch(10);
+		//service->GetIocpCore()->Dispatch(10);
+		// 
+		// 예약된 일감 처리
+		ThreadManager::DistributeReservedJobs();
+
+		// 글로벌 큐
+		ThreadManager::DoGlobalQueueWork();
+	}
+}
+
+void DoWorkerJob(ServerServiceRef& service,bool bMain=false)
+{
+	bool bFlag = false;
+	while (true)
+	{
+		if (LSecondTickCount < GetTickCount64())
+		{
+			LSecondTickCount = GetTickCount64() + SECOND_TICK;
+			bFlag = true;
+			g_nPacketCount.fetch_add(LPacketCount);
+
+			//cout << LThreadId <<" : 워커스레드의  초당 패킷 처리량:" << LPacketCount << endl;
+
+			LPacketCount = 0;
+		}
+		else
+		{
+			bFlag = false;
+			//LPacketCount++;
+
+		}
+
+		LEndTickCount = ::GetTickCount64() + WORKER_TICK;
+
+		// 네트워크 입출력 처리 -> 인게임 로직까지 (패킷 핸들러에 의해)
+		if(service->GetIocpCore()->Dispatch(10)==true )
+			LPacketCount++;
+
 
 		// 예약된 일감 처리
 		ThreadManager::DistributeReservedJobs();
@@ -36,9 +80,9 @@ void DoWorkerJob(ServerServiceRef& service)
 
 int main()
 {
-	GRoom->DoTimer(1000, [] { cout << "Hello 1000" << endl; });
-	GRoom->DoTimer(2000, [] { cout << "Hello 2000" << endl; });
-	GRoom->DoTimer(3000, [] { cout << "Hello 3000" << endl; });
+	//GRoom->DoTimer(1000, [] { cout << "Hello 1000" << endl; });
+	//GRoom->DoTimer(2000, [] { cout << "Hello 2000" << endl; });
+	//GRoom->DoTimer(3000, [] { cout << "Hello 3000" << endl; });
 
 	ClientPacketHandler::Init();
 
@@ -46,11 +90,13 @@ int main()
 		NetAddress(L"127.0.0.1", 7777),
 		MakeShared<IocpCore>(),
 		MakeShared<GameSession>, // TODO : SessionManager 등
-		100);
+		2200);
 
 	ASSERT_CRASH(service->Start());
 
-	for (int32 i = 0; i < 5; i++)
+	unsigned int core_count = std::thread::hardware_concurrency();
+	int nThreadCnt = 10;//core_count * 2 + 1;
+	for (int32 i = 0; i < nThreadCnt; i++)
 	{
 		GThreadManager->Launch([&service]()
 			{
@@ -59,7 +105,7 @@ int main()
 	}
 
 	// Main Thread
-	DoWorkerJob(service);
+	DoMainJob(service);
 
 	GThreadManager->Join();
 }

@@ -86,7 +86,7 @@ bool Handle_C_ENTER_GAME(PacketSessionRef& session, Protocol::C_ENTER_GAME& pkt)
 
 bool Handle_C_CHAT(PacketSessionRef& session, Protocol::C_CHAT& pkt)
 {
-	std::cout << pkt.msg() << endl;
+	//std::cout << pkt.msg() << endl;
 
 	Protocol::S_CHAT chatPkt;
 	chatPkt.set_msg(pkt.msg());
