@@ -120,6 +120,7 @@
     <ClInclude Include="Enum.h">
       <Filter>Main</Filter>
     </ClInclude>
+    <ClInclude Include="CSingleton.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CorePch.cpp">
@@ -203,5 +204,6 @@
     <ClCompile Include="JobTimer.cpp">
       <Filter>Job</Filter>
     </ClCompile>
+    <ClCompile Include="CSingleton.cpp" />
   </ItemGroup>
 </Project>

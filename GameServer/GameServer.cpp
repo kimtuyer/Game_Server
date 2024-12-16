@@ -10,9 +10,9 @@
 #include "Protocol.pb.h"
 #include "Job.h"
 #include "Room.h"
-#include "Player.h"
+//#include "Player.h"
 #include "Enum.h"
-
+#include "CZone_Manager.h"
 atomic<int>	g_nPacketCount = 0;
 void DoMainJob(ServerServiceRef& service)
 {
@@ -20,7 +20,7 @@ void DoMainJob(ServerServiceRef& service)
 	{
 		if (LSecondTickCount < GetTickCount64())
 		{
-			LSecondTickCount = GetTickCount64() + SECOND_TICK;
+			LSecondTickCount = GetTickCount64() + Tick::SECOND_TICK;
 
 
 			cout << "전체 초당 패킷 처리량:" << g_nPacketCount << endl;
@@ -28,7 +28,7 @@ void DoMainJob(ServerServiceRef& service)
 			g_nPacketCount.store(0);
 		}
 
-		LEndTickCount = ::GetTickCount64() + WORKER_TICK;
+		LEndTickCount = ::GetTickCount64() + Tick::WORKER_TICK;
 
 		// 네트워크 입출력 처리 -> 인게임 로직까지 (패킷 핸들러에 의해)
 		//service->GetIocpCore()->Dispatch(10);
@@ -48,7 +48,7 @@ void DoWorkerJob(ServerServiceRef& service,bool bMain=false)
 	{
 		if (LSecondTickCount < GetTickCount64())
 		{
-			LSecondTickCount = GetTickCount64() + SECOND_TICK;
+			LSecondTickCount = GetTickCount64() + Tick::SECOND_TICK;
 			bFlag = true;
 			g_nPacketCount.fetch_add(LPacketCount);
 
@@ -63,7 +63,7 @@ void DoWorkerJob(ServerServiceRef& service,bool bMain=false)
 
 		}
 
-		LEndTickCount = ::GetTickCount64() + WORKER_TICK;
+		LEndTickCount = ::GetTickCount64() + Tick::WORKER_TICK;
 
 		// 네트워크 입출력 처리 -> 인게임 로직까지 (패킷 핸들러에 의해)
 		if(service->GetIocpCore()->Dispatch(10)==true )
@@ -82,9 +82,9 @@ int main()
 {
 	//GRoom->DoTimer(1000, [] { cout << "Hello 1000" << endl; });
 	//GRoom->DoTimer(2000, [] { cout << "Hello 2000" << endl; });
-	//GRoom->DoTimer(3000, [] { cout << "Hello 3000" << endl; });
 
 	ClientPacketHandler::Init();
+	CZone_Manager::Instance()->Init();
 
 	ServerServiceRef service = MakeShared<ServerService>(
 		NetAddress(L"127.0.0.1", 7777),

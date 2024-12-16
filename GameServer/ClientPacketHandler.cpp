@@ -2,6 +2,8 @@
 #include "ClientPacketHandler.h"
 #include "Player.h"
 #include "Room.h"
+#include "CMonster.h"
+#include "CZone_Manager.h"
 #include "GameSession.h"
 
 PacketHandlerFunc GPacketHandler[UINT16_MAX];
@@ -35,7 +37,7 @@ bool Handle_C_LOGIN(PacketSessionRef& session, Protocol::C_LOGIN& pkt)
 		player->set_name(u8"DB에서긁어온이름1");
 		player->set_playertype(Protocol::PLAYER_TYPE_KNIGHT);
 
-		PlayerRef playerRef = MakeShared<Player>();
+		PlayerRef playerRef = MakeShared<CPlayer>();
 		playerRef->playerId = idGenerator++;
 		playerRef->name = player->name();
 		playerRef->type = player->playertype();
@@ -49,7 +51,7 @@ bool Handle_C_LOGIN(PacketSessionRef& session, Protocol::C_LOGIN& pkt)
 		player->set_name(u8"DB에서긁어온이름2");
 		player->set_playertype(Protocol::PLAYER_TYPE_MAGE);
 
-		PlayerRef playerRef = MakeShared<Player>();
+		PlayerRef playerRef = MakeShared<CPlayer>();
 		playerRef->playerId = idGenerator++;
 		playerRef->name = player->name();
 		playerRef->type = player->playertype();
@@ -91,6 +93,8 @@ bool Handle_C_CHAT(PacketSessionRef& session, Protocol::C_CHAT& pkt)
 	Protocol::S_CHAT chatPkt;
 	chatPkt.set_msg(pkt.msg());
 	auto sendBuffer = ClientPacketHandler::MakeSendBuffer(chatPkt);
+
+	//GRoom->DoTimer(3000, CM, sendBuffer);
 
 	GRoom->DoAsync(&Room::Broadcast, sendBuffer);
 

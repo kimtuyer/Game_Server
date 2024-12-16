@@ -45,6 +45,18 @@
     <ClCompile Include="Room.cpp">
       <Filter>GameContents</Filter>
     </ClCompile>
+    <ClCompile Include="CZone.cpp">
+      <Filter>GameContents</Filter>
+    </ClCompile>
+    <ClCompile Include="CZone_Manager.cpp">
+      <Filter>GameContents</Filter>
+    </ClCompile>
+    <ClCompile Include="CObject.cpp">
+      <Filter>GameContents</Filter>
+    </ClCompile>
+    <ClCompile Include="CMonster.cpp">
+      <Filter>GameContents</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -72,6 +84,18 @@
       <Filter>GameContents</Filter>
     </ClInclude>
     <ClInclude Include="Player.h">
+      <Filter>GameContents</Filter>
+    </ClInclude>
+    <ClInclude Include="CZone.h">
+      <Filter>GameContents</Filter>
+    </ClInclude>
+    <ClInclude Include="CZone_Manager.h">
+      <Filter>GameContents</Filter>
+    </ClInclude>
+    <ClInclude Include="CObject.h">
+      <Filter>GameContents</Filter>
+    </ClInclude>
+    <ClInclude Include="CMonster.h">
       <Filter>GameContents</Filter>
     </ClInclude>
   </ItemGroup>

@@ -1,6 +1,6 @@
 #pragma once
 
-class Player
+class CPlayer: public CObject
 {
 public:
 
@@ -8,5 +8,10 @@ public:
 	string					name;
 	Protocol::PlayerType	type = Protocol::PLAYER_TYPE_NONE;
 	GameSessionRef			ownerSession; // Cycle
+
+
+private:
+	//m_nf
+
 };
 

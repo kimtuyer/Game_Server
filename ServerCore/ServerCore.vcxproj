@@ -163,6 +163,7 @@
     <ClInclude Include="CoreMacro.h" />
     <ClInclude Include="CorePch.h" />
     <ClInclude Include="CoreTLS.h" />
+    <ClInclude Include="CSingleton.h" />
     <ClInclude Include="DeadLockProfiler.h" />
     <ClInclude Include="Enum.h" />
     <ClInclude Include="GlobalQueue.h" />
@@ -196,6 +197,7 @@
     <ClCompile Include="CoreGlobal.cpp" />
     <ClCompile Include="CorePch.cpp" />
     <ClCompile Include="CoreTLS.cpp" />
+    <ClCompile Include="CSingleton.cpp" />
     <ClCompile Include="DeadLockProfiler.cpp" />
     <ClCompile Include="GlobalQueue.cpp" />
     <ClCompile Include="IocpCore.cpp" />

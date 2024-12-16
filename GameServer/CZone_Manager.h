@@ -1,0 +1,45 @@
+#pragma once
+#include "CZone.h"
+class CZone;
+using ZoneID = int;
+class CZone_Manager : public JobQueue
+{
+	DECLARE_SIGNLETON(CZone_Manager);
+public:
+
+	//처음 서버 시작시 초기화때 각 존 생성 , 몹 정보 미리 생성 삽입 
+	
+	~CZone_Manager()
+	{
+		m_listZone.clear();
+	}
+
+
+	//유저 입장시 해당 존 활성화 및 추가 및 업데이트
+
+	//리스트 순회하면서 업데이트
+	void Init();
+
+	//오브젝트 리스트에 객체 삽입
+	bool Insert(int nZoneID, const CZoneRef);
+
+	//오브젝트 리스트 객체 삭제
+	void Remove(int nZoneID, CZoneRef);
+
+	//리스트 순회, 객체 타이머 
+	void Update();
+
+
+
+
+	CZoneRef	GetZone(int nZoneID);
+
+
+
+private:
+	USE_LOCK;
+	map<ZoneID, CZoneRef> m_listZone;
+
+
+};
+CREATE_FUNCTION(CZone_Manager, ZoneManager);

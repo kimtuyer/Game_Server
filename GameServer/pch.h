@@ -12,6 +12,9 @@
 
 #include "CorePch.h"
 #include "Enum.pb.h"
+#include "CObject.h"
 
 using GameSessionRef = shared_ptr<class GameSession>;
-using PlayerRef = shared_ptr<class Player>;
+using ObjectRef = shared_ptr<class CObject>;
+using PlayerRef = shared_ptr<class CPlayer>;
+using MonsterRef = shared_ptr<class CMonster>;

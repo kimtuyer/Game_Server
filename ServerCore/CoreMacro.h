@@ -14,6 +14,40 @@
 #define WRITE_LOCK				WRITE_LOCK_IDX(0)
 
 /*---------------
+	  Singleon
+---------------*/
+
+#define DECLARE_SIGNLETON(classname)	\
+										\
+	public:								\
+static classname* Instance();			\
+										
+										
+								
+#define CREATE_FUNCTION(classname,funcname)	\
+										\
+  static classname*  ##funcname()			\
+	{									\
+		return classname::Instance();	\
+	}\
+	
+
+
+#define IMPLEMENT_SIGNLETON(classname)	\
+										\
+	static classname* Instance()			\
+	{									\
+										\
+		static classname pInstance;		\
+										\
+		return &pInstance;				\
+										\
+	}									\
+									
+
+
+
+/*---------------
 	  Crash
 ---------------*/
 
