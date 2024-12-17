@@ -47,7 +47,7 @@ struct TableStruct_Struct_2eproto {
     PROTOBUF_SECTION_VARIABLE(protodesc_cold);
   static const ::PROTOBUF_NAMESPACE_ID::internal::AuxiliaryParseTableField aux[]
     PROTOBUF_SECTION_VARIABLE(protodesc_cold);
-  static const ::PROTOBUF_NAMESPACE_ID::internal::ParseTable schema[1]
+  static const ::PROTOBUF_NAMESPACE_ID::internal::ParseTable schema[2]
     PROTOBUF_SECTION_VARIABLE(protodesc_cold);
   static const ::PROTOBUF_NAMESPACE_ID::internal::FieldMetadata field_metadata[];
   static const ::PROTOBUF_NAMESPACE_ID::internal::SerializationTable serialization_table[];
@@ -55,35 +55,39 @@ struct TableStruct_Struct_2eproto {
 };
 extern const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_Struct_2eproto;
 namespace Protocol {
-class CPlayer;
-struct CPlayerDefaultTypeInternal;
-extern CPlayerDefaultTypeInternal _CPlayer_default_instance_;
+class D3DVECTOR;
+struct D3DVECTORDefaultTypeInternal;
+extern D3DVECTORDefaultTypeInternal _D3DVECTOR_default_instance_;
+class Player;
+struct PlayerDefaultTypeInternal;
+extern PlayerDefaultTypeInternal _Player_default_instance_;
 }  // namespace Protocol
 PROTOBUF_NAMESPACE_OPEN
-template<> ::Protocol::CPlayer* Arena::CreateMaybeMessage<::Protocol::CPlayer>(Arena*);
+template<> ::Protocol::D3DVECTOR* Arena::CreateMaybeMessage<::Protocol::D3DVECTOR>(Arena*);
+template<> ::Protocol::Player* Arena::CreateMaybeMessage<::Protocol::Player>(Arena*);
 PROTOBUF_NAMESPACE_CLOSE
 namespace Protocol {
 
 // ===================================================================
 
-class CPlayer final :
-    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:Protocol.CPlayer) */ {
+class Player final :
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:Protocol.Player) */ {
  public:
-  inline CPlayer() : CPlayer(nullptr) {}
-  ~CPlayer() override;
-  explicit constexpr CPlayer(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
+  inline Player() : Player(nullptr) {}
+  ~Player() override;
+  explicit constexpr Player(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
 
-  CPlayer(const CPlayer& from);
-  CPlayer(CPlayer&& from) noexcept
-    : CPlayer() {
+  Player(const Player& from);
+  Player(Player&& from) noexcept
+    : Player() {
     *this = ::std::move(from);
   }
 
-  inline CPlayer& operator=(const CPlayer& from) {
+  inline Player& operator=(const Player& from) {
     CopyFrom(from);
     return *this;
   }
-  inline CPlayer& operator=(CPlayer&& from) noexcept {
+  inline Player& operator=(Player&& from) noexcept {
     if (this == &from) return *this;
     if (GetOwningArena() == from.GetOwningArena()) {
       InternalSwap(&from);
@@ -102,20 +106,20 @@ class CPlayer final :
   static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
     return default_instance().GetMetadata().reflection;
   }
-  static const CPlayer& default_instance() {
+  static const Player& default_instance() {
     return *internal_default_instance();
   }
-  static inline const CPlayer* internal_default_instance() {
-    return reinterpret_cast<const CPlayer*>(
-               &_CPlayer_default_instance_);
+  static inline const Player* internal_default_instance() {
+    return reinterpret_cast<const Player*>(
+               &_Player_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
     0;
 
-  friend void swap(CPlayer& a, CPlayer& b) {
+  friend void swap(Player& a, Player& b) {
     a.Swap(&b);
   }
-  inline void Swap(CPlayer* other) {
+  inline void Swap(Player* other) {
     if (other == this) return;
     if (GetOwningArena() == other->GetOwningArena()) {
       InternalSwap(other);
@@ -123,7 +127,7 @@ class CPlayer final :
       ::PROTOBUF_NAMESPACE_ID::internal::GenericSwap(this, other);
     }
   }
-  void UnsafeArenaSwap(CPlayer* other) {
+  void UnsafeArenaSwap(Player* other) {
     if (other == this) return;
     GOOGLE_DCHECK(GetOwningArena() == other->GetOwningArena());
     InternalSwap(other);
@@ -131,17 +135,17 @@ class CPlayer final :
 
   // implements Message ----------------------------------------------
 
-  inline CPlayer* New() const final {
-    return new CPlayer();
+  inline Player* New() const final {
+    return new Player();
   }
 
-  CPlayer* New(::PROTOBUF_NAMESPACE_ID::Arena* arena) const final {
-    return CreateMaybeMessage<CPlayer>(arena);
+  Player* New(::PROTOBUF_NAMESPACE_ID::Arena* arena) const final {
+    return CreateMaybeMessage<Player>(arena);
   }
   void CopyFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) final;
   void MergeFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) final;
-  void CopyFrom(const CPlayer& from);
-  void MergeFrom(const CPlayer& from);
+  void CopyFrom(const Player& from);
+  void MergeFrom(const Player& from);
   PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
   bool IsInitialized() const final;
 
@@ -155,13 +159,13 @@ class CPlayer final :
   void SharedCtor();
   void SharedDtor();
   void SetCachedSize(int size) const final;
-  void InternalSwap(CPlayer* other);
+  void InternalSwap(Player* other);
   friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
   static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
-    return "Protocol.CPlayer";
+    return "Protocol.Player";
   }
   protected:
-  explicit CPlayer(::PROTOBUF_NAMESPACE_ID::Arena* arena);
+  explicit Player(::PROTOBUF_NAMESPACE_ID::Arena* arena);
   private:
   static void ArenaDtor(void* object);
   inline void RegisterArenaDtor(::PROTOBUF_NAMESPACE_ID::Arena* arena);
@@ -210,7 +214,7 @@ class CPlayer final :
   void _internal_set_playertype(::Protocol::PlayerType value);
   public:
 
-  // @@protoc_insertion_point(class_scope:Protocol.CPlayer)
+  // @@protoc_insertion_point(class_scope:Protocol.Player)
  private:
   class _Internal;
 
@@ -223,6 +227,160 @@ class CPlayer final :
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_Struct_2eproto;
 };
+// -------------------------------------------------------------------
+
+class D3DVECTOR final :
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:Protocol.D3DVECTOR) */ {
+ public:
+  inline D3DVECTOR() : D3DVECTOR(nullptr) {}
+  ~D3DVECTOR() override;
+  explicit constexpr D3DVECTOR(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
+
+  D3DVECTOR(const D3DVECTOR& from);
+  D3DVECTOR(D3DVECTOR&& from) noexcept
+    : D3DVECTOR() {
+    *this = ::std::move(from);
+  }
+
+  inline D3DVECTOR& operator=(const D3DVECTOR& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline D3DVECTOR& operator=(D3DVECTOR&& from) noexcept {
+    if (this == &from) return *this;
+    if (GetOwningArena() == from.GetOwningArena()) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const D3DVECTOR& default_instance() {
+    return *internal_default_instance();
+  }
+  static inline const D3DVECTOR* internal_default_instance() {
+    return reinterpret_cast<const D3DVECTOR*>(
+               &_D3DVECTOR_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    1;
+
+  friend void swap(D3DVECTOR& a, D3DVECTOR& b) {
+    a.Swap(&b);
+  }
+  inline void Swap(D3DVECTOR* other) {
+    if (other == this) return;
+    if (GetOwningArena() == other->GetOwningArena()) {
+      InternalSwap(other);
+    } else {
+      ::PROTOBUF_NAMESPACE_ID::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(D3DVECTOR* other) {
+    if (other == this) return;
+    GOOGLE_DCHECK(GetOwningArena() == other->GetOwningArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  inline D3DVECTOR* New() const final {
+    return new D3DVECTOR();
+  }
+
+  D3DVECTOR* New(::PROTOBUF_NAMESPACE_ID::Arena* arena) const final {
+    return CreateMaybeMessage<D3DVECTOR>(arena);
+  }
+  void CopyFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) final;
+  void MergeFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) final;
+  void CopyFrom(const D3DVECTOR& from);
+  void MergeFrom(const D3DVECTOR& from);
+  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
+  ::PROTOBUF_NAMESPACE_ID::uint8* _InternalSerialize(
+      ::PROTOBUF_NAMESPACE_ID::uint8* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
+  int GetCachedSize() const final { return _cached_size_.Get(); }
+
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(D3DVECTOR* other);
+  friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
+  static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
+    return "Protocol.D3DVECTOR";
+  }
+  protected:
+  explicit D3DVECTOR(::PROTOBUF_NAMESPACE_ID::Arena* arena);
+  private:
+  static void ArenaDtor(void* object);
+  inline void RegisterArenaDtor(::PROTOBUF_NAMESPACE_ID::Arena* arena);
+  public:
+
+  ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  enum : int {
+    kXFieldNumber = 1,
+    kYFieldNumber = 2,
+    kZFieldNumber = 3,
+  };
+  // float x = 1;
+  void clear_x();
+  float x() const;
+  void set_x(float value);
+  private:
+  float _internal_x() const;
+  void _internal_set_x(float value);
+  public:
+
+  // float y = 2;
+  void clear_y();
+  float y() const;
+  void set_y(float value);
+  private:
+  float _internal_y() const;
+  void _internal_set_y(float value);
+  public:
+
+  // float z = 3;
+  void clear_z();
+  float z() const;
+  void set_z(float value);
+  private:
+  float _internal_z() const;
+  void _internal_set_z(float value);
+  public:
+
+  // @@protoc_insertion_point(class_scope:Protocol.D3DVECTOR)
+ private:
+  class _Internal;
+
+  template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
+  typedef void InternalArenaConstructable_;
+  typedef void DestructorSkippable_;
+  float x_;
+  float y_;
+  float z_;
+  mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
+  friend struct ::TableStruct_Struct_2eproto;
+};
 // ===================================================================
 
 
@@ -232,63 +390,63 @@ class CPlayer final :
   #pragma GCC diagnostic push
   #pragma GCC diagnostic ignored "-Wstrict-aliasing"
 #endif  // __GNUC__
-// CPlayer
+// Player
 
 // uint64 id = 1;
-inline void CPlayer::clear_id() {
+inline void Player::clear_id() {
   id_ = uint64_t{0u};
 }
-inline ::PROTOBUF_NAMESPACE_ID::uint64 CPlayer::_internal_id() const {
+inline ::PROTOBUF_NAMESPACE_ID::uint64 Player::_internal_id() const {
   return id_;
 }
-inline ::PROTOBUF_NAMESPACE_ID::uint64 CPlayer::id() const {
-  // @@protoc_insertion_point(field_get:Protocol.CPlayer.id)
+inline ::PROTOBUF_NAMESPACE_ID::uint64 Player::id() const {
+  // @@protoc_insertion_point(field_get:Protocol.Player.id)
   return _internal_id();
 }
-inline void CPlayer::_internal_set_id(::PROTOBUF_NAMESPACE_ID::uint64 value) {
+inline void Player::_internal_set_id(::PROTOBUF_NAMESPACE_ID::uint64 value) {
   
   id_ = value;
 }
-inline void CPlayer::set_id(::PROTOBUF_NAMESPACE_ID::uint64 value) {
+inline void Player::set_id(::PROTOBUF_NAMESPACE_ID::uint64 value) {
   _internal_set_id(value);
-  // @@protoc_insertion_point(field_set:Protocol.CPlayer.id)
+  // @@protoc_insertion_point(field_set:Protocol.Player.id)
 }
 
 // string name = 2;
-inline void CPlayer::clear_name() {
+inline void Player::clear_name() {
   name_.ClearToEmpty();
 }
-inline const std::string& CPlayer::name() const {
-  // @@protoc_insertion_point(field_get:Protocol.CPlayer.name)
+inline const std::string& Player::name() const {
+  // @@protoc_insertion_point(field_get:Protocol.Player.name)
   return _internal_name();
 }
 template <typename ArgT0, typename... ArgT>
 inline PROTOBUF_ALWAYS_INLINE
-void CPlayer::set_name(ArgT0&& arg0, ArgT... args) {
+void Player::set_name(ArgT0&& arg0, ArgT... args) {
  
  name_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set:Protocol.CPlayer.name)
+  // @@protoc_insertion_point(field_set:Protocol.Player.name)
 }
-inline std::string* CPlayer::mutable_name() {
-  // @@protoc_insertion_point(field_mutable:Protocol.CPlayer.name)
+inline std::string* Player::mutable_name() {
+  // @@protoc_insertion_point(field_mutable:Protocol.Player.name)
   return _internal_mutable_name();
 }
-inline const std::string& CPlayer::_internal_name() const {
+inline const std::string& Player::_internal_name() const {
   return name_.Get();
 }
-inline void CPlayer::_internal_set_name(const std::string& value) {
+inline void Player::_internal_set_name(const std::string& value) {
   
   name_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, value, GetArenaForAllocation());
 }
-inline std::string* CPlayer::_internal_mutable_name() {
+inline std::string* Player::_internal_mutable_name() {
   
   return name_.Mutable(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, GetArenaForAllocation());
 }
-inline std::string* CPlayer::release_name() {
-  // @@protoc_insertion_point(field_release:Protocol.CPlayer.name)
+inline std::string* Player::release_name() {
+  // @@protoc_insertion_point(field_release:Protocol.Player.name)
   return name_.Release(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArenaForAllocation());
 }
-inline void CPlayer::set_allocated_name(std::string* name) {
+inline void Player::set_allocated_name(std::string* name) {
   if (name != nullptr) {
     
   } else {
@@ -296,32 +454,98 @@ inline void CPlayer::set_allocated_name(std::string* name) {
   }
   name_.SetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), name,
       GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set_allocated:Protocol.CPlayer.name)
+  // @@protoc_insertion_point(field_set_allocated:Protocol.Player.name)
 }
 
 // .Protocol.PlayerType playerType = 3;
-inline void CPlayer::clear_playertype() {
+inline void Player::clear_playertype() {
   playertype_ = 0;
 }
-inline ::Protocol::PlayerType CPlayer::_internal_playertype() const {
+inline ::Protocol::PlayerType Player::_internal_playertype() const {
   return static_cast< ::Protocol::PlayerType >(playertype_);
 }
-inline ::Protocol::PlayerType CPlayer::playertype() const {
-  // @@protoc_insertion_point(field_get:Protocol.CPlayer.playerType)
+inline ::Protocol::PlayerType Player::playertype() const {
+  // @@protoc_insertion_point(field_get:Protocol.Player.playerType)
   return _internal_playertype();
 }
-inline void CPlayer::_internal_set_playertype(::Protocol::PlayerType value) {
+inline void Player::_internal_set_playertype(::Protocol::PlayerType value) {
   
   playertype_ = value;
 }
-inline void CPlayer::set_playertype(::Protocol::PlayerType value) {
+inline void Player::set_playertype(::Protocol::PlayerType value) {
   _internal_set_playertype(value);
-  // @@protoc_insertion_point(field_set:Protocol.CPlayer.playerType)
+  // @@protoc_insertion_point(field_set:Protocol.Player.playerType)
+}
+
+// -------------------------------------------------------------------
+
+// D3DVECTOR
+
+// float x = 1;
+inline void D3DVECTOR::clear_x() {
+  x_ = 0;
+}
+inline float D3DVECTOR::_internal_x() const {
+  return x_;
+}
+inline float D3DVECTOR::x() const {
+  // @@protoc_insertion_point(field_get:Protocol.D3DVECTOR.x)
+  return _internal_x();
+}
+inline void D3DVECTOR::_internal_set_x(float value) {
+  
+  x_ = value;
+}
+inline void D3DVECTOR::set_x(float value) {
+  _internal_set_x(value);
+  // @@protoc_insertion_point(field_set:Protocol.D3DVECTOR.x)
+}
+
+// float y = 2;
+inline void D3DVECTOR::clear_y() {
+  y_ = 0;
+}
+inline float D3DVECTOR::_internal_y() const {
+  return y_;
+}
+inline float D3DVECTOR::y() const {
+  // @@protoc_insertion_point(field_get:Protocol.D3DVECTOR.y)
+  return _internal_y();
+}
+inline void D3DVECTOR::_internal_set_y(float value) {
+  
+  y_ = value;
+}
+inline void D3DVECTOR::set_y(float value) {
+  _internal_set_y(value);
+  // @@protoc_insertion_point(field_set:Protocol.D3DVECTOR.y)
+}
+
+// float z = 3;
+inline void D3DVECTOR::clear_z() {
+  z_ = 0;
+}
+inline float D3DVECTOR::_internal_z() const {
+  return z_;
+}
+inline float D3DVECTOR::z() const {
+  // @@protoc_insertion_point(field_get:Protocol.D3DVECTOR.z)
+  return _internal_z();
+}
+inline void D3DVECTOR::_internal_set_z(float value) {
+  
+  z_ = value;
+}
+inline void D3DVECTOR::set_z(float value) {
+  _internal_set_z(value);
+  // @@protoc_insertion_point(field_set:Protocol.D3DVECTOR.z)
 }
 
 #ifdef __GNUC__
   #pragma GCC diagnostic pop
 #endif  // __GNUC__
+// -------------------------------------------------------------------
+
 
 // @@protoc_insertion_point(namespace_scope)
 

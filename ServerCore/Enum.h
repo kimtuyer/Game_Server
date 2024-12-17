@@ -21,4 +21,11 @@ namespace Object
 		Player=1,
 		Monster=2
 	};
+
+	enum eObject_State
+	{
+		Idle = 1,
+		Move = 2,
+		Attack
+	};
 }

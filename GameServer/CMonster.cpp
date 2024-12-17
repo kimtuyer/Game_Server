@@ -4,7 +4,7 @@
 #include "CZone.h"
 #include "Player.h"
 class CZone;
-CMonster::CMonster() : m_nHP(100), m_nAttack(10), m_eState(Idle)
+CMonster::CMonster() : m_nHP(100), m_nAttack(10), m_eState(Object::Idle)
 {
 	cout << "몬스터 생성" << endl;
 
@@ -14,19 +14,19 @@ void CMonster::Update()
 {	
 	switch (m_eState)
 	{
-		case Idle:
+	case Object::Idle:
 		{
 			AI_Idle();
 
 		}
 		break;
-		case Move:
+	case Object::Move:
 		{
 
 			AI_Move();
 		}
 		break;
-		case Attack:
+	case Object::Attack:
 		{
 
 			AI_Attack();
@@ -62,7 +62,7 @@ void CMonster::AI_Idle()
 		 이동할 지점 계산, 정한 후
 		 클라로 몹 이동 패킷 전송
 		*/
-		m_eState = Move;
+		m_eState = Object::Move;
 		DoTimer(Tick::AI_TICK, &CMonster::AI_Move);
 
 		//AI_Move();

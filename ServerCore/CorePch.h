@@ -23,3 +23,4 @@ using namespace std;
 #include "Session.h"
 #include "JobQueue.h"
 #include "Enum.h"
+#include "Struct.h"

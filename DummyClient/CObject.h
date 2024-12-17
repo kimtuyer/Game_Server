@@ -5,18 +5,12 @@ class CObject : public JobQueue
 public:
 	CObject();
 
+	virtual void Update();
 
 	virtual ~CObject()
 	{
 
 	}
-
-
-	virtual void Update();
-	virtual void AI_Idle();
-	virtual void AI_Move();
-	virtual void AI_Attack();
-
 
 	float	GetSearchRange()
 	{
@@ -33,6 +27,14 @@ public:
 	bool	GetActivate()
 	{
 		return m_bActivate;
+	}
+	void	SetZoneid(int zoneid)
+	{
+		m_nZoneID = zoneid;
+	}
+	int		GetZoneID()
+	{
+		return m_nZoneID;
 	}
 
 

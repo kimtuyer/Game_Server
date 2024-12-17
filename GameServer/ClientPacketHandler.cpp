@@ -45,21 +45,22 @@ bool Handle_C_LOGIN(PacketSessionRef& session, Protocol::C_LOGIN& pkt)
 		playerRef->ownerSession = gameSession;
 		
 		gameSession->_players.push_back(playerRef);
+		player->set_id(playerRef->playerId);
 	}
 
-	{
-		auto player = loginPkt.add_players();
-		//player->set_name(u8"DB에서긁어온이름2");
-		player->set_playertype(Protocol::PLAYER_TYPE_MAGE);
-
-		PlayerRef playerRef = MakeShared<CPlayer>();
-		playerRef->playerId = idGenerator++;
-		playerRef->name = player->name();
-		playerRef->type = player->playertype();
-		playerRef->ownerSession = gameSession;
-
-		gameSession->_players.push_back(playerRef);
-	}
+	//{
+	//	auto player = loginPkt.add_players();
+	//	//player->set_name(u8"DB에서긁어온이름2");
+	//	player->set_playertype(Protocol::PLAYER_TYPE_MAGE);
+	//
+	//	PlayerRef playerRef = MakeShared<CPlayer>();
+	//	playerRef->playerId = idGenerator++;
+	//	playerRef->name = player->name();
+	//	playerRef->type = player->playertype();
+	//	playerRef->ownerSession = gameSession;
+	//
+	//	gameSession->_players.push_back(playerRef);
+	//}
 
 	auto sendBuffer = ClientPacketHandler::MakeSendBuffer(loginPkt);
 	session->Send(sendBuffer);
@@ -67,11 +68,27 @@ bool Handle_C_LOGIN(PacketSessionRef& session, Protocol::C_LOGIN& pkt)
 	return true;
 }
 
-bool Handle_C_ENTER_GAME(PacketSessionRef& session, Protocol::C_ENTER_GAME& pkt)
+bool Handle_C_ENTER_ZONE(PacketSessionRef& session, Protocol::C_ENTER_ZONE& pkt)
+{
+
+	return false;
+}
+
+bool Handle_C_MOVE(PacketSessionRef& session, Protocol::C_MOVE& pkt)
+{
+	return false;
+}
+
+bool Handle_C_ATTACK(PacketSessionRef& session, Protocol::C_ATTACK& pkt)
+{
+	return false;
+}
+
+bool Handle_C_ENTER_GAME(PacketSessionRef& session, Protocol::C_ENTER_ZONE& pkt)
 {
 	GameSessionRef gameSession = static_pointer_cast<GameSession>(session);
 
-	uint64 index = pkt.playerindex();
+	uint64 index = pkt.playerid();
 	// TODO : Validation
 
 	gameSession->_currentPlayer = gameSession->_players[index]; // READ_ONLY?
@@ -79,7 +96,7 @@ bool Handle_C_ENTER_GAME(PacketSessionRef& session, Protocol::C_ENTER_GAME& pkt)
 
 	GRoom->DoAsync(&Room::Enter, gameSession->_currentPlayer);
 
-	Protocol::S_ENTER_GAME enterGamePkt;
+	Protocol::S_ENTER_ACK enterGamePkt;
 	enterGamePkt.set_success(true);
 	auto sendBuffer = ClientPacketHandler::MakeSendBuffer(enterGamePkt);
 	gameSession->_currentPlayer->ownerSession->Send(sendBuffer);

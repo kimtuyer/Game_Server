@@ -10,3 +10,15 @@ CObject::CObject():m_nZoneID(0),m_bActivate(false)
 void CObject::Update()
 {
 }
+
+void CObject::AI_Idle()
+{
+}
+
+void CObject::AI_Move()
+{
+}
+
+void CObject::AI_Attack()
+{
+}

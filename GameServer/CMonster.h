@@ -1,15 +1,10 @@
 #pragma once
 
-enum eMonster_State
-{
-	Idle=1,
-	Move=2,
-	Attack
-};
+
 
 struct StMonsterAction
 {
-	eMonster_State eState;
+	Object::eObject_State eState;
 	int64	nLastTickCount = 0;
 };
 class CMonster : public CObject
@@ -18,9 +13,9 @@ public:
 	CMonster();
 
 	virtual void Update();
-	void AI_Idle();
-	void AI_Move();
-	void AI_Attack();
+	virtual void AI_Idle();
+	virtual void AI_Move();
+	virtual void AI_Attack();
 
 	void SetTarget(CObject* pObject)
 	{
@@ -32,7 +27,7 @@ public:
 
 
 private:
-	eMonster_State	m_eState;
+	Object::eObject_State	m_eState;
 	int		m_nHP;
 	int		m_nAttack;
 

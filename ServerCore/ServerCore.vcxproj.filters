@@ -121,6 +121,9 @@
       <Filter>Main</Filter>
     </ClInclude>
     <ClInclude Include="CSingleton.h" />
+    <ClInclude Include="Struct.h">
+      <Filter>Main</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CorePch.cpp">
