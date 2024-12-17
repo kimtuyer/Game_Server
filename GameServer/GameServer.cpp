@@ -10,10 +10,10 @@
 #include "Protocol.pb.h"
 #include "Job.h"
 #include "Room.h"
-//#include "Player.h"
-#include "Enum.h"
+#include "CMonster.h"
 #include "CZone_Manager.h"
 atomic<int>	g_nPacketCount = 0;
+//class CZone_Manager;
 void DoMainJob(ServerServiceRef& service)
 {
 	while (true)
@@ -31,8 +31,8 @@ void DoMainJob(ServerServiceRef& service)
 		LEndTickCount = ::GetTickCount64() + Tick::WORKER_TICK;
 
 		// 네트워크 입출력 처리 -> 인게임 로직까지 (패킷 핸들러에 의해)
-		//service->GetIocpCore()->Dispatch(10);
-		// 
+		service->GetIocpCore()->Dispatch(10);
+		
 		// 예약된 일감 처리
 		ThreadManager::DistributeReservedJobs();
 
@@ -84,7 +84,8 @@ int main()
 	//GRoom->DoTimer(2000, [] { cout << "Hello 2000" << endl; });
 
 	ClientPacketHandler::Init();
-	CZone_Manager::Instance()->Init();
+	GZoneManager->Init();
+	//ZoneManager()->Init();
 
 	ServerServiceRef service = MakeShared<ServerService>(
 		NetAddress(L"127.0.0.1", 7777),

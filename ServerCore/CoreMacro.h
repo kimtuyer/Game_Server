@@ -30,12 +30,12 @@ static classname* Instance();			\
 	{									\
 		return classname::Instance();	\
 	}\
-	
+	 
 
 
 #define IMPLEMENT_SIGNLETON(classname)	\
 										\
-	static classname* Instance()			\
+	static classname* Instance()		\
 	{									\
 										\
 		static classname pInstance;		\

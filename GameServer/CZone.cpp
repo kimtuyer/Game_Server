@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "CZone.h"
-
+#include "Player.h" //참조안하면 static_cast변환 실패
+#include "CMonster.h"
 CZone::CZone()
 {
 }

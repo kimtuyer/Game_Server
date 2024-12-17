@@ -1,7 +1,6 @@
 #pragma once
 #include "CObject.h"
-#include "Player.h" //참조안하면 static_cast변환 실패
-#include "CMonster.h"
+
 class CObject;
 using ObjectType = int;
 typedef set<ObjectRef> ObjectList;

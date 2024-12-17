@@ -1,10 +1,12 @@
 #include "pch.h"
 #include "CMonster.h"
 #include "CZone_Manager.h"
-
+#include "CZone.h"
+#include "Player.h"
+class CZone;
 CMonster::CMonster() : m_nHP(100), m_nAttack(10), m_eState(Idle)
 {
-
+	cout << "몬스터 생성" << endl;
 
 }
 
@@ -49,7 +51,7 @@ void CMonster::AI_Idle()
 		
 	*/
 
-	CZoneRef pZone = ZoneManager()->GetZone(m_nZoneID);
+	CZoneRef pZone = CZone_Manager().GetZone(m_nZoneID);
 	if (pZone == nullptr)
 		return;
 

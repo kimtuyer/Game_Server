@@ -13,6 +13,7 @@ Memory*				GMemory = nullptr;
 SendBufferManager*	GSendBufferManager = nullptr;
 GlobalQueue*		GGlobalQueue = nullptr;
 JobTimer*			GJobTimer = nullptr;
+JobTimer*			GLogicTimer = nullptr;
 
 DeadLockProfiler*	GDeadLockProfiler = nullptr;
 

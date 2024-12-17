@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "CZone_Manager.h"
-IMPLEMENT_SIGNLETON(CZone_Manager);
+#include "CZone.h"
+//IMPLEMENT_SIGNLETON(CZone_Manager);
+shared_ptr<CZone_Manager> GZoneManager = make_shared<CZone_Manager>();
 
 void CZone_Manager::Init()
 {
@@ -10,10 +12,13 @@ void CZone_Manager::Init()
 	*/
 	for (int i = 0; i < 50; i++)
 	{
-		//CZoneRef one = MakeShared<CZone>();
+		//CZoneRef Zone = MakeShared<CZone>();
+		//Zone.get()->Insert()
+
 		m_listZone.insert({ i,MakeShared<CZone>()});
 	}
 
+	
 	DoTimer(Tick::AI_TICK, &CZone_Manager::Update);
 
 }

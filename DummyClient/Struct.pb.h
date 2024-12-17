@@ -55,35 +55,35 @@ struct TableStruct_Struct_2eproto {
 };
 extern const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_Struct_2eproto;
 namespace Protocol {
-class Player;
-struct PlayerDefaultTypeInternal;
-extern PlayerDefaultTypeInternal _Player_default_instance_;
+class CPlayer;
+struct CPlayerDefaultTypeInternal;
+extern CPlayerDefaultTypeInternal _CPlayer_default_instance_;
 }  // namespace Protocol
 PROTOBUF_NAMESPACE_OPEN
-template<> ::Protocol::Player* Arena::CreateMaybeMessage<::Protocol::Player>(Arena*);
+template<> ::Protocol::CPlayer* Arena::CreateMaybeMessage<::Protocol::CPlayer>(Arena*);
 PROTOBUF_NAMESPACE_CLOSE
 namespace Protocol {
 
 // ===================================================================
 
-class Player final :
-    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:Protocol.Player) */ {
+class CPlayer final :
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:Protocol.CPlayer) */ {
  public:
-  inline Player() : Player(nullptr) {}
-  ~Player() override;
-  explicit constexpr Player(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
+  inline CPlayer() : CPlayer(nullptr) {}
+  ~CPlayer() override;
+  explicit constexpr CPlayer(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
 
-  Player(const Player& from);
-  Player(Player&& from) noexcept
-    : Player() {
+  CPlayer(const CPlayer& from);
+  CPlayer(CPlayer&& from) noexcept
+    : CPlayer() {
     *this = ::std::move(from);
   }
 
-  inline Player& operator=(const Player& from) {
+  inline CPlayer& operator=(const CPlayer& from) {
     CopyFrom(from);
     return *this;
   }
-  inline Player& operator=(Player&& from) noexcept {
+  inline CPlayer& operator=(CPlayer&& from) noexcept {
     if (this == &from) return *this;
     if (GetOwningArena() == from.GetOwningArena()) {
       InternalSwap(&from);
@@ -102,20 +102,20 @@ class Player final :
   static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
     return default_instance().GetMetadata().reflection;
   }
-  static const Player& default_instance() {
+  static const CPlayer& default_instance() {
     return *internal_default_instance();
   }
-  static inline const Player* internal_default_instance() {
-    return reinterpret_cast<const Player*>(
-               &_Player_default_instance_);
+  static inline const CPlayer* internal_default_instance() {
+    return reinterpret_cast<const CPlayer*>(
+               &_CPlayer_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
     0;
 
-  friend void swap(Player& a, Player& b) {
+  friend void swap(CPlayer& a, CPlayer& b) {
     a.Swap(&b);
   }
-  inline void Swap(Player* other) {
+  inline void Swap(CPlayer* other) {
     if (other == this) return;
     if (GetOwningArena() == other->GetOwningArena()) {
       InternalSwap(other);
@@ -123,7 +123,7 @@ class Player final :
       ::PROTOBUF_NAMESPACE_ID::internal::GenericSwap(this, other);
     }
   }
-  void UnsafeArenaSwap(Player* other) {
+  void UnsafeArenaSwap(CPlayer* other) {
     if (other == this) return;
     GOOGLE_DCHECK(GetOwningArena() == other->GetOwningArena());
     InternalSwap(other);
@@ -131,17 +131,17 @@ class Player final :
 
   // implements Message ----------------------------------------------
 
-  inline Player* New() const final {
-    return new Player();
+  inline CPlayer* New() const final {
+    return new CPlayer();
   }
 
-  Player* New(::PROTOBUF_NAMESPACE_ID::Arena* arena) const final {
-    return CreateMaybeMessage<Player>(arena);
+  CPlayer* New(::PROTOBUF_NAMESPACE_ID::Arena* arena) const final {
+    return CreateMaybeMessage<CPlayer>(arena);
   }
   void CopyFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) final;
   void MergeFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) final;
-  void CopyFrom(const Player& from);
-  void MergeFrom(const Player& from);
+  void CopyFrom(const CPlayer& from);
+  void MergeFrom(const CPlayer& from);
   PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
   bool IsInitialized() const final;
 
@@ -155,13 +155,13 @@ class Player final :
   void SharedCtor();
   void SharedDtor();
   void SetCachedSize(int size) const final;
-  void InternalSwap(Player* other);
+  void InternalSwap(CPlayer* other);
   friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
   static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
-    return "Protocol.Player";
+    return "Protocol.CPlayer";
   }
   protected:
-  explicit Player(::PROTOBUF_NAMESPACE_ID::Arena* arena);
+  explicit CPlayer(::PROTOBUF_NAMESPACE_ID::Arena* arena);
   private:
   static void ArenaDtor(void* object);
   inline void RegisterArenaDtor(::PROTOBUF_NAMESPACE_ID::Arena* arena);
@@ -210,7 +210,7 @@ class Player final :
   void _internal_set_playertype(::Protocol::PlayerType value);
   public:
 
-  // @@protoc_insertion_point(class_scope:Protocol.Player)
+  // @@protoc_insertion_point(class_scope:Protocol.CPlayer)
  private:
   class _Internal;
 
@@ -232,63 +232,63 @@ class Player final :
   #pragma GCC diagnostic push
   #pragma GCC diagnostic ignored "-Wstrict-aliasing"
 #endif  // __GNUC__
-// Player
+// CPlayer
 
 // uint64 id = 1;
-inline void Player::clear_id() {
+inline void CPlayer::clear_id() {
   id_ = uint64_t{0u};
 }
-inline ::PROTOBUF_NAMESPACE_ID::uint64 Player::_internal_id() const {
+inline ::PROTOBUF_NAMESPACE_ID::uint64 CPlayer::_internal_id() const {
   return id_;
 }
-inline ::PROTOBUF_NAMESPACE_ID::uint64 Player::id() const {
-  // @@protoc_insertion_point(field_get:Protocol.Player.id)
+inline ::PROTOBUF_NAMESPACE_ID::uint64 CPlayer::id() const {
+  // @@protoc_insertion_point(field_get:Protocol.CPlayer.id)
   return _internal_id();
 }
-inline void Player::_internal_set_id(::PROTOBUF_NAMESPACE_ID::uint64 value) {
+inline void CPlayer::_internal_set_id(::PROTOBUF_NAMESPACE_ID::uint64 value) {
   
   id_ = value;
 }
-inline void Player::set_id(::PROTOBUF_NAMESPACE_ID::uint64 value) {
+inline void CPlayer::set_id(::PROTOBUF_NAMESPACE_ID::uint64 value) {
   _internal_set_id(value);
-  // @@protoc_insertion_point(field_set:Protocol.Player.id)
+  // @@protoc_insertion_point(field_set:Protocol.CPlayer.id)
 }
 
 // string name = 2;
-inline void Player::clear_name() {
+inline void CPlayer::clear_name() {
   name_.ClearToEmpty();
 }
-inline const std::string& Player::name() const {
-  // @@protoc_insertion_point(field_get:Protocol.Player.name)
+inline const std::string& CPlayer::name() const {
+  // @@protoc_insertion_point(field_get:Protocol.CPlayer.name)
   return _internal_name();
 }
 template <typename ArgT0, typename... ArgT>
 inline PROTOBUF_ALWAYS_INLINE
-void Player::set_name(ArgT0&& arg0, ArgT... args) {
+void CPlayer::set_name(ArgT0&& arg0, ArgT... args) {
  
  name_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set:Protocol.Player.name)
+  // @@protoc_insertion_point(field_set:Protocol.CPlayer.name)
 }
-inline std::string* Player::mutable_name() {
-  // @@protoc_insertion_point(field_mutable:Protocol.Player.name)
+inline std::string* CPlayer::mutable_name() {
+  // @@protoc_insertion_point(field_mutable:Protocol.CPlayer.name)
   return _internal_mutable_name();
 }
-inline const std::string& Player::_internal_name() const {
+inline const std::string& CPlayer::_internal_name() const {
   return name_.Get();
 }
-inline void Player::_internal_set_name(const std::string& value) {
+inline void CPlayer::_internal_set_name(const std::string& value) {
   
   name_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, value, GetArenaForAllocation());
 }
-inline std::string* Player::_internal_mutable_name() {
+inline std::string* CPlayer::_internal_mutable_name() {
   
   return name_.Mutable(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, GetArenaForAllocation());
 }
-inline std::string* Player::release_name() {
-  // @@protoc_insertion_point(field_release:Protocol.Player.name)
+inline std::string* CPlayer::release_name() {
+  // @@protoc_insertion_point(field_release:Protocol.CPlayer.name)
   return name_.Release(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArenaForAllocation());
 }
-inline void Player::set_allocated_name(std::string* name) {
+inline void CPlayer::set_allocated_name(std::string* name) {
   if (name != nullptr) {
     
   } else {
@@ -296,27 +296,27 @@ inline void Player::set_allocated_name(std::string* name) {
   }
   name_.SetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), name,
       GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set_allocated:Protocol.Player.name)
+  // @@protoc_insertion_point(field_set_allocated:Protocol.CPlayer.name)
 }
 
 // .Protocol.PlayerType playerType = 3;
-inline void Player::clear_playertype() {
+inline void CPlayer::clear_playertype() {
   playertype_ = 0;
 }
-inline ::Protocol::PlayerType Player::_internal_playertype() const {
+inline ::Protocol::PlayerType CPlayer::_internal_playertype() const {
   return static_cast< ::Protocol::PlayerType >(playertype_);
 }
-inline ::Protocol::PlayerType Player::playertype() const {
-  // @@protoc_insertion_point(field_get:Protocol.Player.playerType)
+inline ::Protocol::PlayerType CPlayer::playertype() const {
+  // @@protoc_insertion_point(field_get:Protocol.CPlayer.playerType)
   return _internal_playertype();
 }
-inline void Player::_internal_set_playertype(::Protocol::PlayerType value) {
+inline void CPlayer::_internal_set_playertype(::Protocol::PlayerType value) {
   
   playertype_ = value;
 }
-inline void Player::set_playertype(::Protocol::PlayerType value) {
+inline void CPlayer::set_playertype(::Protocol::PlayerType value) {
   _internal_set_playertype(value);
-  // @@protoc_insertion_point(field_set:Protocol.Player.playerType)
+  // @@protoc_insertion_point(field_set:Protocol.CPlayer.playerType)
 }
 
 #ifdef __GNUC__

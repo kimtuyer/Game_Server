@@ -317,22 +317,22 @@ class S_LOGIN final :
     kPlayersFieldNumber = 2,
     kSuccessFieldNumber = 1,
   };
-  // repeated .Protocol.Player players = 2;
+  // repeated .Protocol.CPlayer players = 2;
   int players_size() const;
   private:
   int _internal_players_size() const;
   public:
   void clear_players();
-  ::Protocol::Player* mutable_players(int index);
-  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Protocol::Player >*
+  ::Protocol::CPlayer* mutable_players(int index);
+  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Protocol::CPlayer >*
       mutable_players();
   private:
-  const ::Protocol::Player& _internal_players(int index) const;
-  ::Protocol::Player* _internal_add_players();
+  const ::Protocol::CPlayer& _internal_players(int index) const;
+  ::Protocol::CPlayer* _internal_add_players();
   public:
-  const ::Protocol::Player& players(int index) const;
-  ::Protocol::Player* add_players();
-  const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Protocol::Player >&
+  const ::Protocol::CPlayer& players(int index) const;
+  ::Protocol::CPlayer* add_players();
+  const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Protocol::CPlayer >&
       players() const;
 
   // bool success = 1;
@@ -351,7 +351,7 @@ class S_LOGIN final :
   template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
   typedef void InternalArenaConstructable_;
   typedef void DestructorSkippable_;
-  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Protocol::Player > players_;
+  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Protocol::CPlayer > players_;
   bool success_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_Protocol_2eproto;
@@ -940,37 +940,37 @@ inline void S_LOGIN::set_success(bool value) {
   // @@protoc_insertion_point(field_set:Protocol.S_LOGIN.success)
 }
 
-// repeated .Protocol.Player players = 2;
+// repeated .Protocol.CPlayer players = 2;
 inline int S_LOGIN::_internal_players_size() const {
   return players_.size();
 }
 inline int S_LOGIN::players_size() const {
   return _internal_players_size();
 }
-inline ::Protocol::Player* S_LOGIN::mutable_players(int index) {
+inline ::Protocol::CPlayer* S_LOGIN::mutable_players(int index) {
   // @@protoc_insertion_point(field_mutable:Protocol.S_LOGIN.players)
   return players_.Mutable(index);
 }
-inline ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Protocol::Player >*
+inline ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Protocol::CPlayer >*
 S_LOGIN::mutable_players() {
   // @@protoc_insertion_point(field_mutable_list:Protocol.S_LOGIN.players)
   return &players_;
 }
-inline const ::Protocol::Player& S_LOGIN::_internal_players(int index) const {
+inline const ::Protocol::CPlayer& S_LOGIN::_internal_players(int index) const {
   return players_.Get(index);
 }
-inline const ::Protocol::Player& S_LOGIN::players(int index) const {
+inline const ::Protocol::CPlayer& S_LOGIN::players(int index) const {
   // @@protoc_insertion_point(field_get:Protocol.S_LOGIN.players)
   return _internal_players(index);
 }
-inline ::Protocol::Player* S_LOGIN::_internal_add_players() {
+inline ::Protocol::CPlayer* S_LOGIN::_internal_add_players() {
   return players_.Add();
 }
-inline ::Protocol::Player* S_LOGIN::add_players() {
+inline ::Protocol::CPlayer* S_LOGIN::add_players() {
   // @@protoc_insertion_point(field_add:Protocol.S_LOGIN.players)
   return _internal_add_players();
 }
-inline const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Protocol::Player >&
+inline const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Protocol::CPlayer >&
 S_LOGIN::players() const {
   // @@protoc_insertion_point(field_list:Protocol.S_LOGIN.players)
   return players_;

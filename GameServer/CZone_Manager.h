@@ -1,10 +1,10 @@
 #pragma once
-#include "CZone.h"
+//#include "CZone.h"
 class CZone;
 using ZoneID = int;
 class CZone_Manager : public JobQueue
 {
-	DECLARE_SIGNLETON(CZone_Manager);
+	//DECLARE_SIGNLETON(CZone_Manager);
 public:
 
 	//처음 서버 시작시 초기화때 각 존 생성 , 몹 정보 미리 생성 삽입 
@@ -42,4 +42,5 @@ private:
 
 
 };
-CREATE_FUNCTION(CZone_Manager, ZoneManager);
+extern shared_ptr<CZone_Manager> GZoneManager;
+//CREATE_FUNCTION(CZone_Manager, ZoneManager);

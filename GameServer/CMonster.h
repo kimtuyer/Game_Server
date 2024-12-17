@@ -1,4 +1,5 @@
 #pragma once
+
 enum eMonster_State
 {
 	Idle=1,
@@ -11,7 +12,6 @@ struct StMonsterAction
 	eMonster_State eState;
 	int64	nLastTickCount = 0;
 };
-
 class CMonster : public CObject
 {
 public:
