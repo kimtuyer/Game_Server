@@ -91,12 +91,12 @@ int main()
 		NetAddress(L"127.0.0.1", 7777),
 		MakeShared<IocpCore>(),
 		MakeShared<GameSession>, // TODO : SessionManager 등
-		2200);
+		5100);
 
 	ASSERT_CRASH(service->Start());
 
 	unsigned int core_count = std::thread::hardware_concurrency();
-	int nThreadCnt = 10;//core_count * 2 + 1;
+	int nThreadCnt = core_count * 2 + 1;
 	for (int32 i = 0; i < nThreadCnt; i++)
 	{
 		GThreadManager->Launch([&service]()

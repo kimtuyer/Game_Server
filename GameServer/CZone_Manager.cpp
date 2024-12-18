@@ -28,6 +28,11 @@ void CZone_Manager::Init(int nZoneCount)
 
 }
 
+bool CZone_Manager::PlayerEnter(int& nZoneID, PlayerRef object)
+{
+	return false;
+}
+
 bool CZone_Manager::Enter(int& nZoneID, ObjectRef object)
 {
 	auto zone_iter = m_listZone.find(nZoneID);

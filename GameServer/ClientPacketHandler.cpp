@@ -20,7 +20,7 @@ bool Handle_INVALID(PacketSessionRef& session, BYTE* buffer, int32 len)
 
 bool Handle_C_LOGIN(PacketSessionRef& session, Protocol::C_LOGIN& pkt)
 {
-	cout << "C_LOGIN" << endl;
+	//cout << "C_LOGIN" << endl;
 	GameSessionRef gameSession = static_pointer_cast<GameSession>(session);
 
 	// TODO : Validation üũ
@@ -78,7 +78,7 @@ bool Handle_C_LOGIN(PacketSessionRef& session, Protocol::C_LOGIN& pkt)
 
 bool Handle_C_ENTER_ZONE(PacketSessionRef& session, Protocol::C_ENTER_ZONE& pkt)
 {
-	cout << "C_ENTER_ZONE" << endl;
+	//cout << "C_ENTER_ZONE" << endl;
 
 	GameSessionRef gameSession = static_pointer_cast<GameSession>(session);
 
@@ -89,6 +89,8 @@ bool Handle_C_ENTER_ZONE(PacketSessionRef& session, Protocol::C_ENTER_ZONE& pkt)
 	enterpkt.set_sendtime(pkt.sendtime());
 
 	int nZoneid = pkt.zoneid();
+	gameSession->_currentPlayer->SetObjectID(pkt.playerid());
+
 
 	if (GZoneManager->Enter(nZoneid, gameSession->_currentPlayer) == false)
 	{
@@ -118,7 +120,7 @@ bool Handle_C_ENTER_ZONE(PacketSessionRef& session, Protocol::C_ENTER_ZONE& pkt)
 
 bool Handle_C_MOVE(PacketSessionRef& session, Protocol::C_MOVE& pkt)
 {
-	cout << "C_MOVE" << endl;
+	//cout << "C_MOVE" << endl;
 
 	GameSessionRef gameSession = static_pointer_cast<GameSession>(session);
 

@@ -21,6 +21,8 @@ public:
 	void Init(int nZoneCount);
 
 	//오브젝트 리스트에 객체 삽입
+	bool PlayerEnter(int& nZoneID, PlayerRef object);
+
 	bool Enter(int& nZoneID,ObjectRef object);
 
 	bool Insert(int nZoneID, const CZoneRef);

@@ -58,11 +58,22 @@ public:
 		eObjectType = eType;
 	}
 
+	virtual int		ObjectID()
+	{
+		return m_nObjectID;
+	}
+
+	virtual	void	SetObjectID(int nObjectID)
+	{
+		m_nObjectID = nObjectID;
+	}
+
 
 protected:
 	int	m_nZoneID;
 	bool	m_bActivate;
 	Object::ObjectType eObjectType;
+	int		m_nObjectID;
 	//int	m_nHP;
 	//int	m_nAttack;
 

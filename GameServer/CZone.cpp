@@ -26,7 +26,7 @@ bool CZone::_Enter(ObjectType eObjectType, ObjectRef object)
 
 	if (eObjectType == Object::Player)
 	{
-		if (m_nMaxUserCnt <=m_nlistObject[Object::Player].size())
+		if (m_nMaxUserCnt <= m_nUserCnt)
 			return false;
 	}
 
@@ -34,12 +34,12 @@ bool CZone::_Enter(ObjectType eObjectType, ObjectRef object)
 	if (it == m_nlistObject.end())
 	{
 		ObjectList list;
-		list.insert({ object->ObjectType(), object });
+		list.insert({ object->ObjectID(), object});
 		m_nlistObject.insert({ eObjectType, list });
 	}
 	else
 	{
-		m_nlistObject[eObjectType].insert({ object->ObjectType(), object });
+		m_nlistObject[eObjectType].insert({ object->ObjectID(), object });
 	}
 
 	//유저가 있는 존만 활성화
