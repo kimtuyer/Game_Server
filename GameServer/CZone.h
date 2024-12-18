@@ -1,6 +1,7 @@
 #pragma once
 #include "CObject.h"
-
+#include "Struct.pb.h"
+#include "Protocol.pb.h"
 class CObject;
 using ObjectType = int;
 using ObjectID = int;
@@ -61,6 +62,8 @@ public:
 		}
 	}
 	
+	void BroadCasting(Protocol::S_MOVE_PLAYER& movepkt);
+
 
 
 

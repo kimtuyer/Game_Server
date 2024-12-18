@@ -3,6 +3,7 @@
 #include "Player.h"
 #include "Room.h"
 #include "CMonster.h"
+#include "CZone.h"
 #include "CZone_Manager.h"
 #include "GameSession.h"
 #include "CPlayerManager.h"
@@ -138,13 +139,22 @@ bool Handle_C_MOVE(PacketSessionRef& session, Protocol::C_MOVE& pkt)
 		해당 존, 섹터에 위치한 다른 유저들에게 브로드 캐스팅
 	
 	*/
-
-
-	S_MOVE_ACK movepkt;
+	Protocol::S_MOVE_PLAYER movepkt;
+	CZoneRef Zone = GZoneManager->GetZone(gameSession->_currentPlayer->GetZoneID());
+	if (Zone == nullptr)
+		return false;
+	//ObjectList Playerlist = Zone->PlayerList();
+	movepkt.set_playerid(pkt.playerid());
 	movepkt.set_sendtime(pkt.sendtime());
-	movepkt.set_success(true);
+	movepkt.set_allocated_pos(pkt.mutable_pos());
+	Zone->BroadCasting(movepkt);
+		
 
-	auto sendBuffer = ClientPacketHandler::MakeSendBuffer(movepkt);
+	S_MOVE_ACK moveackpkt;
+	moveackpkt.set_sendtime(pkt.sendtime());
+	moveackpkt.set_success(true);
+
+	auto sendBuffer = ClientPacketHandler::MakeSendBuffer(moveackpkt);
 	session->Send(sendBuffer);
 
 	return true;

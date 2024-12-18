@@ -129,3 +129,19 @@ bool Handle_S_OBJ_REMOVE_ACK(PacketSessionRef& session, Protocol::S_OBJ_REMOVE_A
 	// TODO
 	return true;
 }
+
+bool Handle_S_MOVE_MONSTER(PacketSessionRef& session, Protocol::S_MOVE_MONSTER& pkt)
+{
+	RTT(GetTickCount64(), pkt.sendtime(), "S_MOVE_MONSTER");
+
+	// TODO
+	return true;
+}
+
+bool Handle_S_MOVE_PLAYER(PacketSessionRef& session, Protocol::S_MOVE_PLAYER& pkt)
+{
+	RTT(GetTickCount64(), pkt.sendtime(), "S_MOVE_PLAYER");
+
+	// TODO
+	return true;
+}

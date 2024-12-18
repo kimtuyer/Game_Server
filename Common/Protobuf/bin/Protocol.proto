@@ -32,7 +32,7 @@ message S_ENTER_ACK
 
 }
 
-message C_MOVE
+message C_MOVE //클라 동기화
 {
 	uint64 sendTime=1;
 	uint64 playerID = 2;
@@ -46,6 +46,22 @@ message S_MOVE_ACK
 	uint64 sendTime=1;
 	bool success = 2;
 }
+
+
+message S_MOVE_MONSTER
+{
+	uint64 sendTime=1;
+	uint64 objectID = 2;
+	D3DVECTOR pos=3;
+}
+message S_MOVE_PLAYER
+{
+	uint64 sendTime=1;
+	uint64 playerID = 2;
+	D3DVECTOR pos=3;
+}
+
+
 
 
 message C_ATTACK

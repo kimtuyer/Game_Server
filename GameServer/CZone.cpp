@@ -2,6 +2,9 @@
 #include "CZone.h"
 #include "Player.h" //참조안하면 static_cast변환 실패
 #include "CMonster.h"
+#include "GameSession.h"
+#include "ClientPacketHandler.h"
+
 CZone::CZone(int nMaxUserCnt) :m_bActivate(false), m_nMaxUserCnt(nMaxUserCnt)
 {
 	m_nUserCnt.store(0);
@@ -124,6 +127,11 @@ void CZone::Update()
 		pMonster->Update();
 	}
 
+	/*
+	 몬스터 업뎃후 실시간 좌표 주변 유저에게 동기화
+	
+	*/
+
 	//for (auto& Object : m_nlistObject[Object::Player])
 	//{
 	//	if (Object->GetActivate() == false)
@@ -166,4 +174,33 @@ bool CZone::Enter()
 {
 	READ_LOCK;
 	return m_nlistObject[Object::Player].size() < m_nMaxUserCnt;
+}
+
+void CZone::BroadCasting( Protocol::S_MOVE_PLAYER& movepkt)
+{
+	
+	int exceptID = movepkt.playerid();
+	//Protocol::S_MOVE_PLAYER movepkt;
+	//movepkt.set_playerid(exceptID);
+	////movepkt.set_allocated_pos(vPos);
+	//Protocol::D3DVECTOR* Pos = movepkt.mutable_pos();
+	//Pos->set_x(vPos.x());
+	//Pos->set_y(vPos.y());
+	//Pos->set_z(vPos.z());
+	auto sendBuffer = ClientPacketHandler::MakeSendBuffer(movepkt);
+
+	for (auto& [playerid, ObjectRef] : m_nlistObject[Object::Player])
+	{
+
+		if (playerid == exceptID)
+			continue;
+
+		CPlayer* pPlayer = static_cast<CPlayer*>(ObjectRef.get());
+		pPlayer->ownerSession.lock()->Send(sendBuffer);
+
+
+	}
+
+
+
 }

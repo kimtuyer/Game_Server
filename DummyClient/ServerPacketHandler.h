@@ -12,12 +12,14 @@ enum : uint16
 	PKT_S_ENTER_ACK = 1003,
 	PKT_C_MOVE = 1004,
 	PKT_S_MOVE_ACK = 1005,
-	PKT_C_ATTACK = 1006,
-	PKT_S_ATTACK_ACK = 1007,
-	PKT_S_OBJ_LIST = 1008,
-	PKT_S_OBJ_REMOVE_ACK = 1009,
-	PKT_C_CHAT = 1010,
-	PKT_S_CHAT = 1011,
+	PKT_S_MOVE_MONSTER = 1006,
+	PKT_S_MOVE_PLAYER = 1007,
+	PKT_C_ATTACK = 1008,
+	PKT_S_ATTACK_ACK = 1009,
+	PKT_S_OBJ_LIST = 1010,
+	PKT_S_OBJ_REMOVE_ACK = 1011,
+	PKT_C_CHAT = 1012,
+	PKT_S_CHAT = 1013,
 };
 
 // Custom Handlers
@@ -25,6 +27,8 @@ bool Handle_INVALID(PacketSessionRef& session, BYTE* buffer, int32 len);
 bool Handle_S_LOGIN(PacketSessionRef& session, Protocol::S_LOGIN& pkt);
 bool Handle_S_ENTER_ACK(PacketSessionRef& session, Protocol::S_ENTER_ACK& pkt);
 bool Handle_S_MOVE_ACK(PacketSessionRef& session, Protocol::S_MOVE_ACK& pkt);
+bool Handle_S_MOVE_MONSTER(PacketSessionRef& session, Protocol::S_MOVE_MONSTER& pkt);
+bool Handle_S_MOVE_PLAYER(PacketSessionRef& session, Protocol::S_MOVE_PLAYER& pkt);
 bool Handle_S_ATTACK_ACK(PacketSessionRef& session, Protocol::S_ATTACK_ACK& pkt);
 bool Handle_S_OBJ_LIST(PacketSessionRef& session, Protocol::S_OBJ_LIST& pkt);
 bool Handle_S_OBJ_REMOVE_ACK(PacketSessionRef& session, Protocol::S_OBJ_REMOVE_ACK& pkt);
@@ -40,6 +44,8 @@ public:
 		GPacketHandler[PKT_S_LOGIN] = [](PacketSessionRef& session, BYTE* buffer, int32 len) { return HandlePacket<Protocol::S_LOGIN>(Handle_S_LOGIN, session, buffer, len); };
 		GPacketHandler[PKT_S_ENTER_ACK] = [](PacketSessionRef& session, BYTE* buffer, int32 len) { return HandlePacket<Protocol::S_ENTER_ACK>(Handle_S_ENTER_ACK, session, buffer, len); };
 		GPacketHandler[PKT_S_MOVE_ACK] = [](PacketSessionRef& session, BYTE* buffer, int32 len) { return HandlePacket<Protocol::S_MOVE_ACK>(Handle_S_MOVE_ACK, session, buffer, len); };
+		GPacketHandler[PKT_S_MOVE_MONSTER] = [](PacketSessionRef& session, BYTE* buffer, int32 len) { return HandlePacket<Protocol::S_MOVE_MONSTER>(Handle_S_MOVE_MONSTER, session, buffer, len); };
+		GPacketHandler[PKT_S_MOVE_PLAYER] = [](PacketSessionRef& session, BYTE* buffer, int32 len) { return HandlePacket<Protocol::S_MOVE_PLAYER>(Handle_S_MOVE_PLAYER, session, buffer, len); };
 		GPacketHandler[PKT_S_ATTACK_ACK] = [](PacketSessionRef& session, BYTE* buffer, int32 len) { return HandlePacket<Protocol::S_ATTACK_ACK>(Handle_S_ATTACK_ACK, session, buffer, len); };
 		GPacketHandler[PKT_S_OBJ_LIST] = [](PacketSessionRef& session, BYTE* buffer, int32 len) { return HandlePacket<Protocol::S_OBJ_LIST>(Handle_S_OBJ_LIST, session, buffer, len); };
 		GPacketHandler[PKT_S_OBJ_REMOVE_ACK] = [](PacketSessionRef& session, BYTE* buffer, int32 len) { return HandlePacket<Protocol::S_OBJ_REMOVE_ACK>(Handle_S_OBJ_REMOVE_ACK, session, buffer, len); };

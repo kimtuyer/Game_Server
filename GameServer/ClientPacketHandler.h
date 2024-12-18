@@ -12,12 +12,14 @@ enum : uint16
 	PKT_S_ENTER_ACK = 1003,
 	PKT_C_MOVE = 1004,
 	PKT_S_MOVE_ACK = 1005,
-	PKT_C_ATTACK = 1006,
-	PKT_S_ATTACK_ACK = 1007,
-	PKT_S_OBJ_LIST = 1008,
-	PKT_S_OBJ_REMOVE_ACK = 1009,
-	PKT_C_CHAT = 1010,
-	PKT_S_CHAT = 1011,
+	PKT_S_MOVE_MONSTER = 1006,
+	PKT_S_MOVE_PLAYER = 1007,
+	PKT_C_ATTACK = 1008,
+	PKT_S_ATTACK_ACK = 1009,
+	PKT_S_OBJ_LIST = 1010,
+	PKT_S_OBJ_REMOVE_ACK = 1011,
+	PKT_C_CHAT = 1012,
+	PKT_S_CHAT = 1013,
 };
 
 // Custom Handlers
@@ -50,6 +52,8 @@ public:
 	static SendBufferRef MakeSendBuffer(Protocol::S_LOGIN& pkt) { return MakeSendBuffer(pkt, PKT_S_LOGIN); }
 	static SendBufferRef MakeSendBuffer(Protocol::S_ENTER_ACK& pkt) { return MakeSendBuffer(pkt, PKT_S_ENTER_ACK); }
 	static SendBufferRef MakeSendBuffer(Protocol::S_MOVE_ACK& pkt) { return MakeSendBuffer(pkt, PKT_S_MOVE_ACK); }
+	static SendBufferRef MakeSendBuffer(Protocol::S_MOVE_MONSTER& pkt) { return MakeSendBuffer(pkt, PKT_S_MOVE_MONSTER); }
+	static SendBufferRef MakeSendBuffer(Protocol::S_MOVE_PLAYER& pkt) { return MakeSendBuffer(pkt, PKT_S_MOVE_PLAYER); }
 	static SendBufferRef MakeSendBuffer(Protocol::S_ATTACK_ACK& pkt) { return MakeSendBuffer(pkt, PKT_S_ATTACK_ACK); }
 	static SendBufferRef MakeSendBuffer(Protocol::S_OBJ_LIST& pkt) { return MakeSendBuffer(pkt, PKT_S_OBJ_LIST); }
 	static SendBufferRef MakeSendBuffer(Protocol::S_OBJ_REMOVE_ACK& pkt) { return MakeSendBuffer(pkt, PKT_S_OBJ_REMOVE_ACK); }
