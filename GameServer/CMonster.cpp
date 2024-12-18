@@ -12,6 +12,10 @@ CMonster::CMonster() : m_nHP(100), m_nAttack(10), m_eState(Object::Idle)
 
 void CMonster::Update()
 {	
+	if (GetActivate() == false)
+		return;
+
+
 	switch (m_eState)
 	{
 	case Object::Idle:
@@ -63,7 +67,7 @@ void CMonster::AI_Idle()
 		 클라로 몹 이동 패킷 전송
 		*/
 		m_eState = Object::Move;
-		DoTimer(Tick::AI_TICK, &CMonster::AI_Move);
+		//DoTimer(Tick::AI_TICK, &CMonster::AI_Move);
 
 		//AI_Move();
 		return;
@@ -71,7 +75,8 @@ void CMonster::AI_Idle()
 	}
 
 	pTarget = pEnemy;
-	DoTimer(Tick::AI_TICK, &CMonster::AI_Attack);
+	m_eState = Object::Attack;
+//	DoTimer(Tick::AI_TICK, &CMonster::AI_Attack);
 	//AI_Attack();
 	/*
 	 

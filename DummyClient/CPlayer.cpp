@@ -3,55 +3,62 @@
 #include "ClientSession.h"
 #include "ServerPacketHandler.h"
 
-CPlayer::CPlayer():m_eState(Object::Idle)
+CClientPlayer::CClientPlayer():m_eState(Object::Idle)
 {
 
 }
 
-void CPlayer::Update()
+CClientPlayer::~CClientPlayer()
+{
+	cout << "CClientPlayer ¼Ò¸ê" << endl;
+}
+
+void CClientPlayer::Update()
 {
 }
 
-void CPlayer::AI_Idle()
+
+void CClientPlayer::AI_Idle()
 {
 	Protocol::C_MOVE pkt;
 	{
 		pkt.set_sendtime(GetTickCount64());
-		pkt.set_playerindex(playerId);
-		auto vPos = pkt.add_pos();
-		vPos->set_x(m_vPos.x);
-		vPos->set_y(m_vPos.y);
-		vPos->set_z(m_vPos.z);
+		pkt.set_playerid(playerId);
+		auto vPos = pkt.mutable_pos();
+		vPos->set_x(m_vPos.x());
+		vPos->set_y(m_vPos.y());
+		vPos->set_z(m_vPos.z());
 	}
 
 	auto sendBuffer = ServerPacketHandler::MakeSendBuffer(pkt);
 	ownerSession->Send(sendBuffer);
 
 
-	DoTimer(Tick::AI_TICK, &CPlayer::AI_Move);
+	DoTimer(Tick::AI_TICK, &CClientPlayer::AI_Move);
 
 }
 
-void CPlayer::AI_Move()
+void CClientPlayer::AI_Move()
 {
 
 	Protocol::C_MOVE pkt;
 	{
 		pkt.set_sendtime(GetTickCount64());
-		pkt.set_playerindex(playerId);
-		auto vPos = pkt.add_pos();
-		vPos->set_x(m_vPos.x);
-		vPos->set_y(m_vPos.y);
-		vPos->set_z(m_vPos.z);
+		pkt.set_playerid(playerId);
+		auto vPos = pkt.mutable_pos();
+	
+		vPos->set_x(m_vPos.x());
+		vPos->set_y(m_vPos.y());
+		vPos->set_z(m_vPos.z());
 	}
 
 	auto sendBuffer = ServerPacketHandler::MakeSendBuffer(pkt);
 	ownerSession->Send(sendBuffer);
 
 
-	DoTimer(Tick::AI_TICK, &CPlayer::AI_Idle);
+	DoTimer(Tick::AI_TICK, &CClientPlayer::AI_Idle);
 }
 
-void CPlayer::AI_Attack()
+void CClientPlayer::AI_Attack()
 {
 }

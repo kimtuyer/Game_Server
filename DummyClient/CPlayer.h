@@ -1,9 +1,10 @@
 #pragma once
 
-class CPlayer : public CObject
+class CClientPlayer : public CObject
 {
 public:
-	CPlayer();
+	CClientPlayer();
+	~CClientPlayer();
 
 	virtual void Update();
 	virtual void AI_Idle();
@@ -17,7 +18,7 @@ public:
 
 
 	//int		m_nZoneid;
-	D3DVECTOR	m_vPos;
+	Protocol::D3DVECTOR	m_vPos;
 	Object::eObject_State	m_eState;
 
 

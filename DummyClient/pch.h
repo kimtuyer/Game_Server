@@ -12,9 +12,10 @@
 
 #include "CorePch.h"
 #include "Enum.pb.h"
+#include "Struct.pb.h"
 #include "CObject.h"
 
 using ClientSessionRef = shared_ptr<class ClientSession>;
 using ObjectRef = shared_ptr<class CObject>;
-using PlayerRef = shared_ptr<class CPlayer>;
+using PlayerRef = shared_ptr<class CClientPlayer>;
 using MonsterRef = shared_ptr<class CMonster>;

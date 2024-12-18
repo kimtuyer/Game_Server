@@ -8,7 +8,7 @@ class CZone_Manager : public JobQueue
 public:
 
 	//처음 서버 시작시 초기화때 각 존 생성 , 몹 정보 미리 생성 삽입 
-	
+	CZone_Manager();
 	~CZone_Manager()
 	{
 		m_listZone.clear();
@@ -18,9 +18,11 @@ public:
 	//유저 입장시 해당 존 활성화 및 추가 및 업데이트
 
 	//리스트 순회하면서 업데이트
-	void Init();
+	void Init(int nZoneCount);
 
 	//오브젝트 리스트에 객체 삽입
+	bool Enter(int& nZoneID,ObjectRef object);
+
 	bool Insert(int nZoneID, const CZoneRef);
 
 	//오브젝트 리스트 객체 삭제
@@ -30,6 +32,8 @@ public:
 	void Update();
 
 
+	int	IssueZoneID();
+
 
 
 	CZoneRef	GetZone(int nZoneID);
@@ -38,6 +42,8 @@ public:
 
 private:
 	USE_LOCK;
+	int	m_nZoneCount;
+	
 	map<ZoneID, CZoneRef> m_listZone;
 
 

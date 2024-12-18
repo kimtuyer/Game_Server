@@ -3,7 +3,8 @@
 #include "GameSessionManager.h"
 #include "ClientPacketHandler.h"
 #include "Room.h"
-
+#include "Player.h"
+#include "CPlayerManager.h"
 void GameSession::OnConnected()
 {
 	GSessionManager.Add(static_pointer_cast<GameSession>(shared_from_this()));
@@ -15,8 +16,15 @@ void GameSession::OnDisconnected()
 
 	if (_currentPlayer)
 	{
+		//레드는 플레이어매니저는 자체적으로 초마다 체크하면서,로그아웃시간이 1시간경과시 삭제함.
+		GPlayerManager->Remove(_currentPlayer->playerId);
+		_currentPlayer->LeaveZone();
+		//_currentPlayer->DoAsync(&CPlayer::LeaveZone);
+
 		if (auto room = _room.lock())
 			room->DoAsync(&Room::Leave, _currentPlayer);
+
+
 	}
 
 	_currentPlayer = nullptr;

@@ -13,6 +13,9 @@ public:
 
 
 	virtual void Update();
+	virtual void	LeaveZone();
+
+
 	virtual void AI_Idle();
 	virtual void AI_Move();
 	virtual void AI_Attack();
@@ -26,25 +29,45 @@ public:
 	{
 		return m_fAttackRange;
 	}
-	void	SetActivate(bool bFlag)
+	virtual void	SetActivate(bool bFlag)
 	{
 		m_bActivate = bFlag;
 	}
-	bool	GetActivate()
+	virtual bool	GetActivate()
 	{
 		return m_bActivate;
+	}
+
+	virtual void	SetZoneID(int nZoneid)
+	{
+		m_nZoneID = nZoneid;
+	}
+
+	virtual int		GetZoneID()
+	{
+		return m_nZoneID;
+	}
+
+	virtual int		ObjectType()
+	{
+		return (int)eObjectType;
+	}
+
+	virtual	void	SetObjectType(Object::ObjectType eType)
+	{
+		eObjectType = eType;
 	}
 
 
 protected:
 	int	m_nZoneID;
+	bool	m_bActivate;
+	Object::ObjectType eObjectType;
 	//int	m_nHP;
 	//int	m_nAttack;
 
 private:
-	bool	m_bActivate;
 	float	m_fSearchRange;
 	float	m_fAttackRange;
-
 };
 

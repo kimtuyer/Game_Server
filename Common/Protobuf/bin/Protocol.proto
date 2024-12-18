@@ -12,13 +12,16 @@ message C_LOGIN
 message S_LOGIN
 {
 	bool success = 1;
-	repeated Player players = 2; // 아이디 발급 전
+	uint32	 zoneid=2;
+	Player players = 3; // 아이디 발급 전
 }
 
 message C_ENTER_ZONE
 {
 	uint64 sendTime=1;
 	uint64 playerID = 2;
+	uint32	 zoneid=3;
+
 }
 
 message S_ENTER_ACK
@@ -32,8 +35,8 @@ message S_ENTER_ACK
 message C_MOVE
 {
 	uint64 sendTime=1;
-	uint64 playerIndex = 2;
-	repeated D3DVECTOR pos=3;
+	uint64 playerID = 2;
+	D3DVECTOR pos=3;
 
 
 }
@@ -48,7 +51,7 @@ message S_MOVE_ACK
 message C_ATTACK
 {
 	uint64 sendTime=1;
-	uint64 playerIndex = 2;
+	uint64 playerID = 2;
 }
 
 message S_ATTACK_ACK
@@ -65,6 +68,13 @@ message S_OBJ_LIST
 
 	bool success = 2;
 }
+
+message S_OBJ_REMOVE_ACK
+{
+	uint64 sendTime=1;
+	bool success = 2;
+}
+
 
 
 message C_CHAT

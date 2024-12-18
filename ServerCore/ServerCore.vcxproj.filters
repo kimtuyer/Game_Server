@@ -19,6 +19,9 @@
     <Filter Include="Job">
       <UniqueIdentifier>{8b94d2b1-e1ee-493c-956e-df847a2e11fe}</UniqueIdentifier>
     </Filter>
+    <Filter Include="GameObject">
+      <UniqueIdentifier>{448cbc86-3317-4b2d-8e7c-07e76f77c529}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CorePch.h">

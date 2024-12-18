@@ -11,6 +11,10 @@ void CObject::Update()
 {
 }
 
+void CObject::LeaveZone()
+{
+}
+
 void CObject::AI_Idle()
 {
 }

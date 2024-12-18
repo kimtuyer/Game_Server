@@ -5,11 +5,12 @@
 #include "CMonster.h"
 #include "CZone_Manager.h"
 #include "GameSession.h"
+#include "CPlayerManager.h"
 
 PacketHandlerFunc GPacketHandler[UINT16_MAX];
 
 // 직접 컨텐츠 작업자
-
+using namespace Protocol;
 bool Handle_INVALID(PacketSessionRef& session, BYTE* buffer, int32 len)
 {
 	PacketHeader* header = reinterpret_cast<PacketHeader*>(buffer);
@@ -19,13 +20,14 @@ bool Handle_INVALID(PacketSessionRef& session, BYTE* buffer, int32 len)
 
 bool Handle_C_LOGIN(PacketSessionRef& session, Protocol::C_LOGIN& pkt)
 {
+	cout << "C_LOGIN" << endl;
 	GameSessionRef gameSession = static_pointer_cast<GameSession>(session);
 
 	// TODO : Validation 체크
 
 	Protocol::S_LOGIN loginPkt;
 	loginPkt.set_success(true);
-
+	
 	// DB에서 플레이 정보를 긁어온다
 	// GameSession에 플레이 정보를 저장 (메모리)
 
@@ -33,19 +35,25 @@ bool Handle_C_LOGIN(PacketSessionRef& session, Protocol::C_LOGIN& pkt)
 	static Atomic<uint64> idGenerator = 1;
 
 	{
-		auto player = loginPkt.add_players();
+		auto player = loginPkt.mutable_players();
 		//player->set_name(u8"DB에서긁어온이름1");
-		
 		player->set_playertype(Protocol::PLAYER_TYPE_KNIGHT);
 
 		PlayerRef playerRef = MakeShared<CPlayer>();
 		playerRef->playerId = idGenerator++;
 		playerRef->name = player->name();
 		playerRef->type = player->playertype();
+		playerRef->SetObjectType(Object::Player);
 		playerRef->ownerSession = gameSession;
 		
-		gameSession->_players.push_back(playerRef);
+		gameSession->_currentPlayer = playerRef;
 		player->set_id(playerRef->playerId);
+		//gameSession->_players.push_back(playerRef);
+		
+		GPlayerManager->Insert(playerRef->playerId, playerRef);
+
+		//int nzoneid = GZoneManager->IssueZoneID();
+		loginPkt.set_zoneid(GZoneManager->IssueZoneID());
 	}
 
 	//{
@@ -70,13 +78,74 @@ bool Handle_C_LOGIN(PacketSessionRef& session, Protocol::C_LOGIN& pkt)
 
 bool Handle_C_ENTER_ZONE(PacketSessionRef& session, Protocol::C_ENTER_ZONE& pkt)
 {
+	cout << "C_ENTER_ZONE" << endl;
 
-	return false;
+	GameSessionRef gameSession = static_pointer_cast<GameSession>(session);
+
+	if (GPlayerManager->Find(pkt.playerid())==false)
+		return false;
+
+	S_ENTER_ACK enterpkt;
+	enterpkt.set_sendtime(pkt.sendtime());
+
+	int nZoneid = pkt.zoneid();
+
+	if (GZoneManager->Enter(nZoneid, gameSession->_currentPlayer) == false)
+	{
+		enterpkt.set_success(false);
+	
+
+	}
+	else
+	{
+		enterpkt.set_success(true);
+		enterpkt.set_zoneid(nZoneid);
+
+	}
+
+	auto sendBuffer = ClientPacketHandler::MakeSendBuffer(enterpkt);
+	session->Send(sendBuffer);
+
+	/*
+		해당 존 접속한 다른유저에게 알림?
+	
+	
+	*/
+
+
+	return true;
 }
 
 bool Handle_C_MOVE(PacketSessionRef& session, Protocol::C_MOVE& pkt)
 {
-	return false;
+	cout << "C_MOVE" << endl;
+
+	GameSessionRef gameSession = static_pointer_cast<GameSession>(session);
+
+	if (GPlayerManager->Find(pkt.playerid()) == false)
+		return false;
+	if (gameSession->_currentPlayer == nullptr)
+		return false;
+
+	//gameSession->_currentPlayer->
+	//PlayerRef Player=
+
+	/*
+		현재 위치에서 이동가능한 위치인지 확인
+	
+		해당 존, 섹터에 위치한 다른 유저들에게 브로드 캐스팅
+	
+	*/
+
+
+	S_MOVE_ACK movepkt;
+	movepkt.set_sendtime(pkt.sendtime());
+	movepkt.set_success(true);
+
+	auto sendBuffer = ClientPacketHandler::MakeSendBuffer(movepkt);
+	session->Send(sendBuffer);
+
+	return true;
 }
 
 bool Handle_C_ATTACK(PacketSessionRef& session, Protocol::C_ATTACK& pkt)
@@ -84,25 +153,7 @@ bool Handle_C_ATTACK(PacketSessionRef& session, Protocol::C_ATTACK& pkt)
 	return false;
 }
 
-bool Handle_C_ENTER_GAME(PacketSessionRef& session, Protocol::C_ENTER_ZONE& pkt)
-{
-	GameSessionRef gameSession = static_pointer_cast<GameSession>(session);
 
-	uint64 index = pkt.playerid();
-	// TODO : Validation
-
-	gameSession->_currentPlayer = gameSession->_players[index]; // READ_ONLY?
-	gameSession->_room = GRoom;
-
-	GRoom->DoAsync(&Room::Enter, gameSession->_currentPlayer);
-
-	Protocol::S_ENTER_ACK enterGamePkt;
-	enterGamePkt.set_success(true);
-	auto sendBuffer = ClientPacketHandler::MakeSendBuffer(enterGamePkt);
-	gameSession->_currentPlayer->ownerSession->Send(sendBuffer);
-
-	return true;
-}
 
 bool Handle_C_CHAT(PacketSessionRef& session, Protocol::C_CHAT& pkt)
 {

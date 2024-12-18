@@ -3,21 +3,22 @@
 
 class CObject;
 using ObjectType = int;
-typedef set<ObjectRef> ObjectList;
+using ObjectID = int;
+typedef  map<ObjectID, ObjectRef> ObjectList;
 class CZone : public JobQueue
 {
 
 public:
 
-	CZone();
+	CZone(int nMaxUserCnt);
 	~CZone();
 
 	
 	//오브젝트 리스트에 객체 삽입
-	bool Insert(ObjectType, ObjectRef);
+	bool _Enter(ObjectType, ObjectRef);
 
 	//오브젝트 리스트 객체 삭제
-	void Remove(ObjectType, ObjectRef);
+	void Remove(ObjectType, int objectID);
 
 	//리스트 순회, 객체 타이머 
 	void Update();
@@ -28,18 +29,22 @@ public:
 
 
 
+	void	SetActivate(bool bFlag)
+	{
+		m_bActivate = bFlag;
+	}
 	bool	GetActivate()
 	{
 		return m_bActivate;
 	}
 
+	
 
+	bool	Enter();
 
 	ObjectList& PlayerList()
 	{
-		//READ_LOCK;
-
-		//if (m_nlistObject.contains(Object::Player))
+		READ_LOCK;
 		{
 			return m_nlistObject[Object::Player];
 		}
@@ -49,8 +54,7 @@ public:
 
 	ObjectList& MonsterList()
 	{
-		//READ_LOCK;
-
+		READ_LOCK;
 		//if (m_nlistObject.contains(Object::Monster))
 		{
 			return m_nlistObject[Object::Monster];
@@ -61,10 +65,12 @@ public:
 
 
 private:	//오브젝트 리스트도 맵 or set이 나은가?
-
+	
 	//오브젝트는 타입에 따라 리스트를 다르게 가져가는게 나은가
-
-	map<ObjectType, set<ObjectRef>> m_nlistObject;
+	USE_LOCK;
+	int			m_nMaxUserCnt;
+	atomic<int>	m_nUserCnt;
+	map<ObjectType, map<ObjectID,ObjectRef>> m_nlistObject;
 
 	bool m_bActivate;
 

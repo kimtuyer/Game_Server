@@ -12,6 +12,7 @@
 
 #include "CorePch.h"
 #include "Enum.pb.h"
+#include "Struct.pb.h"
 #include "CObject.h"
 
 using GameSessionRef = shared_ptr<class GameSession>;

@@ -122,6 +122,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -161,7 +162,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -176,6 +177,7 @@
   <ItemGroup>
     <ClCompile Include="CMonster.cpp" />
     <ClCompile Include="CObject.cpp" />
+    <ClCompile Include="CPlayerManager.cpp" />
     <ClCompile Include="CZone.cpp" />
     <ClCompile Include="CZone_Manager.cpp" />
     <ClCompile Include="Enum.pb.cc">
@@ -212,6 +214,7 @@
   <ItemGroup>
     <ClInclude Include="CMonster.h" />
     <ClInclude Include="CObject.h" />
+    <ClInclude Include="CPlayerManager.h" />
     <ClInclude Include="CZone.h" />
     <ClInclude Include="CZone_Manager.h" />
     <ClInclude Include="Enum.pb.h" />

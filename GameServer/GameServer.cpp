@@ -84,7 +84,7 @@ int main()
 	//GRoom->DoTimer(2000, [] { cout << "Hello 2000" << endl; });
 
 	ClientPacketHandler::Init();
-	GZoneManager->Init();
+	GZoneManager->Init(25);
 	//ZoneManager()->Init();
 
 	ServerServiceRef service = MakeShared<ServerService>(
