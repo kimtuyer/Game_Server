@@ -134,23 +134,29 @@ bool Handle_C_MOVE(PacketSessionRef& session, Protocol::C_MOVE& pkt)
 	//PlayerRef Player=
 
 	/*
-		현재 위치에서 이동가능한 위치인지 확인
-	
+		현재 위치에서 이동가능한 위치인지 확인	
 		해당 존, 섹터에 위치한 다른 유저들에게 브로드 캐스팅
-	
 	*/
+
+	//나중엔 해당 유저가 이전위치와 비교, 움직였을때만 브로드캐스팅!
 	Protocol::S_MOVE_PLAYER movepkt;
 	CZoneRef Zone = GZoneManager->GetZone(gameSession->_currentPlayer->GetZoneID());
 	if (Zone == nullptr)
 		return false;
+
+	Protocol::D3DVECTOR* vec= movepkt.mutable_pos();
+	vec->set_x(pkt.pos().x());
+	vec->set_y(pkt.pos().y());
+	vec->set_z(pkt.pos().z());
+
 	//ObjectList Playerlist = Zone->PlayerList();
 	movepkt.set_playerid(pkt.playerid());
 	movepkt.set_sendtime(pkt.sendtime());
-	movepkt.set_allocated_pos(pkt.mutable_pos());
+	//movepkt.set_allocated_pos(vec);
 	Zone->BroadCasting(movepkt);
 		
 
-	S_MOVE_ACK moveackpkt;
+	Protocol::S_MOVE_ACK moveackpkt;
 	moveackpkt.set_sendtime(pkt.sendtime());
 	moveackpkt.set_success(true);
 
