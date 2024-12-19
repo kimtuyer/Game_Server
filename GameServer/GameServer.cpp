@@ -13,6 +13,8 @@
 #include "CMonster.h"
 #include "CZone_Manager.h"
 atomic<int>	g_nPacketCount = 0;
+const	int	g_nZoneCount = 25;
+const	int g_nZoneUserMax = 50;
 //class CZone_Manager;
 void DoMainJob(ServerServiceRef& service)
 {
@@ -84,14 +86,14 @@ int main()
 	//GRoom->DoTimer(2000, [] { cout << "Hello 2000" << endl; });
 
 	ClientPacketHandler::Init();
-	GZoneManager->Init(25);
+	GZoneManager->Init(g_nZoneCount, g_nZoneUserMax);
 	//ZoneManager()->Init();
 
 	ServerServiceRef service = MakeShared<ServerService>(
 		NetAddress(L"127.0.0.1", 7777),
 		MakeShared<IocpCore>(),
 		MakeShared<GameSession>, // TODO : SessionManager 등
-		5100);
+		3500);
 
 	ASSERT_CRASH(service->Start());
 

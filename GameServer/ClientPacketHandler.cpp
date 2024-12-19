@@ -153,6 +153,9 @@ bool Handle_C_MOVE(PacketSessionRef& session, Protocol::C_MOVE& pkt)
 	movepkt.set_playerid(pkt.playerid());
 	movepkt.set_sendtime(pkt.sendtime());
 	//movepkt.set_allocated_pos(vec);
+
+	//c_move패킷 받은 스레드가 브로드캐스팅을 한번에 다 처리해야하나 아니면 글로벌큐로 넘겨서 분담처리?
+	//브로드해야하는 유저가 일정수이상일경우,글로벌에 넘겨 다른스레드에 분배요청?
 	Zone->BroadCasting(movepkt);
 		
 
