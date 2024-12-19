@@ -142,6 +142,19 @@ bool Handle_S_MOVE_PLAYER(PacketSessionRef& session, Protocol::S_MOVE_PLAYER& pk
 {
 	RTT(GetTickCount64(), pkt.sendtime(), "S_MOVE_PLAYER");
 
+	//for (int i = 0; i < pkt.pos().size(); i++)
+	//{
+	//	const Protocol::Player_Pos sData = pkt.pos(i);
+	//
+	//	cout << "ID:" << sData.id() << endl;
+	//	cout << "위치 x:" << sData.vpos().x() << endl;
+	//	/*
+	//	
+	//	 같은 섹터내 위치한 다른 유저들 정보 받아서 업데이트
+	//	
+	//	*/
+	//}
+
 	// TODO
 	return true;
 }

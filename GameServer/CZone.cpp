@@ -37,7 +37,7 @@ bool CZone::_Enter(ObjectType eObjectType, ObjectRef object)
 	if (it == m_nlistObject.end())
 	{
 		ObjectList list;
-		list.insert({ object->ObjectID(), object});
+		list.insert({ object->ObjectID(), object });
 		m_nlistObject.insert({ eObjectType, list });
 	}
 	else
@@ -88,15 +88,12 @@ void CZone::Remove(ObjectType eObjectType, int objectID)
 			if (m_nlistObject[Object::Player].empty())
 				m_bActivate = false;
 		}
-
-
 	}
 	/*
 		해당 존, 섹터 위치한 다른 유저들에게 브로드캐스팅
 		S_OBJ_REMOVE_ACK
-		
-	*/
 
+	*/
 }
 
 void CZone::Update()
@@ -129,20 +126,47 @@ void CZone::Update()
 
 	/*
 	 몬스터 업뎃후 실시간 좌표 주변 유저에게 동기화
-	
+
 	*/
+	Protocol::S_MOVE_PLAYER pkt;
+	pkt.set_sendtime(GetTickCount64());
+	map<ObjectID, ObjectRef> PlayerList = m_nlistObject[Object::Player];
 
-	//for (auto& Object : m_nlistObject[Object::Player])
-	//{
-	//	if (Object->GetActivate() == false)
-	//		continue;
-	//
-	//	//if (ObjectType != (int)Object::Monster)
-	//		//continue;
-	//	CPlayer* pPlayer = static_cast<CPlayer*>(Object.get());
-	//	pPlayer->Update();
-	//}
+	int nCnt = 0;
+	for (auto& [objectid, Object] : PlayerList)
+	{
+		/*
+		 이때도 엄밀하게는 존 안의 같은 섹터영역에 유저에게만 보내야
+		*/
 
+		//패킷 크기 고려해 일단 한번에 30명분 제한
+		if (nCnt > 30)
+			break;
+
+		if (Object->GetActivate() == false)
+			continue;
+
+		if (Object->IsUpdatePos() == false)
+			continue;
+
+		//이전 위치와 다른지 업뎃필요한 유저인지 확인도 필요
+
+		Protocol::Player_Pos sData;
+		sData.set_id(objectid);
+		Protocol::D3DVECTOR* vPos = sData.mutable_vpos();
+		Protocol::D3DVECTOR targetPos = Object->GetPos();
+		vPos->set_x(targetPos.x());
+		vPos->set_y(targetPos.y());
+		vPos->set_z(targetPos.z());
+
+		pkt.add_pos()->CopyFrom(sData);
+
+		nCnt++;
+		//CPlayer* pPlayer = static_cast<CPlayer*>(Object.get());
+		//pPlayer->Update();
+	}
+
+	BroadCasting(pkt);
 	//ZoneManager에서 모든 zone update 호출중
 	//DoTimer(Tick::AI_TICK, &CZone::Update);
 }
@@ -170,16 +194,28 @@ CObject* CZone::SearchEnemy(CObject* pMonster)
 	return nullptr;
 }
 
+void CZone::Update_Pos(int nObjectID, const Protocol::D3DVECTOR& vPos)
+{
+	if (m_nlistObject[Object::Player].contains(nObjectID))
+	{
+		/*
+			이전 위치와 다른 플레이어만 업데이트.
+			지금은 일단 모두  업데이트.
+
+		*/
+		m_nlistObject[Object::Player][nObjectID]->SetPos(vPos);
+	}
+}
+
 bool CZone::Enter()
 {
 	READ_LOCK;
 	return m_nlistObject[Object::Player].size() < m_nMaxUserCnt;
 }
 
-void CZone::BroadCasting( Protocol::S_MOVE_PLAYER& movepkt)
+void CZone::BroadCasting(Protocol::S_MOVE_PLAYER& movepkt)
 {
-	
-	int exceptID = movepkt.playerid();
+	//int exceptID = movepkt.playerid();
 	//Protocol::S_MOVE_PLAYER movepkt;
 	//movepkt.set_playerid(exceptID);
 	////movepkt.set_allocated_pos(vPos);
@@ -188,19 +224,32 @@ void CZone::BroadCasting( Protocol::S_MOVE_PLAYER& movepkt)
 	//Pos->set_y(vPos.y());
 	//Pos->set_z(vPos.z());
 	auto sendBuffer = ClientPacketHandler::MakeSendBuffer(movepkt);
-
+	int nCnt = 0;
 	for (auto& [playerid, ObjectRef] : m_nlistObject[Object::Player])
 	{
+		//if (nCnt > 10)
+		//	break;
 
-		if (playerid == exceptID)
+		if(ObjectRef->GetActivate() == false)
 			continue;
 
+		//if (playerid == exceptID)
+		//	continue;
+
 		CPlayer* pPlayer = static_cast<CPlayer*>(ObjectRef.get());
-		pPlayer->ownerSession.lock()->Send(sendBuffer);
+		if (pPlayer->ownerSession.expired()==false)
+		{
+			pPlayer->ownerSession.lock()->Send(sendBuffer);
+
+		}
+		else
+		{
+			pPlayer->SetActivate(false);
+			///세션 소멸, 해당 플레이어 객체도 
+
+		}
 
 
+		nCnt++;
 	}
-
-
-
 }

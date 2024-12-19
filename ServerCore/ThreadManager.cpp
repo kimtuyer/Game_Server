@@ -74,3 +74,26 @@ void ThreadManager::DistributeReservedJobs()
 
 	GJobTimer->Distribute(now);
 }
+/*												*/
+void ThreadManager::DistributeBroadJobs()
+{
+	const uint64 now = ::GetTickCount64();
+
+	GBroadCastTimer->BroadJob_Distribute(now);
+}
+
+void ThreadManager::DoBroadQueueWork()
+{
+	while (true)
+	{
+		//uint64 now = ::GetTickCount64();
+		//if (now > LEndTickCount)
+		//	break;
+
+		JobQueueRef jobQueue = GBroadQueue->Pop();
+		if (jobQueue == nullptr)
+			break;
+		
+		jobQueue->Execute();
+	}
+}

@@ -68,12 +68,35 @@ public:
 		m_nObjectID = nObjectID;
 	}
 
+	void	SetPos(const Protocol::D3DVECTOR& Pos)
+	{
+		vPos = Pos;
+		m_bPos = true;
+	}
+
+	Protocol::D3DVECTOR& GetPos()
+	{
+		return vPos;
+	}
+
+
+	virtual void	UpdatePos(bool bFlag)
+	{
+		m_bPos = bFlag;
+	}
+	virtual bool	IsUpdatePos()
+	{
+		return m_bPos;
+	}
+
 
 protected:
 	int	m_nZoneID;
 	bool	m_bActivate;
-	Object::ObjectType eObjectType;
+	Object::ObjectType eObjectType; 
 	int		m_nObjectID;
+	atomic<bool>	m_bPos = false;		//이전 위치 다를시 체크용
+	Protocol::D3DVECTOR vPos;
 	//int	m_nHP;
 	//int	m_nAttack;
 

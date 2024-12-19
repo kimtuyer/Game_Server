@@ -14,6 +14,9 @@ SendBufferManager*	GSendBufferManager = nullptr;
 GlobalQueue*		GGlobalQueue = nullptr;
 JobTimer*			GJobTimer = nullptr;
 JobTimer*			GLogicTimer = nullptr;
+JobTimer*			GBroadCastTimer = nullptr;
+GlobalQueue*		GBroadQueue = nullptr;
+
 
 DeadLockProfiler*	GDeadLockProfiler = nullptr;
 
@@ -27,6 +30,10 @@ public:
 		GSendBufferManager = new SendBufferManager();
 		GGlobalQueue = new GlobalQueue();
 		GJobTimer = new JobTimer();
+
+		GBroadQueue = new GlobalQueue();
+		GBroadCastTimer = new JobTimer();
+
 		GDeadLockProfiler = new DeadLockProfiler();
 		SocketUtils::Init();
 	}

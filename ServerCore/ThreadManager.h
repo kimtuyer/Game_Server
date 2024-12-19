@@ -22,6 +22,11 @@ public:
 	static void DoGlobalQueueWork();
 	static void DistributeReservedJobs();
 
+
+	static void  DistributeBroadJobs();
+	static void DoBroadQueueWork();
+
+
 private:
 	Mutex			_lock;
 	vector<thread>	_threads;

@@ -14,7 +14,7 @@
 #include "CZone_Manager.h"
 atomic<int>	g_nPacketCount = 0;
 const	int	g_nZoneCount = 25;
-const	int g_nZoneUserMax = 50;
+const	int g_nZoneUserMax = 200;
 //class CZone_Manager;
 void DoMainJob(ServerServiceRef& service)
 {
@@ -33,13 +33,13 @@ void DoMainJob(ServerServiceRef& service)
 		LEndTickCount = ::GetTickCount64() + Tick::WORKER_TICK;
 
 		// 네트워크 입출력 처리 -> 인게임 로직까지 (패킷 핸들러에 의해)
-		service->GetIocpCore()->Dispatch(10);
+		//service->GetIocpCore()->Dispatch(10);
 		
-		// 예약된 일감 처리
-		ThreadManager::DistributeReservedJobs();
-
-		// 글로벌 큐
-		ThreadManager::DoGlobalQueueWork();
+		//// 예약된 일감 처리
+		//ThreadManager::DistributeReservedJobs();
+		//
+		//// 글로벌 큐
+		//ThreadManager::DoGlobalQueueWork();
 	}
 }
 
@@ -80,6 +80,44 @@ void DoWorkerJob(ServerServiceRef& service,bool bMain=false)
 	}
 }
 
+void DoBroadJob(ServerServiceRef& service, bool bMain = false)
+{
+	//bool bFlag = false;
+	while (true)
+	{
+		//if (LSecondTickCount < GetTickCount64())
+		//{
+		//	LSecondTickCount = GetTickCount64() + Tick::SECOND_TICK;
+		//	bFlag = true;
+		//	g_nPacketCount.fetch_add(LPacketCount);
+		//
+		//	//cout << LThreadId <<" : 워커스레드의  초당 패킷 처리량:" << LPacketCount << endl;
+		//
+		//	LPacketCount = 0;
+		//}
+		//else
+		//{
+		//	bFlag = false;
+		//	//LPacketCount++;
+		//
+		//}
+
+		//LEndTickCount = ::GetTickCount64() + Tick::WORKER_TICK;
+
+		// 네트워크 입출력 처리 -> 인게임 로직까지 (패킷 핸들러에 의해)
+		//if (service->GetIocpCore()->Dispatch(10) == true)
+		//	LPacketCount++;
+
+		ThreadManager::DistributeBroadJobs();
+
+		ThreadManager::DoBroadQueueWork();
+		// 예약된 일감 처리
+
+		// 글로벌 큐
+		//ThreadManager::DoGlobalQueueWork();
+	}
+}
+
 int main()
 {
 	//GRoom->DoTimer(1000, [] { cout << "Hello 1000" << endl; });
@@ -98,7 +136,15 @@ int main()
 	ASSERT_CRASH(service->Start());
 
 	unsigned int core_count = std::thread::hardware_concurrency();
-	int nThreadCnt = core_count * 2 + 1;
+	int nThreadCnt = core_count * 2;//+ 1;
+	//for (int32 i = 0; i < 2; i++)
+	//{
+	//	GThreadManager->Launch([&service]()
+	//		{
+	//			DoBroadJob(service);
+	//		});
+	//}
+
 	for (int32 i = 0; i < nThreadCnt; i++)
 	{
 		GThreadManager->Launch([&service]()

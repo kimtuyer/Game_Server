@@ -46,8 +46,21 @@ struct D3DVECTORDefaultTypeInternal {
   };
 };
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT D3DVECTORDefaultTypeInternal _D3DVECTOR_default_instance_;
+constexpr Player_Pos::Player_Pos(
+  ::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized)
+  : vpos_(nullptr)
+  , id_(uint64_t{0u}){}
+struct Player_PosDefaultTypeInternal {
+  constexpr Player_PosDefaultTypeInternal()
+    : _instance(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized{}) {}
+  ~Player_PosDefaultTypeInternal() {}
+  union {
+    Player_Pos _instance;
+  };
+};
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT Player_PosDefaultTypeInternal _Player_Pos_default_instance_;
 }  // namespace Protocol
-static ::PROTOBUF_NAMESPACE_ID::Metadata file_level_metadata_Struct_2eproto[2];
+static ::PROTOBUF_NAMESPACE_ID::Metadata file_level_metadata_Struct_2eproto[3];
 static constexpr ::PROTOBUF_NAMESPACE_ID::EnumDescriptor const** file_level_enum_descriptors_Struct_2eproto = nullptr;
 static constexpr ::PROTOBUF_NAMESPACE_ID::ServiceDescriptor const** file_level_service_descriptors_Struct_2eproto = nullptr;
 
@@ -68,15 +81,24 @@ const ::PROTOBUF_NAMESPACE_ID::uint32 TableStruct_Struct_2eproto::offsets[] PROT
   PROTOBUF_FIELD_OFFSET(::Protocol::D3DVECTOR, x_),
   PROTOBUF_FIELD_OFFSET(::Protocol::D3DVECTOR, y_),
   PROTOBUF_FIELD_OFFSET(::Protocol::D3DVECTOR, z_),
+  ~0u,  // no _has_bits_
+  PROTOBUF_FIELD_OFFSET(::Protocol::Player_Pos, _internal_metadata_),
+  ~0u,  // no _extensions_
+  ~0u,  // no _oneof_case_
+  ~0u,  // no _weak_field_map_
+  PROTOBUF_FIELD_OFFSET(::Protocol::Player_Pos, id_),
+  PROTOBUF_FIELD_OFFSET(::Protocol::Player_Pos, vpos_),
 };
 static const ::PROTOBUF_NAMESPACE_ID::internal::MigrationSchema schemas[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
   { 0, -1, sizeof(::Protocol::Player)},
   { 8, -1, sizeof(::Protocol::D3DVECTOR)},
+  { 16, -1, sizeof(::Protocol::Player_Pos)},
 };
 
 static ::PROTOBUF_NAMESPACE_ID::Message const * const file_default_instances[] = {
   reinterpret_cast<const ::PROTOBUF_NAMESPACE_ID::Message*>(&::Protocol::_Player_default_instance_),
   reinterpret_cast<const ::PROTOBUF_NAMESPACE_ID::Message*>(&::Protocol::_D3DVECTOR_default_instance_),
+  reinterpret_cast<const ::PROTOBUF_NAMESPACE_ID::Message*>(&::Protocol::_Player_Pos_default_instance_),
 };
 
 const char descriptor_table_protodef_Struct_2eproto[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) =
@@ -84,15 +106,16 @@ const char descriptor_table_protodef_Struct_2eproto[] PROTOBUF_SECTION_VARIABLE(
   "Player\022\n\n\002id\030\001 \001(\004\022\014\n\004name\030\002 \001(\t\022(\n\nplay"
   "erType\030\003 \001(\0162\024.Protocol.PlayerType\",\n\tD3"
   "DVECTOR\022\t\n\001x\030\001 \001(\002\022\t\n\001y\030\002 \001(\002\022\t\n\001z\030\003 \001(\002"
-  "b\006proto3"
+  "\";\n\nPlayer_Pos\022\n\n\002id\030\001 \001(\004\022!\n\004vPos\030\002 \001(\013"
+  "2\023.Protocol.D3DVECTORb\006proto3"
   ;
 static const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable*const descriptor_table_Struct_2eproto_deps[1] = {
   &::descriptor_table_Enum_2eproto,
 };
 static ::PROTOBUF_NAMESPACE_ID::internal::once_flag descriptor_table_Struct_2eproto_once;
 const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_Struct_2eproto = {
-  false, false, 168, descriptor_table_protodef_Struct_2eproto, "Struct.proto", 
-  &descriptor_table_Struct_2eproto_once, descriptor_table_Struct_2eproto_deps, 1, 2,
+  false, false, 229, descriptor_table_protodef_Struct_2eproto, "Struct.proto", 
+  &descriptor_table_Struct_2eproto_once, descriptor_table_Struct_2eproto_deps, 1, 3,
   schemas, file_default_instances, TableStruct_Struct_2eproto::offsets,
   file_level_metadata_Struct_2eproto, file_level_enum_descriptors_Struct_2eproto, file_level_service_descriptors_Struct_2eproto,
 };
@@ -614,6 +637,244 @@ void D3DVECTOR::InternalSwap(D3DVECTOR* other) {
       file_level_metadata_Struct_2eproto[1]);
 }
 
+// ===================================================================
+
+class Player_Pos::_Internal {
+ public:
+  static const ::Protocol::D3DVECTOR& vpos(const Player_Pos* msg);
+};
+
+const ::Protocol::D3DVECTOR&
+Player_Pos::_Internal::vpos(const Player_Pos* msg) {
+  return *msg->vpos_;
+}
+Player_Pos::Player_Pos(::PROTOBUF_NAMESPACE_ID::Arena* arena)
+  : ::PROTOBUF_NAMESPACE_ID::Message(arena) {
+  SharedCtor();
+  RegisterArenaDtor(arena);
+  // @@protoc_insertion_point(arena_constructor:Protocol.Player_Pos)
+}
+Player_Pos::Player_Pos(const Player_Pos& from)
+  : ::PROTOBUF_NAMESPACE_ID::Message() {
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  if (from._internal_has_vpos()) {
+    vpos_ = new ::Protocol::D3DVECTOR(*from.vpos_);
+  } else {
+    vpos_ = nullptr;
+  }
+  id_ = from.id_;
+  // @@protoc_insertion_point(copy_constructor:Protocol.Player_Pos)
+}
+
+void Player_Pos::SharedCtor() {
+::memset(reinterpret_cast<char*>(this) + static_cast<size_t>(
+    reinterpret_cast<char*>(&vpos_) - reinterpret_cast<char*>(this)),
+    0, static_cast<size_t>(reinterpret_cast<char*>(&id_) -
+    reinterpret_cast<char*>(&vpos_)) + sizeof(id_));
+}
+
+Player_Pos::~Player_Pos() {
+  // @@protoc_insertion_point(destructor:Protocol.Player_Pos)
+  SharedDtor();
+  _internal_metadata_.Delete<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
+}
+
+void Player_Pos::SharedDtor() {
+  GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
+  if (this != internal_default_instance()) delete vpos_;
+}
+
+void Player_Pos::ArenaDtor(void* object) {
+  Player_Pos* _this = reinterpret_cast< Player_Pos* >(object);
+  (void)_this;
+}
+void Player_Pos::RegisterArenaDtor(::PROTOBUF_NAMESPACE_ID::Arena*) {
+}
+void Player_Pos::SetCachedSize(int size) const {
+  _cached_size_.Set(size);
+}
+
+void Player_Pos::Clear() {
+// @@protoc_insertion_point(message_clear_start:Protocol.Player_Pos)
+  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  if (GetArenaForAllocation() == nullptr && vpos_ != nullptr) {
+    delete vpos_;
+  }
+  vpos_ = nullptr;
+  id_ = uint64_t{0u};
+  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
+}
+
+const char* Player_Pos::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) {
+#define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
+  while (!ctx->Done(&ptr)) {
+    ::PROTOBUF_NAMESPACE_ID::uint32 tag;
+    ptr = ::PROTOBUF_NAMESPACE_ID::internal::ReadTag(ptr, &tag);
+    switch (tag >> 3) {
+      // uint64 id = 1;
+      case 1:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 8)) {
+          id_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
+          CHK_(ptr);
+        } else goto handle_unusual;
+        continue;
+      // .Protocol.D3DVECTOR vPos = 2;
+      case 2:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 18)) {
+          ptr = ctx->ParseMessage(_internal_mutable_vpos(), ptr);
+          CHK_(ptr);
+        } else goto handle_unusual;
+        continue;
+      default: {
+      handle_unusual:
+        if ((tag == 0) || ((tag & 7) == 4)) {
+          CHK_(ptr);
+          ctx->SetLastTag(tag);
+          goto success;
+        }
+        ptr = UnknownFieldParse(tag,
+            _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
+            ptr, ctx);
+        CHK_(ptr != nullptr);
+        continue;
+      }
+    }  // switch
+  }  // while
+success:
+  return ptr;
+failure:
+  ptr = nullptr;
+  goto success;
+#undef CHK_
+}
+
+::PROTOBUF_NAMESPACE_ID::uint8* Player_Pos::_InternalSerialize(
+    ::PROTOBUF_NAMESPACE_ID::uint8* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
+  // @@protoc_insertion_point(serialize_to_array_start:Protocol.Player_Pos)
+  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  // uint64 id = 1;
+  if (this->id() != 0) {
+    target = stream->EnsureSpace(target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteUInt64ToArray(1, this->_internal_id(), target);
+  }
+
+  // .Protocol.D3DVECTOR vPos = 2;
+  if (this->has_vpos()) {
+    target = stream->EnsureSpace(target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
+      InternalWriteMessage(
+        2, _Internal::vpos(this), target, stream);
+  }
+
+  if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::InternalSerializeUnknownFieldsToArray(
+        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:Protocol.Player_Pos)
+  return target;
+}
+
+size_t Player_Pos::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:Protocol.Player_Pos)
+  size_t total_size = 0;
+
+  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  // .Protocol.D3DVECTOR vPos = 2;
+  if (this->has_vpos()) {
+    total_size += 1 +
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
+        *vpos_);
+  }
+
+  // uint64 id = 1;
+  if (this->id() != 0) {
+    total_size += 1 +
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::UInt64Size(
+        this->_internal_id());
+  }
+
+  if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
+    return ::PROTOBUF_NAMESPACE_ID::internal::ComputeUnknownFieldsSize(
+        _internal_metadata_, total_size, &_cached_size_);
+  }
+  int cached_size = ::PROTOBUF_NAMESPACE_ID::internal::ToCachedSize(total_size);
+  SetCachedSize(cached_size);
+  return total_size;
+}
+
+void Player_Pos::MergeFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) {
+// @@protoc_insertion_point(generalized_merge_from_start:Protocol.Player_Pos)
+  GOOGLE_DCHECK_NE(&from, this);
+  const Player_Pos* source =
+      ::PROTOBUF_NAMESPACE_ID::DynamicCastToGenerated<Player_Pos>(
+          &from);
+  if (source == nullptr) {
+  // @@protoc_insertion_point(generalized_merge_from_cast_fail:Protocol.Player_Pos)
+    ::PROTOBUF_NAMESPACE_ID::internal::ReflectionOps::Merge(from, this);
+  } else {
+  // @@protoc_insertion_point(generalized_merge_from_cast_success:Protocol.Player_Pos)
+    MergeFrom(*source);
+  }
+}
+
+void Player_Pos::MergeFrom(const Player_Pos& from) {
+// @@protoc_insertion_point(class_specific_merge_from_start:Protocol.Player_Pos)
+  GOOGLE_DCHECK_NE(&from, this);
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  if (from.has_vpos()) {
+    _internal_mutable_vpos()->::Protocol::D3DVECTOR::MergeFrom(from._internal_vpos());
+  }
+  if (from.id() != 0) {
+    _internal_set_id(from._internal_id());
+  }
+}
+
+void Player_Pos::CopyFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) {
+// @@protoc_insertion_point(generalized_copy_from_start:Protocol.Player_Pos)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void Player_Pos::CopyFrom(const Player_Pos& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:Protocol.Player_Pos)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool Player_Pos::IsInitialized() const {
+  return true;
+}
+
+void Player_Pos::InternalSwap(Player_Pos* other) {
+  using std::swap;
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  ::PROTOBUF_NAMESPACE_ID::internal::memswap<
+      PROTOBUF_FIELD_OFFSET(Player_Pos, id_)
+      + sizeof(Player_Pos::id_)
+      - PROTOBUF_FIELD_OFFSET(Player_Pos, vpos_)>(
+          reinterpret_cast<char*>(&vpos_),
+          reinterpret_cast<char*>(&other->vpos_));
+}
+
+::PROTOBUF_NAMESPACE_ID::Metadata Player_Pos::GetMetadata() const {
+  return ::PROTOBUF_NAMESPACE_ID::internal::AssignDescriptors(
+      &descriptor_table_Struct_2eproto_getter, &descriptor_table_Struct_2eproto_once,
+      file_level_metadata_Struct_2eproto[2]);
+}
+
 // @@protoc_insertion_point(namespace_scope)
 }  // namespace Protocol
 PROTOBUF_NAMESPACE_OPEN
@@ -622,6 +883,9 @@ template<> PROTOBUF_NOINLINE ::Protocol::Player* Arena::CreateMaybeMessage< ::Pr
 }
 template<> PROTOBUF_NOINLINE ::Protocol::D3DVECTOR* Arena::CreateMaybeMessage< ::Protocol::D3DVECTOR >(Arena* arena) {
   return Arena::CreateMessageInternal< ::Protocol::D3DVECTOR >(arena);
+}
+template<> PROTOBUF_NOINLINE ::Protocol::Player_Pos* Arena::CreateMaybeMessage< ::Protocol::Player_Pos >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::Protocol::Player_Pos >(arena);
 }
 PROTOBUF_NAMESPACE_CLOSE
 

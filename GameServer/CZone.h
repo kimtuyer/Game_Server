@@ -29,6 +29,9 @@ public:
 
 
 
+	void	Update_Pos(int nObjectID, const Protocol::D3DVECTOR& vPos);
+
+
 
 	void	SetActivate(bool bFlag)
 	{

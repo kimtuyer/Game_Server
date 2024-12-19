@@ -1286,27 +1286,26 @@ class S_MOVE_PLAYER final :
   // accessors -------------------------------------------------------
 
   enum : int {
-    kPosFieldNumber = 3,
+    kPosFieldNumber = 2,
     kSendTimeFieldNumber = 1,
-    kPlayerIDFieldNumber = 2,
   };
-  // .Protocol.D3DVECTOR pos = 3;
-  bool has_pos() const;
+  // repeated .Protocol.Player_Pos pos = 2;
+  int pos_size() const;
   private:
-  bool _internal_has_pos() const;
+  int _internal_pos_size() const;
   public:
   void clear_pos();
-  const ::Protocol::D3DVECTOR& pos() const;
-  PROTOBUF_FUTURE_MUST_USE_RESULT ::Protocol::D3DVECTOR* release_pos();
-  ::Protocol::D3DVECTOR* mutable_pos();
-  void set_allocated_pos(::Protocol::D3DVECTOR* pos);
+  ::Protocol::Player_Pos* mutable_pos(int index);
+  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Protocol::Player_Pos >*
+      mutable_pos();
   private:
-  const ::Protocol::D3DVECTOR& _internal_pos() const;
-  ::Protocol::D3DVECTOR* _internal_mutable_pos();
+  const ::Protocol::Player_Pos& _internal_pos(int index) const;
+  ::Protocol::Player_Pos* _internal_add_pos();
   public:
-  void unsafe_arena_set_allocated_pos(
-      ::Protocol::D3DVECTOR* pos);
-  ::Protocol::D3DVECTOR* unsafe_arena_release_pos();
+  const ::Protocol::Player_Pos& pos(int index) const;
+  ::Protocol::Player_Pos* add_pos();
+  const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Protocol::Player_Pos >&
+      pos() const;
 
   // uint64 sendTime = 1;
   void clear_sendtime();
@@ -1317,15 +1316,6 @@ class S_MOVE_PLAYER final :
   void _internal_set_sendtime(::PROTOBUF_NAMESPACE_ID::uint64 value);
   public:
 
-  // uint64 playerID = 2;
-  void clear_playerid();
-  ::PROTOBUF_NAMESPACE_ID::uint64 playerid() const;
-  void set_playerid(::PROTOBUF_NAMESPACE_ID::uint64 value);
-  private:
-  ::PROTOBUF_NAMESPACE_ID::uint64 _internal_playerid() const;
-  void _internal_set_playerid(::PROTOBUF_NAMESPACE_ID::uint64 value);
-  public:
-
   // @@protoc_insertion_point(class_scope:Protocol.S_MOVE_PLAYER)
  private:
   class _Internal;
@@ -1333,9 +1323,8 @@ class S_MOVE_PLAYER final :
   template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
   typedef void InternalArenaConstructable_;
   typedef void DestructorSkippable_;
-  ::Protocol::D3DVECTOR* pos_;
+  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Protocol::Player_Pos > pos_;
   ::PROTOBUF_NAMESPACE_ID::uint64 sendtime_;
-  ::PROTOBUF_NAMESPACE_ID::uint64 playerid_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_Protocol_2eproto;
 };
@@ -2772,103 +2761,40 @@ inline void S_MOVE_PLAYER::set_sendtime(::PROTOBUF_NAMESPACE_ID::uint64 value) {
   // @@protoc_insertion_point(field_set:Protocol.S_MOVE_PLAYER.sendTime)
 }
 
-// uint64 playerID = 2;
-inline void S_MOVE_PLAYER::clear_playerid() {
-  playerid_ = uint64_t{0u};
+// repeated .Protocol.Player_Pos pos = 2;
+inline int S_MOVE_PLAYER::_internal_pos_size() const {
+  return pos_.size();
 }
-inline ::PROTOBUF_NAMESPACE_ID::uint64 S_MOVE_PLAYER::_internal_playerid() const {
-  return playerid_;
+inline int S_MOVE_PLAYER::pos_size() const {
+  return _internal_pos_size();
 }
-inline ::PROTOBUF_NAMESPACE_ID::uint64 S_MOVE_PLAYER::playerid() const {
-  // @@protoc_insertion_point(field_get:Protocol.S_MOVE_PLAYER.playerID)
-  return _internal_playerid();
-}
-inline void S_MOVE_PLAYER::_internal_set_playerid(::PROTOBUF_NAMESPACE_ID::uint64 value) {
-  
-  playerid_ = value;
-}
-inline void S_MOVE_PLAYER::set_playerid(::PROTOBUF_NAMESPACE_ID::uint64 value) {
-  _internal_set_playerid(value);
-  // @@protoc_insertion_point(field_set:Protocol.S_MOVE_PLAYER.playerID)
-}
-
-// .Protocol.D3DVECTOR pos = 3;
-inline bool S_MOVE_PLAYER::_internal_has_pos() const {
-  return this != internal_default_instance() && pos_ != nullptr;
-}
-inline bool S_MOVE_PLAYER::has_pos() const {
-  return _internal_has_pos();
-}
-inline const ::Protocol::D3DVECTOR& S_MOVE_PLAYER::_internal_pos() const {
-  const ::Protocol::D3DVECTOR* p = pos_;
-  return p != nullptr ? *p : reinterpret_cast<const ::Protocol::D3DVECTOR&>(
-      ::Protocol::_D3DVECTOR_default_instance_);
-}
-inline const ::Protocol::D3DVECTOR& S_MOVE_PLAYER::pos() const {
-  // @@protoc_insertion_point(field_get:Protocol.S_MOVE_PLAYER.pos)
-  return _internal_pos();
-}
-inline void S_MOVE_PLAYER::unsafe_arena_set_allocated_pos(
-    ::Protocol::D3DVECTOR* pos) {
-  if (GetArenaForAllocation() == nullptr) {
-    delete reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(pos_);
-  }
-  pos_ = pos;
-  if (pos) {
-    
-  } else {
-    
-  }
-  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:Protocol.S_MOVE_PLAYER.pos)
-}
-inline ::Protocol::D3DVECTOR* S_MOVE_PLAYER::release_pos() {
-  
-  ::Protocol::D3DVECTOR* temp = pos_;
-  pos_ = nullptr;
-  if (GetArenaForAllocation() != nullptr) {
-    temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
-  }
-  return temp;
-}
-inline ::Protocol::D3DVECTOR* S_MOVE_PLAYER::unsafe_arena_release_pos() {
-  // @@protoc_insertion_point(field_release:Protocol.S_MOVE_PLAYER.pos)
-  
-  ::Protocol::D3DVECTOR* temp = pos_;
-  pos_ = nullptr;
-  return temp;
-}
-inline ::Protocol::D3DVECTOR* S_MOVE_PLAYER::_internal_mutable_pos() {
-  
-  if (pos_ == nullptr) {
-    auto* p = CreateMaybeMessage<::Protocol::D3DVECTOR>(GetArenaForAllocation());
-    pos_ = p;
-  }
-  return pos_;
-}
-inline ::Protocol::D3DVECTOR* S_MOVE_PLAYER::mutable_pos() {
+inline ::Protocol::Player_Pos* S_MOVE_PLAYER::mutable_pos(int index) {
   // @@protoc_insertion_point(field_mutable:Protocol.S_MOVE_PLAYER.pos)
-  return _internal_mutable_pos();
+  return pos_.Mutable(index);
 }
-inline void S_MOVE_PLAYER::set_allocated_pos(::Protocol::D3DVECTOR* pos) {
-  ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaForAllocation();
-  if (message_arena == nullptr) {
-    delete reinterpret_cast< ::PROTOBUF_NAMESPACE_ID::MessageLite*>(pos_);
-  }
-  if (pos) {
-    ::PROTOBUF_NAMESPACE_ID::Arena* submessage_arena =
-        ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper<
-            ::PROTOBUF_NAMESPACE_ID::MessageLite>::GetOwningArena(
-                reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(pos));
-    if (message_arena != submessage_arena) {
-      pos = ::PROTOBUF_NAMESPACE_ID::internal::GetOwnedMessage(
-          message_arena, pos, submessage_arena);
-    }
-    
-  } else {
-    
-  }
-  pos_ = pos;
-  // @@protoc_insertion_point(field_set_allocated:Protocol.S_MOVE_PLAYER.pos)
+inline ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Protocol::Player_Pos >*
+S_MOVE_PLAYER::mutable_pos() {
+  // @@protoc_insertion_point(field_mutable_list:Protocol.S_MOVE_PLAYER.pos)
+  return &pos_;
+}
+inline const ::Protocol::Player_Pos& S_MOVE_PLAYER::_internal_pos(int index) const {
+  return pos_.Get(index);
+}
+inline const ::Protocol::Player_Pos& S_MOVE_PLAYER::pos(int index) const {
+  // @@protoc_insertion_point(field_get:Protocol.S_MOVE_PLAYER.pos)
+  return _internal_pos(index);
+}
+inline ::Protocol::Player_Pos* S_MOVE_PLAYER::_internal_add_pos() {
+  return pos_.Add();
+}
+inline ::Protocol::Player_Pos* S_MOVE_PLAYER::add_pos() {
+  // @@protoc_insertion_point(field_add:Protocol.S_MOVE_PLAYER.pos)
+  return _internal_add_pos();
+}
+inline const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Protocol::Player_Pos >&
+S_MOVE_PLAYER::pos() const {
+  // @@protoc_insertion_point(field_list:Protocol.S_MOVE_PLAYER.pos)
+  return pos_;
 }
 
 // -------------------------------------------------------------------

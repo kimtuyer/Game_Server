@@ -91,6 +91,7 @@ bool Handle_C_ENTER_ZONE(PacketSessionRef& session, Protocol::C_ENTER_ZONE& pkt)
 
 	int nZoneid = pkt.zoneid();
 	gameSession->_currentPlayer->SetObjectID(pkt.playerid());
+	gameSession->_currentPlayer->SetActivate(true);
 
 
 	if (GZoneManager->Enter(nZoneid, gameSession->_currentPlayer) == false)
@@ -139,32 +140,36 @@ bool Handle_C_MOVE(PacketSessionRef& session, Protocol::C_MOVE& pkt)
 	*/
 
 	//나중엔 해당 유저가 이전위치와 비교, 움직였을때만 브로드캐스팅!
-	Protocol::S_MOVE_PLAYER movepkt;
+	//Protocol::S_MOVE_PLAYER movepkt;
 	CZoneRef Zone = GZoneManager->GetZone(gameSession->_currentPlayer->GetZoneID());
 	if (Zone == nullptr)
 		return false;
 
-	Protocol::D3DVECTOR* vec= movepkt.mutable_pos();
-	vec->set_x(pkt.pos().x());
-	vec->set_y(pkt.pos().y());
-	vec->set_z(pkt.pos().z());
+	//일단 무조건 위치 바뀌었다 가정
+	gameSession->_currentPlayer->UpdatePos(true);
+	Zone->Update_Pos(pkt.playerid(), pkt.pos());
+		
+	//Protocol::D3DVECTOR* vec = movepkt.mutable_pos();
+	//vec->set_x(pkt.pos().x());
+	//vec->set_y(pkt.pos().y());
+	//vec->set_z(pkt.pos().z());
 
-	//ObjectList Playerlist = Zone->PlayerList();
-	movepkt.set_playerid(pkt.playerid());
-	movepkt.set_sendtime(pkt.sendtime());
-	//movepkt.set_allocated_pos(vec);
+	//movepkt.set_sendtime(pkt.sendtime());
 
 	//c_move패킷 받은 스레드가 브로드캐스팅을 한번에 다 처리해야하나 아니면 글로벌큐로 넘겨서 분담처리?
 	//브로드해야하는 유저가 일정수이상일경우,글로벌에 넘겨 다른스레드에 분배요청?
-	Zone->BroadCasting(movepkt);
+
+	//Zone->DoBroadTimer(Tick::AI_TICK, &CZone::BroadCasting,movepkt);
+	//Zone->DoTimer(Tick::AI_TICK, &CZone::BroadCasting, movepkt);
+
 		
 
-	Protocol::S_MOVE_ACK moveackpkt;
-	moveackpkt.set_sendtime(pkt.sendtime());
-	moveackpkt.set_success(true);
-
-	auto sendBuffer = ClientPacketHandler::MakeSendBuffer(moveackpkt);
-	session->Send(sendBuffer);
+	//Protocol::S_MOVE_ACK moveackpkt;
+	//moveackpkt.set_sendtime(pkt.sendtime());
+	//moveackpkt.set_success(true);
+	//
+	//auto sendBuffer = ClientPacketHandler::MakeSendBuffer(moveackpkt);
+	//session->Send(sendBuffer);
 
 	return true;
 }
@@ -184,7 +189,8 @@ bool Handle_C_CHAT(PacketSessionRef& session, Protocol::C_CHAT& pkt)
 	chatPkt.set_msg(pkt.msg());
 	auto sendBuffer = ClientPacketHandler::MakeSendBuffer(chatPkt);
 
-	//GRoom->DoTimer(3000, CM, sendBuffer);
+	//Room->DoTimer(3000, CM, sendBuffer);
+	//GRoom->DoTimer(3000 ,&Room::Broadcast, sendBuffer);
 
 	GRoom->DoAsync(&Room::Broadcast, sendBuffer);
 

@@ -57,8 +57,9 @@ message S_MOVE_MONSTER
 message S_MOVE_PLAYER
 {
 	uint64 sendTime=1;
-	uint64 playerID = 2;
-	D3DVECTOR pos=3;
+	repeated Player_Pos pos=2;
+	//uint64 playerID = 2;
+	//D3DVECTOR pos=3;
 }
 
 
