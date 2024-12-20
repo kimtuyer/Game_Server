@@ -7,7 +7,7 @@
 #include "CZone_Manager.h"
 #include "GameSession.h"
 #include "CPlayerManager.h"
-
+#include "ConsoleMapViewer.h"
 PacketHandlerFunc GPacketHandler[UINT16_MAX];
 
 // 직접 컨텐츠 작업자
@@ -46,7 +46,8 @@ bool Handle_C_LOGIN(PacketSessionRef& session, Protocol::C_LOGIN& pkt)
 		playerRef->type = player->playertype();
 		playerRef->SetObjectType(Object::Player);
 		playerRef->ownerSession = gameSession;
-		
+		playerRef->SetZoneID(GZoneManager->IssueZoneID());
+
 		gameSession->_currentPlayer = playerRef;
 		player->set_id(playerRef->playerId);
 		//gameSession->_players.push_back(playerRef);
@@ -54,7 +55,7 @@ bool Handle_C_LOGIN(PacketSessionRef& session, Protocol::C_LOGIN& pkt)
 		GPlayerManager->Insert(playerRef->playerId, playerRef);
 
 		//int nzoneid = GZoneManager->IssueZoneID();
-		loginPkt.set_zoneid(GZoneManager->IssueZoneID());
+		loginPkt.set_zoneid(playerRef->GetZoneID());
 	}
 
 	//{
@@ -146,7 +147,14 @@ bool Handle_C_MOVE(PacketSessionRef& session, Protocol::C_MOVE& pkt)
 		return false;
 
 	//일단 무조건 위치 바뀌었다 가정
+	Protocol::D3DVECTOR vPos = pkt.pos();
 	gameSession->_currentPlayer->UpdatePos(true);
+
+	//비동기로 호출해서 그릴지,바로 그리고 나올지..
+
+	GConsoleViewer->queuePlayerUpdate(pkt.playerid(), Zone->ZoneID(), vPos.x(), vPos.y());
+	//GConsoleViewer->Concurrent_queueUpdate(pkt.playerid(), Zone->ZoneID(), vPos.x(), vPos.y());
+	//GConsoleViewer->updatePlayerPosition(pkt.playerid(), Zone->ZoneID(), vPos.x(), vPos.y());
 	Zone->Update_Pos(pkt.playerid(), pkt.pos());
 		
 	//Protocol::D3DVECTOR* vec = movepkt.mutable_pos();

@@ -9,9 +9,20 @@ namespace Tick
 		MINUTE_TICK = SECOND_TICK * 60,
 
 		AI_TICK=200,
+		RENDERING_TICK=100,
 
 	};
 }
+
+namespace Zone
+{
+	static const int ZONE_WIDTH = 20;  // 각 존의 가로 크기
+	static const int ZONE_HEIGHT = 10; // 각 존의 세로 크기
+	static const int ZONES_PER_ROW = 5;
+	static const int ZONES_PER_COL = 3;
+
+}
+
 
 namespace Object
 {

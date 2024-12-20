@@ -14,7 +14,7 @@
 #include "Enum.pb.h"
 #include "Struct.pb.h"
 #include "CObject.h"
-
+//#include "ConsoleMapViewer.h"
 using GameSessionRef = shared_ptr<class GameSession>;
 using ObjectRef = shared_ptr<class CObject>;
 using PlayerRef = shared_ptr<class CPlayer>;

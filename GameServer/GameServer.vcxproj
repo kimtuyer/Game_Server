@@ -177,6 +177,7 @@
   <ItemGroup>
     <ClCompile Include="CMonster.cpp" />
     <ClCompile Include="CObject.cpp" />
+    <ClCompile Include="ConsoleMapViewer.cpp" />
     <ClCompile Include="CPlayerManager.cpp" />
     <ClCompile Include="CZone.cpp" />
     <ClCompile Include="CZone_Manager.cpp" />
@@ -214,6 +215,7 @@
   <ItemGroup>
     <ClInclude Include="CMonster.h" />
     <ClInclude Include="CObject.h" />
+    <ClInclude Include="ConsoleMapViewer.h" />
     <ClInclude Include="CPlayerManager.h" />
     <ClInclude Include="CZone.h" />
     <ClInclude Include="CZone_Manager.h" />

@@ -12,7 +12,8 @@
 #include "Room.h"
 #include "CMonster.h"
 #include "CZone_Manager.h"
-atomic<int>	g_nPacketCount = 0;
+#include "ConsoleMapViewer.h"
+//atomic<int>	g_nPacketCount = 0;
 const	int	g_nZoneCount = 25;
 const	int g_nZoneUserMax = 200;
 //class CZone_Manager;
@@ -23,23 +24,15 @@ void DoMainJob(ServerServiceRef& service)
 		if (LSecondTickCount < GetTickCount64())
 		{
 			LSecondTickCount = GetTickCount64() + Tick::SECOND_TICK;
-
-
+			
+			GConsoleViewer->gotoxy(0, 0);
 			cout << "전체 초당 패킷 처리량:" << g_nPacketCount << endl;
 
 			g_nPacketCount.store(0);
 		}
 
-		LEndTickCount = ::GetTickCount64() + Tick::WORKER_TICK;
+		//LEndTickCount = ::GetTickCount64() + Tick::WORKER_TICK;
 
-		// 네트워크 입출력 처리 -> 인게임 로직까지 (패킷 핸들러에 의해)
-		//service->GetIocpCore()->Dispatch(10);
-		
-		//// 예약된 일감 처리
-		//ThreadManager::DistributeReservedJobs();
-		//
-		//// 글로벌 큐
-		//ThreadManager::DoGlobalQueueWork();
 	}
 }
 
@@ -79,6 +72,28 @@ void DoWorkerJob(ServerServiceRef& service,bool bMain=false)
 		ThreadManager::DoGlobalQueueWork();
 	}
 }
+
+
+void DoRenderingJob()
+{
+	while (true)
+	{
+		if (LRenderingTickCount < GetTickCount64())
+		{
+			LRenderingTickCount = GetTickCount64() + Tick::RENDERING_TICK;
+
+			GConsoleViewer->renderFrame();
+
+			//락 프리 기법 렌더링
+			//GConsoleViewer->processUpdates();
+
+		}
+
+		//LEndTickCount = ::GetTickCount64() + Tick::WORKER_TICK;
+
+	}
+}
+
 
 void DoBroadJob(ServerServiceRef& service, bool bMain = false)
 {
@@ -125,6 +140,7 @@ int main()
 
 	ClientPacketHandler::Init();
 	GZoneManager->Init(g_nZoneCount, g_nZoneUserMax);
+	
 	//ZoneManager()->Init();
 
 	ServerServiceRef service = MakeShared<ServerService>(
@@ -137,13 +153,13 @@ int main()
 
 	unsigned int core_count = std::thread::hardware_concurrency();
 	int nThreadCnt = core_count * 2;//+ 1;
-	//for (int32 i = 0; i < 2; i++)
-	//{
-	//	GThreadManager->Launch([&service]()
-	//		{
-	//			DoBroadJob(service);
-	//		});
-	//}
+
+	
+	GThreadManager->Launch([]()
+		{
+			DoRenderingJob();
+		});
+	
 
 	for (int32 i = 0; i < nThreadCnt; i++)
 	{
@@ -154,7 +170,6 @@ int main()
 	}
 
 	// Main Thread
-	DoMainJob(service);
-
+	//DoMainJob(service);
 	GThreadManager->Join();
 }

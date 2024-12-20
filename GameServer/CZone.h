@@ -11,10 +11,13 @@ class CZone : public JobQueue
 
 public:
 
-	CZone(int nMaxUserCnt);
+	CZone(int nMaxUserCnt,int m_nZoneID);
 	~CZone();
 
-	
+	int		ZoneID()
+	{
+		return m_nZoneID;
+	}
 	//오브젝트 리스트에 객체 삽입
 	bool _Enter(ObjectType, ObjectRef);
 
@@ -74,6 +77,7 @@ private:	//오브젝트 리스트도 맵 or set이 나은가?
 	
 	//오브젝트는 타입에 따라 리스트를 다르게 가져가는게 나은가
 	USE_LOCK;
+	int			m_nZoneID;
 	int			m_nMaxUserCnt;
 	atomic<int>	m_nUserCnt;
 	map<ObjectType, map<ObjectID,ObjectRef>> m_nlistObject;

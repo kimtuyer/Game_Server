@@ -16,10 +16,10 @@ void CZone_Manager::Init(const int nZoneCount,const int nZoneUserMax )
 	
 	
 	*/
-	for (int i = 0; i < m_nZoneCount; i++)
+	for (int i = 1; i <= m_nZoneCount; i++)
 	{
 		//CZoneRef Zone = MakeShared<CZone>(200);
-		m_listZone.insert({ i,MakeShared<CZone>(nZoneUserMax)});
+		m_listZone.insert({ i,MakeShared<CZone>(nZoneUserMax,i)});
 		//Zone->DoTimer(Tick::AI_TICK, &CZone::Update);
 
 	}

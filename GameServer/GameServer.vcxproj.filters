@@ -16,6 +16,9 @@
     <Filter Include="Session">
       <UniqueIdentifier>{da6ba675-eef3-432e-bd08-c74eb63b28d8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="UI">
+      <UniqueIdentifier>{5afcae3c-2e1c-4833-a529-3e5e5d08056c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameServer.cpp">
@@ -63,6 +66,9 @@
     <ClCompile Include="GameSession.cpp">
       <Filter>Session</Filter>
     </ClCompile>
+    <ClCompile Include="ConsoleMapViewer.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -106,6 +112,9 @@
     </ClInclude>
     <ClInclude Include="GameSession.h">
       <Filter>Session</Filter>
+    </ClInclude>
+    <ClInclude Include="ConsoleMapViewer.h">
+      <Filter>UI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

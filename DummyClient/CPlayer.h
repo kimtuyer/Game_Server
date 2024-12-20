@@ -18,7 +18,6 @@ public:
 
 
 	//int		m_nZoneid;
-	Protocol::D3DVECTOR	m_vPos;
 	Object::eObject_State	m_eState;
 
 

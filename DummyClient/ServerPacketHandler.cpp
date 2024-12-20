@@ -36,6 +36,7 @@ bool Handle_S_LOGIN(PacketSessionRef& session, Protocol::S_LOGIN& pkt)
 	PlayerRef playerRef = MakeShared<CClientPlayer>();
 	playerRef->playerId = player->id();
 	playerRef->ownerSession = gameSession;
+	playerRef->SetZoneid(pkt.zoneid());
 	gameSession->_currentPlayer = playerRef;
 
 
@@ -44,6 +45,7 @@ bool Handle_S_LOGIN(PacketSessionRef& session, Protocol::S_LOGIN& pkt)
 	Protocol::C_ENTER_ZONE enterGamePkt;
 	enterGamePkt.set_sendtime(GetTickCount64());
 	enterGamePkt.set_playerid(player->id());
+	enterGamePkt.set_zoneid(pkt.zoneid());
 	
 	auto sendBuffer = ServerPacketHandler::MakeSendBuffer(enterGamePkt);
 	session->Send(sendBuffer);
@@ -66,7 +68,13 @@ bool Handle_S_ENTER_ACK(PacketSessionRef& session, Protocol::S_ENTER_ACK& pkt)
 	gameSession->_currentPlayer->SetZoneid(pkt.zoneid());
 	gameSession->_currentPlayer->m_eState = Object::Move;
 
-	gameSession->_currentPlayer->DoTimer(Tick::AI_TICK, &CClientPlayer::AI_Move);
+	//임시 테스트용, 클라도 따로 매니저 만들어서 각 플레이어 id 및 존 id 따라서 좌표위치 랜덤 일괄부여
+	Protocol::D3DVECTOR vPos;
+	vPos.set_x(3);
+	vPos.set_y(3);
+	gameSession->_currentPlayer->SetPos(vPos);
+
+	gameSession->_currentPlayer->DoTimer(Tick::SECOND_TICK, &CClientPlayer::AI_Move);
 
 	//Player->m_nZoneid= pkt.
 

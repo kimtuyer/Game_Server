@@ -54,7 +54,7 @@ int main()
 		NetAddress(L"127.0.0.1", 7777),
 		MakeShared<IocpCore>(),
 		MakeShared<ClientSession>, // TODO : SessionManager 등
-		1000); //1000일땐 500메가, 2000일땐 900메가 
+		1); //1000일땐 500메가, 2000일땐 900메가 
 	
 	ASSERT_CRASH(service->Start());
 

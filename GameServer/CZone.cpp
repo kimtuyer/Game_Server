@@ -5,7 +5,7 @@
 #include "GameSession.h"
 #include "ClientPacketHandler.h"
 
-CZone::CZone(int nMaxUserCnt) :m_bActivate(false), m_nMaxUserCnt(nMaxUserCnt)
+CZone::CZone(int nMaxUserCnt,int nZoneID) :m_bActivate(false), m_nMaxUserCnt(nMaxUserCnt), m_nZoneID(nZoneID)
 {
 	m_nUserCnt.store(0);
 

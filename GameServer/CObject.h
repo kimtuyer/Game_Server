@@ -70,13 +70,13 @@ public:
 
 	void	SetPos(const Protocol::D3DVECTOR& Pos)
 	{
-		vPos = Pos;
+		m_vPos = Pos;
 		m_bPos = true;
 	}
 
 	Protocol::D3DVECTOR& GetPos()
 	{
-		return vPos;
+		return m_vPos;
 	}
 
 
@@ -95,8 +95,8 @@ protected:
 	bool	m_bActivate;
 	Object::ObjectType eObjectType; 
 	int		m_nObjectID;
+	Protocol::D3DVECTOR m_vPos;
 	atomic<bool>	m_bPos = false;		//이전 위치 다를시 체크용
-	Protocol::D3DVECTOR vPos;
 	//int	m_nHP;
 	//int	m_nAttack;
 
