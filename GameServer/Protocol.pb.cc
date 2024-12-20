@@ -58,7 +58,8 @@ struct C_ENTER_ZONEDefaultTypeInternal {
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT C_ENTER_ZONEDefaultTypeInternal _C_ENTER_ZONE_default_instance_;
 constexpr S_ENTER_ACK::S_ENTER_ACK(
   ::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized)
-  : sendtime_(uint64_t{0u})
+  : pos_(nullptr)
+  , sendtime_(uint64_t{0u})
   , success_(false)
   , zoneid_(0u){}
 struct S_ENTER_ACKDefaultTypeInternal {
@@ -236,6 +237,7 @@ const ::PROTOBUF_NAMESPACE_ID::uint32 TableStruct_Protocol_2eproto::offsets[] PR
   PROTOBUF_FIELD_OFFSET(::Protocol::S_ENTER_ACK, sendtime_),
   PROTOBUF_FIELD_OFFSET(::Protocol::S_ENTER_ACK, success_),
   PROTOBUF_FIELD_OFFSET(::Protocol::S_ENTER_ACK, zoneid_),
+  PROTOBUF_FIELD_OFFSET(::Protocol::S_ENTER_ACK, pos_),
   ~0u,  // no _has_bits_
   PROTOBUF_FIELD_OFFSET(::Protocol::C_MOVE, _internal_metadata_),
   ~0u,  // no _extensions_
@@ -313,16 +315,16 @@ static const ::PROTOBUF_NAMESPACE_ID::internal::MigrationSchema schemas[] PROTOB
   { 5, -1, sizeof(::Protocol::S_LOGIN)},
   { 13, -1, sizeof(::Protocol::C_ENTER_ZONE)},
   { 21, -1, sizeof(::Protocol::S_ENTER_ACK)},
-  { 29, -1, sizeof(::Protocol::C_MOVE)},
-  { 37, -1, sizeof(::Protocol::S_MOVE_ACK)},
-  { 44, -1, sizeof(::Protocol::S_MOVE_MONSTER)},
-  { 52, -1, sizeof(::Protocol::S_MOVE_PLAYER)},
-  { 59, -1, sizeof(::Protocol::C_ATTACK)},
-  { 66, -1, sizeof(::Protocol::S_ATTACK_ACK)},
-  { 73, -1, sizeof(::Protocol::S_OBJ_LIST)},
-  { 80, -1, sizeof(::Protocol::S_OBJ_REMOVE_ACK)},
-  { 87, -1, sizeof(::Protocol::C_CHAT)},
-  { 93, -1, sizeof(::Protocol::S_CHAT)},
+  { 30, -1, sizeof(::Protocol::C_MOVE)},
+  { 38, -1, sizeof(::Protocol::S_MOVE_ACK)},
+  { 45, -1, sizeof(::Protocol::S_MOVE_MONSTER)},
+  { 53, -1, sizeof(::Protocol::S_MOVE_PLAYER)},
+  { 60, -1, sizeof(::Protocol::C_ATTACK)},
+  { 67, -1, sizeof(::Protocol::S_ATTACK_ACK)},
+  { 74, -1, sizeof(::Protocol::S_OBJ_LIST)},
+  { 81, -1, sizeof(::Protocol::S_OBJ_REMOVE_ACK)},
+  { 88, -1, sizeof(::Protocol::C_CHAT)},
+  { 94, -1, sizeof(::Protocol::S_CHAT)},
 };
 
 static ::PROTOBUF_NAMESPACE_ID::Message const * const file_default_instances[] = {
@@ -348,22 +350,23 @@ const char descriptor_table_protodef_Protocol_2eproto[] PROTOBUF_SECTION_VARIABL
   "ccess\030\001 \001(\010\022\016\n\006zoneid\030\002 \001(\r\022!\n\007players\030\003"
   " \001(\0132\020.Protocol.Player\"B\n\014C_ENTER_ZONE\022\020"
   "\n\010sendTime\030\001 \001(\004\022\020\n\010playerID\030\002 \001(\004\022\016\n\006zo"
-  "neid\030\003 \001(\r\"@\n\013S_ENTER_ACK\022\020\n\010sendTime\030\001 "
-  "\001(\004\022\017\n\007success\030\002 \001(\010\022\016\n\006zoneID\030\003 \001(\r\"N\n\006"
-  "C_MOVE\022\020\n\010sendTime\030\001 \001(\004\022\020\n\010playerID\030\002 \001"
-  "(\004\022 \n\003pos\030\003 \001(\0132\023.Protocol.D3DVECTOR\"/\n\n"
-  "S_MOVE_ACK\022\020\n\010sendTime\030\001 \001(\004\022\017\n\007success\030"
-  "\002 \001(\010\"V\n\016S_MOVE_MONSTER\022\020\n\010sendTime\030\001 \001("
-  "\004\022\020\n\010objectID\030\002 \001(\004\022 \n\003pos\030\003 \001(\0132\023.Proto"
-  "col.D3DVECTOR\"D\n\rS_MOVE_PLAYER\022\020\n\010sendTi"
-  "me\030\001 \001(\004\022!\n\003pos\030\002 \003(\0132\024.Protocol.Player_"
-  "Pos\".\n\010C_ATTACK\022\020\n\010sendTime\030\001 \001(\004\022\020\n\010pla"
-  "yerID\030\002 \001(\004\"1\n\014S_ATTACK_ACK\022\020\n\010sendTime\030"
-  "\001 \001(\004\022\017\n\007success\030\002 \001(\010\"/\n\nS_OBJ_LIST\022\020\n\010"
-  "sendTime\030\001 \001(\004\022\017\n\007success\030\002 \001(\010\"5\n\020S_OBJ"
-  "_REMOVE_ACK\022\020\n\010sendTime\030\001 \001(\004\022\017\n\007success"
-  "\030\002 \001(\010\"\025\n\006C_CHAT\022\013\n\003msg\030\001 \001(\t\"\'\n\006S_CHAT\022"
-  "\020\n\010playerId\030\001 \001(\004\022\013\n\003msg\030\002 \001(\tb\006proto3"
+  "neid\030\003 \001(\r\"b\n\013S_ENTER_ACK\022\020\n\010sendTime\030\001 "
+  "\001(\004\022\017\n\007success\030\002 \001(\010\022\016\n\006zoneID\030\003 \001(\r\022 \n\003"
+  "pos\030\004 \001(\0132\023.Protocol.D3DVECTOR\"N\n\006C_MOVE"
+  "\022\020\n\010sendTime\030\001 \001(\004\022\020\n\010playerID\030\002 \001(\004\022 \n\003"
+  "pos\030\003 \001(\0132\023.Protocol.D3DVECTOR\"/\n\nS_MOVE"
+  "_ACK\022\020\n\010sendTime\030\001 \001(\004\022\017\n\007success\030\002 \001(\010\""
+  "V\n\016S_MOVE_MONSTER\022\020\n\010sendTime\030\001 \001(\004\022\020\n\010o"
+  "bjectID\030\002 \001(\004\022 \n\003pos\030\003 \001(\0132\023.Protocol.D3"
+  "DVECTOR\"D\n\rS_MOVE_PLAYER\022\020\n\010sendTime\030\001 \001"
+  "(\004\022!\n\003pos\030\002 \003(\0132\024.Protocol.Player_Pos\".\n"
+  "\010C_ATTACK\022\020\n\010sendTime\030\001 \001(\004\022\020\n\010playerID\030"
+  "\002 \001(\004\"1\n\014S_ATTACK_ACK\022\020\n\010sendTime\030\001 \001(\004\022"
+  "\017\n\007success\030\002 \001(\010\"/\n\nS_OBJ_LIST\022\020\n\010sendTi"
+  "me\030\001 \001(\004\022\017\n\007success\030\002 \001(\010\"5\n\020S_OBJ_REMOV"
+  "E_ACK\022\020\n\010sendTime\030\001 \001(\004\022\017\n\007success\030\002 \001(\010"
+  "\"\025\n\006C_CHAT\022\013\n\003msg\030\001 \001(\t\"\'\n\006S_CHAT\022\020\n\010pla"
+  "yerId\030\001 \001(\004\022\013\n\003msg\030\002 \001(\tb\006proto3"
   ;
 static const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable*const descriptor_table_Protocol_2eproto_deps[2] = {
   &::descriptor_table_Enum_2eproto,
@@ -371,7 +374,7 @@ static const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable*const descriptor
 };
 static ::PROTOBUF_NAMESPACE_ID::internal::once_flag descriptor_table_Protocol_2eproto_once;
 const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_Protocol_2eproto = {
-  false, false, 838, descriptor_table_protodef_Protocol_2eproto, "Protocol.proto", 
+  false, false, 872, descriptor_table_protodef_Protocol_2eproto, "Protocol.proto", 
   &descriptor_table_Protocol_2eproto_once, descriptor_table_Protocol_2eproto_deps, 2, 14,
   schemas, file_default_instances, TableStruct_Protocol_2eproto::offsets,
   file_level_metadata_Protocol_2eproto, file_level_enum_descriptors_Protocol_2eproto, file_level_service_descriptors_Protocol_2eproto,
@@ -1063,8 +1066,19 @@ void C_ENTER_ZONE::InternalSwap(C_ENTER_ZONE* other) {
 
 class S_ENTER_ACK::_Internal {
  public:
+  static const ::Protocol::D3DVECTOR& pos(const S_ENTER_ACK* msg);
 };
 
+const ::Protocol::D3DVECTOR&
+S_ENTER_ACK::_Internal::pos(const S_ENTER_ACK* msg) {
+  return *msg->pos_;
+}
+void S_ENTER_ACK::clear_pos() {
+  if (GetArenaForAllocation() == nullptr && pos_ != nullptr) {
+    delete pos_;
+  }
+  pos_ = nullptr;
+}
 S_ENTER_ACK::S_ENTER_ACK(::PROTOBUF_NAMESPACE_ID::Arena* arena)
   : ::PROTOBUF_NAMESPACE_ID::Message(arena) {
   SharedCtor();
@@ -1074,6 +1088,11 @@ S_ENTER_ACK::S_ENTER_ACK(::PROTOBUF_NAMESPACE_ID::Arena* arena)
 S_ENTER_ACK::S_ENTER_ACK(const S_ENTER_ACK& from)
   : ::PROTOBUF_NAMESPACE_ID::Message() {
   _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  if (from._internal_has_pos()) {
+    pos_ = new ::Protocol::D3DVECTOR(*from.pos_);
+  } else {
+    pos_ = nullptr;
+  }
   ::memcpy(&sendtime_, &from.sendtime_,
     static_cast<size_t>(reinterpret_cast<char*>(&zoneid_) -
     reinterpret_cast<char*>(&sendtime_)) + sizeof(zoneid_));
@@ -1082,9 +1101,9 @@ S_ENTER_ACK::S_ENTER_ACK(const S_ENTER_ACK& from)
 
 void S_ENTER_ACK::SharedCtor() {
 ::memset(reinterpret_cast<char*>(this) + static_cast<size_t>(
-    reinterpret_cast<char*>(&sendtime_) - reinterpret_cast<char*>(this)),
+    reinterpret_cast<char*>(&pos_) - reinterpret_cast<char*>(this)),
     0, static_cast<size_t>(reinterpret_cast<char*>(&zoneid_) -
-    reinterpret_cast<char*>(&sendtime_)) + sizeof(zoneid_));
+    reinterpret_cast<char*>(&pos_)) + sizeof(zoneid_));
 }
 
 S_ENTER_ACK::~S_ENTER_ACK() {
@@ -1095,6 +1114,7 @@ S_ENTER_ACK::~S_ENTER_ACK() {
 
 void S_ENTER_ACK::SharedDtor() {
   GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
+  if (this != internal_default_instance()) delete pos_;
 }
 
 void S_ENTER_ACK::ArenaDtor(void* object) {
@@ -1113,6 +1133,10 @@ void S_ENTER_ACK::Clear() {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
+  if (GetArenaForAllocation() == nullptr && pos_ != nullptr) {
+    delete pos_;
+  }
+  pos_ = nullptr;
   ::memset(&sendtime_, 0, static_cast<size_t>(
       reinterpret_cast<char*>(&zoneid_) -
       reinterpret_cast<char*>(&sendtime_)) + sizeof(zoneid_));
@@ -1143,6 +1167,13 @@ const char* S_ENTER_ACK::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID
       case 3:
         if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 24)) {
           zoneid_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
+          CHK_(ptr);
+        } else goto handle_unusual;
+        continue;
+      // .Protocol.D3DVECTOR pos = 4;
+      case 4:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 34)) {
+          ptr = ctx->ParseMessage(_internal_mutable_pos(), ptr);
           CHK_(ptr);
         } else goto handle_unusual;
         continue;
@@ -1193,6 +1224,14 @@ failure:
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteUInt32ToArray(3, this->_internal_zoneid(), target);
   }
 
+  // .Protocol.D3DVECTOR pos = 4;
+  if (this->has_pos()) {
+    target = stream->EnsureSpace(target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
+      InternalWriteMessage(
+        4, _Internal::pos(this), target, stream);
+  }
+
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::InternalSerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
@@ -1208,6 +1247,13 @@ size_t S_ENTER_ACK::ByteSizeLong() const {
   ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
+
+  // .Protocol.D3DVECTOR pos = 4;
+  if (this->has_pos()) {
+    total_size += 1 +
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
+        *pos_);
+  }
 
   // uint64 sendTime = 1;
   if (this->sendtime() != 0) {
@@ -1259,6 +1305,9 @@ void S_ENTER_ACK::MergeFrom(const S_ENTER_ACK& from) {
   ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
+  if (from.has_pos()) {
+    _internal_mutable_pos()->::Protocol::D3DVECTOR::MergeFrom(from._internal_pos());
+  }
   if (from.sendtime() != 0) {
     _internal_set_sendtime(from._internal_sendtime());
   }
@@ -1294,9 +1343,9 @@ void S_ENTER_ACK::InternalSwap(S_ENTER_ACK* other) {
   ::PROTOBUF_NAMESPACE_ID::internal::memswap<
       PROTOBUF_FIELD_OFFSET(S_ENTER_ACK, zoneid_)
       + sizeof(S_ENTER_ACK::zoneid_)
-      - PROTOBUF_FIELD_OFFSET(S_ENTER_ACK, sendtime_)>(
-          reinterpret_cast<char*>(&sendtime_),
-          reinterpret_cast<char*>(&other->sendtime_));
+      - PROTOBUF_FIELD_OFFSET(S_ENTER_ACK, pos_)>(
+          reinterpret_cast<char*>(&pos_),
+          reinterpret_cast<char*>(&other->pos_));
 }
 
 ::PROTOBUF_NAMESPACE_ID::Metadata S_ENTER_ACK::GetMetadata() const {

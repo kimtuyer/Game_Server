@@ -1,5 +1,5 @@
 #pragma once
-
+class RandomMove;
 class CClientPlayer : public CObject
 {
 public:
@@ -23,6 +23,8 @@ public:
 
 
 private:
+	shared_ptr<RandomMove> m_RandomMovement;
+	//RandomMove* m_RandomMovement;
 	//m_nf
 
 };

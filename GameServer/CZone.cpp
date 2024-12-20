@@ -5,7 +5,8 @@
 #include "GameSession.h"
 #include "ClientPacketHandler.h"
 
-CZone::CZone(int nMaxUserCnt,int nZoneID) :m_bActivate(false), m_nMaxUserCnt(nMaxUserCnt), m_nZoneID(nZoneID)
+CZone::CZone(int nMaxUserCnt,int nZoneID, Protocol::D3DVECTOR vPos) :m_bActivate(false), m_nMaxUserCnt(nMaxUserCnt), m_nZoneID(nZoneID)
+, m_vStartpos(vPos)
 {
 	m_nUserCnt.store(0);
 

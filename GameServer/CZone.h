@@ -11,8 +11,9 @@ class CZone : public JobQueue
 
 public:
 
-	CZone(int nMaxUserCnt,int m_nZoneID);
+	CZone(int nMaxUserCnt, int m_nZoneID, Protocol::D3DVECTOR vPos);
 	~CZone();
+
 
 	int		ZoneID()
 	{
@@ -72,12 +73,26 @@ public:
 
 
 
+	void	SetStartpos(Protocol::D3DVECTOR vPos)
+	{
+		m_vStartpos = vPos;
+	}
+
+	Protocol::D3DVECTOR  StartPos()
+	{
+		return m_vStartpos;
+	}
+
+
+
 
 private:	//오브젝트 리스트도 맵 or set이 나은가?
 	
 	//오브젝트는 타입에 따라 리스트를 다르게 가져가는게 나은가
 	USE_LOCK;
 	int			m_nZoneID;
+	Protocol::D3DVECTOR m_vStartpos;
+
 	int			m_nMaxUserCnt;
 	atomic<int>	m_nUserCnt;
 	map<ObjectType, map<ObjectID,ObjectRef>> m_nlistObject;

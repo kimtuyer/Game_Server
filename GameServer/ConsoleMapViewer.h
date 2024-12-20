@@ -90,7 +90,9 @@ public:
 
 	std::pair<int, int> getScreenPosition(int zoneId, int localX, int localY) {
 		int zoneRow = (zoneId - 1) % ZONES_PER_ROW;
-		int zoneCol = (zoneId - 1) / ZONES_PER_ROW;
+		int zoneCol = (zoneId - 1) % ZONES_PER_ROW;
+
+		//int zoneCol = (zoneId - 1) / ZONES_PER_ROW;
 
 		int screenX = zoneRow * (ZONE_WIDTH + 1) + localX + 1;
 		int screenY = zoneCol * (ZONE_HEIGHT + 1) + localY + 1;
@@ -155,8 +157,8 @@ public:
 	// 패킷 수신 시 호출 (lock 최소화)
 	void queuePlayerUpdate(int playerId, int zoneId, int x, int y) {
 		std::lock_guard<std::mutex> lock(mtx);
-		gotoxy(1,0);
-		cout << "x ,y : " << x << "," << y << endl;
+		//gotoxy(1,0);
+		//cout << "x ,y : " << x << "," << y << endl;
 		pendingUpdates[playerId]={ zoneId, x, y };
 	}
 

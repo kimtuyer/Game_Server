@@ -67,12 +67,11 @@ bool Handle_S_ENTER_ACK(PacketSessionRef& session, Protocol::S_ENTER_ACK& pkt)
 
 	gameSession->_currentPlayer->SetZoneid(pkt.zoneid());
 	gameSession->_currentPlayer->m_eState = Object::Move;
-
 	//임시 테스트용, 클라도 따로 매니저 만들어서 각 플레이어 id 및 존 id 따라서 좌표위치 랜덤 일괄부여
-	Protocol::D3DVECTOR vPos;
-	vPos.set_x(3);
-	vPos.set_y(3);
-	gameSession->_currentPlayer->SetPos(vPos);
+	//Protocol::D3DVECTOR vPos;
+	//vPos.set_x(3);
+	//vPos.set_y(3);
+	gameSession->_currentPlayer->SetPos(pkt.pos());
 
 	gameSession->_currentPlayer->DoTimer(Tick::SECOND_TICK, &CClientPlayer::AI_Move);
 

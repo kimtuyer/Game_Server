@@ -663,10 +663,29 @@ class S_ENTER_ACK final :
   // accessors -------------------------------------------------------
 
   enum : int {
+    kPosFieldNumber = 4,
     kSendTimeFieldNumber = 1,
     kSuccessFieldNumber = 2,
     kZoneIDFieldNumber = 3,
   };
+  // .Protocol.D3DVECTOR pos = 4;
+  bool has_pos() const;
+  private:
+  bool _internal_has_pos() const;
+  public:
+  void clear_pos();
+  const ::Protocol::D3DVECTOR& pos() const;
+  PROTOBUF_FUTURE_MUST_USE_RESULT ::Protocol::D3DVECTOR* release_pos();
+  ::Protocol::D3DVECTOR* mutable_pos();
+  void set_allocated_pos(::Protocol::D3DVECTOR* pos);
+  private:
+  const ::Protocol::D3DVECTOR& _internal_pos() const;
+  ::Protocol::D3DVECTOR* _internal_mutable_pos();
+  public:
+  void unsafe_arena_set_allocated_pos(
+      ::Protocol::D3DVECTOR* pos);
+  ::Protocol::D3DVECTOR* unsafe_arena_release_pos();
+
   // uint64 sendTime = 1;
   void clear_sendtime();
   ::PROTOBUF_NAMESPACE_ID::uint64 sendtime() const;
@@ -701,6 +720,7 @@ class S_ENTER_ACK final :
   template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
   typedef void InternalArenaConstructable_;
   typedef void DestructorSkippable_;
+  ::Protocol::D3DVECTOR* pos_;
   ::PROTOBUF_NAMESPACE_ID::uint64 sendtime_;
   bool success_;
   ::PROTOBUF_NAMESPACE_ID::uint32 zoneid_;
@@ -2445,6 +2465,85 @@ inline void S_ENTER_ACK::_internal_set_zoneid(::PROTOBUF_NAMESPACE_ID::uint32 va
 inline void S_ENTER_ACK::set_zoneid(::PROTOBUF_NAMESPACE_ID::uint32 value) {
   _internal_set_zoneid(value);
   // @@protoc_insertion_point(field_set:Protocol.S_ENTER_ACK.zoneID)
+}
+
+// .Protocol.D3DVECTOR pos = 4;
+inline bool S_ENTER_ACK::_internal_has_pos() const {
+  return this != internal_default_instance() && pos_ != nullptr;
+}
+inline bool S_ENTER_ACK::has_pos() const {
+  return _internal_has_pos();
+}
+inline const ::Protocol::D3DVECTOR& S_ENTER_ACK::_internal_pos() const {
+  const ::Protocol::D3DVECTOR* p = pos_;
+  return p != nullptr ? *p : reinterpret_cast<const ::Protocol::D3DVECTOR&>(
+      ::Protocol::_D3DVECTOR_default_instance_);
+}
+inline const ::Protocol::D3DVECTOR& S_ENTER_ACK::pos() const {
+  // @@protoc_insertion_point(field_get:Protocol.S_ENTER_ACK.pos)
+  return _internal_pos();
+}
+inline void S_ENTER_ACK::unsafe_arena_set_allocated_pos(
+    ::Protocol::D3DVECTOR* pos) {
+  if (GetArenaForAllocation() == nullptr) {
+    delete reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(pos_);
+  }
+  pos_ = pos;
+  if (pos) {
+    
+  } else {
+    
+  }
+  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:Protocol.S_ENTER_ACK.pos)
+}
+inline ::Protocol::D3DVECTOR* S_ENTER_ACK::release_pos() {
+  
+  ::Protocol::D3DVECTOR* temp = pos_;
+  pos_ = nullptr;
+  if (GetArenaForAllocation() != nullptr) {
+    temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
+  }
+  return temp;
+}
+inline ::Protocol::D3DVECTOR* S_ENTER_ACK::unsafe_arena_release_pos() {
+  // @@protoc_insertion_point(field_release:Protocol.S_ENTER_ACK.pos)
+  
+  ::Protocol::D3DVECTOR* temp = pos_;
+  pos_ = nullptr;
+  return temp;
+}
+inline ::Protocol::D3DVECTOR* S_ENTER_ACK::_internal_mutable_pos() {
+  
+  if (pos_ == nullptr) {
+    auto* p = CreateMaybeMessage<::Protocol::D3DVECTOR>(GetArenaForAllocation());
+    pos_ = p;
+  }
+  return pos_;
+}
+inline ::Protocol::D3DVECTOR* S_ENTER_ACK::mutable_pos() {
+  // @@protoc_insertion_point(field_mutable:Protocol.S_ENTER_ACK.pos)
+  return _internal_mutable_pos();
+}
+inline void S_ENTER_ACK::set_allocated_pos(::Protocol::D3DVECTOR* pos) {
+  ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaForAllocation();
+  if (message_arena == nullptr) {
+    delete reinterpret_cast< ::PROTOBUF_NAMESPACE_ID::MessageLite*>(pos_);
+  }
+  if (pos) {
+    ::PROTOBUF_NAMESPACE_ID::Arena* submessage_arena =
+        ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper<
+            ::PROTOBUF_NAMESPACE_ID::MessageLite>::GetOwningArena(
+                reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(pos));
+    if (message_arena != submessage_arena) {
+      pos = ::PROTOBUF_NAMESPACE_ID::internal::GetOwnedMessage(
+          message_arena, pos, submessage_arena);
+    }
+    
+  } else {
+    
+  }
+  pos_ = pos;
+  // @@protoc_insertion_point(field_set_allocated:Protocol.S_ENTER_ACK.pos)
 }
 
 // -------------------------------------------------------------------

@@ -60,6 +60,9 @@ public:
 
 	void	SetPos(const Protocol::D3DVECTOR& Pos)
 	{
+
+		m_nZoneID;
+
 		m_vPos = Pos;
 		m_bPos = true;
 	}

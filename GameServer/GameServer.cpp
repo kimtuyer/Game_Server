@@ -14,7 +14,7 @@
 #include "CZone_Manager.h"
 #include "ConsoleMapViewer.h"
 //atomic<int>	g_nPacketCount = 0;
-const	int	g_nZoneCount = 25;
+const	int	g_nZoneCount = 15;
 const	int g_nZoneUserMax = 200;
 //class CZone_Manager;
 void DoMainJob(ServerServiceRef& service)

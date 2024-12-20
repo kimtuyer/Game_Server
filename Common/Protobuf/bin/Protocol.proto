@@ -29,6 +29,8 @@ message S_ENTER_ACK
 	uint64	 sendTime=1;
 	bool	 success = 2;
 	uint32	 zoneID=3; 
+	D3DVECTOR pos=4;
+
 
 }
 

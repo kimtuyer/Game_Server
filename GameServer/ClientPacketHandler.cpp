@@ -87,10 +87,12 @@ bool Handle_C_ENTER_ZONE(PacketSessionRef& session, Protocol::C_ENTER_ZONE& pkt)
 	if (GPlayerManager->Find(pkt.playerid())==false)
 		return false;
 
+
 	S_ENTER_ACK enterpkt;
 	enterpkt.set_sendtime(pkt.sendtime());
 
-	int nZoneid = pkt.zoneid();
+	int nZoneid = 1;
+
 	gameSession->_currentPlayer->SetObjectID(pkt.playerid());
 	gameSession->_currentPlayer->SetActivate(true);
 
@@ -103,6 +105,11 @@ bool Handle_C_ENTER_ZONE(PacketSessionRef& session, Protocol::C_ENTER_ZONE& pkt)
 	}
 	else
 	{
+		/* 입장 존 최초 위치 받음.	*/
+		Protocol::D3DVECTOR* vPos = enterpkt.mutable_pos();
+		if (GZoneManager->GetStartPos(nZoneid, vPos) == false)
+			return false;
+
 		enterpkt.set_success(true);
 		enterpkt.set_zoneid(nZoneid);
 
@@ -151,7 +158,8 @@ bool Handle_C_MOVE(PacketSessionRef& session, Protocol::C_MOVE& pkt)
 	gameSession->_currentPlayer->UpdatePos(true);
 
 	//비동기로 호출해서 그릴지,바로 그리고 나올지..
-
+	int zoneid = Zone->ZoneID();
+	float y = vPos.y();
 	GConsoleViewer->queuePlayerUpdate(pkt.playerid(), Zone->ZoneID(), vPos.x(), vPos.y());
 	//GConsoleViewer->Concurrent_queueUpdate(pkt.playerid(), Zone->ZoneID(), vPos.x(), vPos.y());
 	//GConsoleViewer->updatePlayerPosition(pkt.playerid(), Zone->ZoneID(), vPos.x(), vPos.y());

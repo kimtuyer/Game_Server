@@ -2,6 +2,7 @@
 //#include "CZone.h"
 class CZone;
 using ZoneID = int;
+using namespace Protocol;
 class CZone_Manager : public JobQueue
 {
 	//DECLARE_SIGNLETON(CZone_Manager);
@@ -23,7 +24,7 @@ public:
 	//오브젝트 리스트에 객체 삽입
 	bool PlayerEnter(int& nZoneID, PlayerRef object);
 
-	bool Enter(int& nZoneID,ObjectRef object);
+	bool Enter(OUT int& nZoneID,ObjectRef object);
 
 	bool Insert(int nZoneID, const CZoneRef);
 
@@ -40,6 +41,7 @@ public:
 
 	CZoneRef	GetZone(int nZoneID);
 
+	bool GetStartPos(int nZoneID, D3DVECTOR*);
 
 
 private:
