@@ -153,6 +153,8 @@ bool Handle_C_MOVE(PacketSessionRef& session, Protocol::C_MOVE& pkt)
 	if (Zone == nullptr)
 		return false;
 
+	int nZoneid = gameSession->_currentPlayer->GetZoneID();
+
 	//일단 무조건 위치 바뀌었다 가정
 	Protocol::D3DVECTOR vPos = pkt.pos();
 	gameSession->_currentPlayer->UpdatePos(true);

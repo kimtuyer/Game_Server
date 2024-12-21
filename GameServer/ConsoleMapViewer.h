@@ -90,12 +90,15 @@ public:
 
 	std::pair<int, int> getScreenPosition(int zoneId, int localX, int localY) {
 		int zoneRow = (zoneId - 1) % ZONES_PER_ROW;
-		int zoneCol = (zoneId - 1) % ZONES_PER_ROW;
+		int zoneCol = (zoneId - 1) % ZONES_PER_COL;
 
 		//int zoneCol = (zoneId - 1) / ZONES_PER_ROW;
 
-		int screenX = zoneRow * (ZONE_WIDTH + 1) + localX + 1;
-		int screenY = zoneCol * (ZONE_HEIGHT + 1) + localY + 1;
+		int screenX =localX + 1;
+		int screenY = localY + 1;
+
+		//int screenX = zoneRow * (ZONE_WIDTH + 1) + localX + 1;
+		//int screenY = zoneCol * (ZONE_HEIGHT + 1) + localY + 1;
 
 		return { screenX, screenY };
 	}
@@ -187,7 +190,7 @@ public:
 			currentDisplay[objectid] = screenPos;
 			gotoxy(screenPos.first, screenPos.second);
 			if(objectid< g_nZoneCount*g_nZoneUserMax)
-				std::cout << ".";
+				std::cout << "p";
 			else
 				std::cout << "m";
 

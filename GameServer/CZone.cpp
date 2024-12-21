@@ -23,15 +23,15 @@ CZone::CZone(int nMaxUserCnt,int nZoneID, Protocol::D3DVECTOR vPos) :m_bActivate
 	//임시 활성화,몹 테스트
 	m_bActivate = true;
 
-	int startID =( g_nZoneCount * g_nZoneUserMax) + (Monster::MonsterMaxCount* (m_nZoneID-1)) +1;
-	int EndMaxID = (startID-1) + Monster::MonsterMaxCount;
+	int startID =( g_nZoneCount * g_nZoneUserMax) + (MonsterMaxCount* (m_nZoneID-1)) +1;
+	int EndMaxID = (startID-1) + MonsterMaxCount;
 
-	//for (;startID < EndMaxID; startID++)
-	//{
-	//	MonsterRef Monster = MakeShared<CMonster>(startID, m_nZoneID, m_vStartpos,true);
-	//
-	//	m_nlistObject[Object::Monster].insert({startID,Monster});
-	//}
+	for (;startID < EndMaxID; startID++)
+	{
+		MonsterRef Monster = MakeShared<CMonster>(startID, m_nZoneID, m_vStartpos,true);
+	
+		m_nlistObject[Object::Monster].insert({startID,Monster});
+	}
 
 
 	
@@ -156,48 +156,16 @@ void CZone::Update()
 	/*
 	 몬스터 업뎃후 실시간 좌표 주변 유저에게 동기화
 
+	 현재 몹 개수는 존당 200개, 다만 해당 몹 데이터 전부를 다 보낼필요는 없음.
+	 유저입장에선 자신과같은 영역(카메라보이는)에 있는 몹정보만 받아서 출력하면됨
+
+	 일단 섹터적용했단 가정하에 30개의 몹정보만 전송 
+
 	*/
-	Protocol::S_MOVE_PLAYER pkt;
-	pkt.set_sendtime(GetTickCount64());
-	map<ObjectID, ObjectRef> PlayerList = m_nlistObject[Object::Player];
+	Send_MonsterUpdateList();
 
-	int nCnt = 0;
-	for (auto& [objectid, Object] : PlayerList)
-	{
-		/*
-		 이때도 엄밀하게는 존 안의 같은 섹터영역에 유저에게만 보내야
-		*/
+	Send_PlayerUpdateList();
 
-		//패킷 크기 고려해 일단 한번에 30명분 제한
-		if (nCnt > 30)
-			break;
-
-		if (Object->GetActivate() == false)
-			continue;
-
-		if (Object->IsUpdatePos() == false)
-			continue;
-
-		//이전 위치와 다른지 업뎃필요한 유저인지 확인도 필요
-
-		Protocol::Player_Pos sData;
-		sData.set_id(objectid);
-		Protocol::D3DVECTOR* vPos = sData.mutable_vpos();
-		Protocol::D3DVECTOR targetPos = Object->GetPos();
-		vPos->set_x(targetPos.x());
-		vPos->set_y(targetPos.y());
-		vPos->set_z(targetPos.z());
-
-		pkt.add_pos()->CopyFrom(sData);
-
-		nCnt++;
-		//CPlayer* pPlayer = static_cast<CPlayer*>(Object.get());
-		//pPlayer->Update();
-	}
-
-	if (PlayerList.empty())
-		return;
-	BroadCasting(pkt);
 	//ZoneManager에서 모든 zone update 호출중
 	//DoTimer(Tick::AI_TICK, &CZone::Update);
 }
@@ -244,7 +212,134 @@ bool CZone::Enter()
 	return m_nlistObject[Object::Player].size() < m_nMaxUserCnt;
 }
 
-void CZone::BroadCasting(Protocol::S_MOVE_PLAYER& movepkt)
+void CZone::Send_MonsterUpdateList()
+{
+
+	Protocol::S_MOVE_MONSTER objectpkt;
+	objectpkt.set_sendtime(GetTickCount64());
+	map<ObjectID, ObjectRef> MonsterList = m_nlistObject[Object::Monster];
+
+	int nCnt = 0;
+	for (auto& [objectid, Object] : MonsterList)
+	{
+		/*
+		 이때도 엄밀하게는 존 안의 같은 섹터영역에 유저에게만 보내야
+		*/
+		//패킷 크기 고려해 일단 한번에 30명분 제한
+		if (nCnt > 30)
+			break;
+
+		if (Object->GetActivate() == false)
+			continue;
+
+		if (Object->IsUpdatePos() == false)
+			continue;
+
+
+		Protocol::Object_Pos sData;
+		sData.set_id(objectid);
+		Protocol::D3DVECTOR* vPos = sData.mutable_vpos();
+		Protocol::D3DVECTOR targetPos = Object->GetPos();
+		vPos->set_x(targetPos.x());
+		vPos->set_y(targetPos.y());
+		vPos->set_z(targetPos.z());
+
+		objectpkt.add_pos()->CopyFrom(sData);
+
+		nCnt++;
+		//CPlayer* pPlayer = static_cast<CPlayer*>(Object.get());
+		//pPlayer->Update();
+	}
+
+	if (MonsterList.empty())
+		return;
+
+	BroadCast_Monster(objectpkt);
+}
+
+void CZone::Send_PlayerUpdateList()
+{
+	Protocol::S_MOVE_PLAYER pkt;
+	pkt.set_sendtime(GetTickCount64());
+	map<ObjectID, ObjectRef> PlayerList = m_nlistObject[Object::Player];
+
+	int nCnt = 0;
+	for (auto& [objectid, Object] : PlayerList)
+	{
+		/*
+		 이때도 엄밀하게는 존 안의 같은 섹터영역에 유저에게만 보내야
+		*/
+
+		//패킷 크기 고려해 일단 한번에 30명분 제한
+		if (nCnt > 30)
+			break;
+
+		if (Object->GetActivate() == false)
+			continue;
+
+		if (Object->IsUpdatePos() == false)
+			continue;
+
+		//이전 위치와 다른지 업뎃필요한 유저인지 확인도 필요
+
+		Protocol::Object_Pos sData;
+		sData.set_id(objectid);
+		Protocol::D3DVECTOR* vPos = sData.mutable_vpos();
+		Protocol::D3DVECTOR targetPos = Object->GetPos();
+		vPos->set_x(targetPos.x());
+		vPos->set_y(targetPos.y());
+		vPos->set_z(targetPos.z());
+
+		pkt.add_pos()->CopyFrom(sData);
+
+		nCnt++;
+		//CPlayer* pPlayer = static_cast<CPlayer*>(Object.get());
+		//pPlayer->Update();
+	}
+
+	if (PlayerList.empty())
+		return;
+
+	BroadCast_Player(pkt);
+
+}
+
+void CZone::BroadCast_Monster(Protocol::S_MOVE_MONSTER& movepkt)
+{
+
+	auto sendBuffer = ClientPacketHandler::MakeSendBuffer(movepkt);
+	int nCnt = 0;
+	for (auto& [playerid, ObjectRef] : m_nlistObject[Object::Player])
+	{
+		//if (nCnt > 10)
+		//	break;
+
+		if (ObjectRef->GetActivate() == false)
+			continue;
+
+		//if (playerid == exceptID)
+		//	continue;
+
+		CPlayer* pPlayer = static_cast<CPlayer*>(ObjectRef.get());
+		if (pPlayer->ownerSession.expired() == false)
+		{
+			pPlayer->ownerSession.lock()->Send(sendBuffer);
+
+		}
+		else
+		{
+			pPlayer->SetActivate(false);
+			///세션 소멸, 해당 플레이어 객체도 
+
+		}
+
+
+		nCnt++;
+	}
+
+}
+
+void CZone::BroadCast_Player(Protocol::S_MOVE_PLAYER& movepkt)
 {
 	//int exceptID = movepkt.playerid();
 	//Protocol::S_MOVE_PLAYER movepkt;

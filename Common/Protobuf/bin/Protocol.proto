@@ -53,13 +53,13 @@ message S_MOVE_ACK
 message S_MOVE_MONSTER
 {
 	uint64 sendTime=1;
-	uint64 objectID = 2;
-	D3DVECTOR pos=3;
+	repeated Object_Pos pos=2;
+
 }
 message S_MOVE_PLAYER
 {
 	uint64 sendTime=1;
-	repeated Player_Pos pos=2;
+	repeated Object_Pos pos=2;
 	//uint64 playerID = 2;
 	//D3DVECTOR pos=3;
 }

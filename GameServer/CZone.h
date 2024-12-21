@@ -68,8 +68,15 @@ public:
 			return m_nlistObject[Object::Monster];
 		}
 	}
-	
-	void BroadCasting(Protocol::S_MOVE_PLAYER& movepkt);
+
+	void Send_MonsterUpdateList();
+
+	void Send_PlayerUpdateList();
+
+
+	void BroadCast_Monster(Protocol::S_MOVE_MONSTER& movepkt);
+
+	void BroadCast_Player(Protocol::S_MOVE_PLAYER& movepkt);
 
 
 

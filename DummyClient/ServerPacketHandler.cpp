@@ -37,7 +37,10 @@ bool Handle_S_LOGIN(PacketSessionRef& session, Protocol::S_LOGIN& pkt)
 	playerRef->playerId = player->id();
 	playerRef->ownerSession = gameSession;
 	playerRef->SetZoneid(pkt.zoneid());
+
+	int zoneid = playerRef->GetZoneID();
 	gameSession->_currentPlayer = playerRef;
+	//gameSession->_currentPlayer->SetZoneid()
 
 
 
@@ -66,6 +69,9 @@ bool Handle_S_ENTER_ACK(PacketSessionRef& session, Protocol::S_ENTER_ACK& pkt)
 	ClientSessionRef gameSession = static_pointer_cast<ClientSession>(session);
 
 	gameSession->_currentPlayer->SetZoneid(pkt.zoneid());
+
+	int nZoneid = pkt.zoneid();
+
 	gameSession->_currentPlayer->m_eState = Object::Move;
 	//임시 테스트용, 클라도 따로 매니저 만들어서 각 플레이어 id 및 존 id 따라서 좌표위치 랜덤 일괄부여
 	//Protocol::D3DVECTOR vPos;
@@ -140,7 +146,9 @@ bool Handle_S_OBJ_REMOVE_ACK(PacketSessionRef& session, Protocol::S_OBJ_REMOVE_A
 bool Handle_S_MOVE_MONSTER(PacketSessionRef& session, Protocol::S_MOVE_MONSTER& pkt)
 {
 	RTT(GetTickCount64(), pkt.sendtime(), "S_MOVE_MONSTER");
-
+	/*
+		
+	*/
 	// TODO
 	return true;
 }

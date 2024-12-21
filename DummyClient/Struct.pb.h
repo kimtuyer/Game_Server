@@ -58,17 +58,17 @@ namespace Protocol {
 class D3DVECTOR;
 struct D3DVECTORDefaultTypeInternal;
 extern D3DVECTORDefaultTypeInternal _D3DVECTOR_default_instance_;
+class Object_Pos;
+struct Object_PosDefaultTypeInternal;
+extern Object_PosDefaultTypeInternal _Object_Pos_default_instance_;
 class Player;
 struct PlayerDefaultTypeInternal;
 extern PlayerDefaultTypeInternal _Player_default_instance_;
-class Player_Pos;
-struct Player_PosDefaultTypeInternal;
-extern Player_PosDefaultTypeInternal _Player_Pos_default_instance_;
 }  // namespace Protocol
 PROTOBUF_NAMESPACE_OPEN
 template<> ::Protocol::D3DVECTOR* Arena::CreateMaybeMessage<::Protocol::D3DVECTOR>(Arena*);
+template<> ::Protocol::Object_Pos* Arena::CreateMaybeMessage<::Protocol::Object_Pos>(Arena*);
 template<> ::Protocol::Player* Arena::CreateMaybeMessage<::Protocol::Player>(Arena*);
-template<> ::Protocol::Player_Pos* Arena::CreateMaybeMessage<::Protocol::Player_Pos>(Arena*);
 PROTOBUF_NAMESPACE_CLOSE
 namespace Protocol {
 
@@ -387,24 +387,24 @@ class D3DVECTOR final :
 };
 // -------------------------------------------------------------------
 
-class Player_Pos final :
-    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:Protocol.Player_Pos) */ {
+class Object_Pos final :
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:Protocol.Object_Pos) */ {
  public:
-  inline Player_Pos() : Player_Pos(nullptr) {}
-  ~Player_Pos() override;
-  explicit constexpr Player_Pos(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
+  inline Object_Pos() : Object_Pos(nullptr) {}
+  ~Object_Pos() override;
+  explicit constexpr Object_Pos(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
 
-  Player_Pos(const Player_Pos& from);
-  Player_Pos(Player_Pos&& from) noexcept
-    : Player_Pos() {
+  Object_Pos(const Object_Pos& from);
+  Object_Pos(Object_Pos&& from) noexcept
+    : Object_Pos() {
     *this = ::std::move(from);
   }
 
-  inline Player_Pos& operator=(const Player_Pos& from) {
+  inline Object_Pos& operator=(const Object_Pos& from) {
     CopyFrom(from);
     return *this;
   }
-  inline Player_Pos& operator=(Player_Pos&& from) noexcept {
+  inline Object_Pos& operator=(Object_Pos&& from) noexcept {
     if (this == &from) return *this;
     if (GetOwningArena() == from.GetOwningArena()) {
       InternalSwap(&from);
@@ -423,20 +423,20 @@ class Player_Pos final :
   static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
     return default_instance().GetMetadata().reflection;
   }
-  static const Player_Pos& default_instance() {
+  static const Object_Pos& default_instance() {
     return *internal_default_instance();
   }
-  static inline const Player_Pos* internal_default_instance() {
-    return reinterpret_cast<const Player_Pos*>(
-               &_Player_Pos_default_instance_);
+  static inline const Object_Pos* internal_default_instance() {
+    return reinterpret_cast<const Object_Pos*>(
+               &_Object_Pos_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
     2;
 
-  friend void swap(Player_Pos& a, Player_Pos& b) {
+  friend void swap(Object_Pos& a, Object_Pos& b) {
     a.Swap(&b);
   }
-  inline void Swap(Player_Pos* other) {
+  inline void Swap(Object_Pos* other) {
     if (other == this) return;
     if (GetOwningArena() == other->GetOwningArena()) {
       InternalSwap(other);
@@ -444,7 +444,7 @@ class Player_Pos final :
       ::PROTOBUF_NAMESPACE_ID::internal::GenericSwap(this, other);
     }
   }
-  void UnsafeArenaSwap(Player_Pos* other) {
+  void UnsafeArenaSwap(Object_Pos* other) {
     if (other == this) return;
     GOOGLE_DCHECK(GetOwningArena() == other->GetOwningArena());
     InternalSwap(other);
@@ -452,17 +452,17 @@ class Player_Pos final :
 
   // implements Message ----------------------------------------------
 
-  inline Player_Pos* New() const final {
-    return new Player_Pos();
+  inline Object_Pos* New() const final {
+    return new Object_Pos();
   }
 
-  Player_Pos* New(::PROTOBUF_NAMESPACE_ID::Arena* arena) const final {
-    return CreateMaybeMessage<Player_Pos>(arena);
+  Object_Pos* New(::PROTOBUF_NAMESPACE_ID::Arena* arena) const final {
+    return CreateMaybeMessage<Object_Pos>(arena);
   }
   void CopyFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) final;
   void MergeFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) final;
-  void CopyFrom(const Player_Pos& from);
-  void MergeFrom(const Player_Pos& from);
+  void CopyFrom(const Object_Pos& from);
+  void MergeFrom(const Object_Pos& from);
   PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
   bool IsInitialized() const final;
 
@@ -476,13 +476,13 @@ class Player_Pos final :
   void SharedCtor();
   void SharedDtor();
   void SetCachedSize(int size) const final;
-  void InternalSwap(Player_Pos* other);
+  void InternalSwap(Object_Pos* other);
   friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
   static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
-    return "Protocol.Player_Pos";
+    return "Protocol.Object_Pos";
   }
   protected:
-  explicit Player_Pos(::PROTOBUF_NAMESPACE_ID::Arena* arena);
+  explicit Object_Pos(::PROTOBUF_NAMESPACE_ID::Arena* arena);
   private:
   static void ArenaDtor(void* object);
   inline void RegisterArenaDtor(::PROTOBUF_NAMESPACE_ID::Arena* arena);
@@ -525,7 +525,7 @@ class Player_Pos final :
   void _internal_set_id(::PROTOBUF_NAMESPACE_ID::uint64 value);
   public:
 
-  // @@protoc_insertion_point(class_scope:Protocol.Player_Pos)
+  // @@protoc_insertion_point(class_scope:Protocol.Object_Pos)
  private:
   class _Internal;
 
@@ -699,51 +699,51 @@ inline void D3DVECTOR::set_z(float value) {
 
 // -------------------------------------------------------------------
 
-// Player_Pos
+// Object_Pos
 
 // uint64 id = 1;
-inline void Player_Pos::clear_id() {
+inline void Object_Pos::clear_id() {
   id_ = uint64_t{0u};
 }
-inline ::PROTOBUF_NAMESPACE_ID::uint64 Player_Pos::_internal_id() const {
+inline ::PROTOBUF_NAMESPACE_ID::uint64 Object_Pos::_internal_id() const {
   return id_;
 }
-inline ::PROTOBUF_NAMESPACE_ID::uint64 Player_Pos::id() const {
-  // @@protoc_insertion_point(field_get:Protocol.Player_Pos.id)
+inline ::PROTOBUF_NAMESPACE_ID::uint64 Object_Pos::id() const {
+  // @@protoc_insertion_point(field_get:Protocol.Object_Pos.id)
   return _internal_id();
 }
-inline void Player_Pos::_internal_set_id(::PROTOBUF_NAMESPACE_ID::uint64 value) {
+inline void Object_Pos::_internal_set_id(::PROTOBUF_NAMESPACE_ID::uint64 value) {
   
   id_ = value;
 }
-inline void Player_Pos::set_id(::PROTOBUF_NAMESPACE_ID::uint64 value) {
+inline void Object_Pos::set_id(::PROTOBUF_NAMESPACE_ID::uint64 value) {
   _internal_set_id(value);
-  // @@protoc_insertion_point(field_set:Protocol.Player_Pos.id)
+  // @@protoc_insertion_point(field_set:Protocol.Object_Pos.id)
 }
 
 // .Protocol.D3DVECTOR vPos = 2;
-inline bool Player_Pos::_internal_has_vpos() const {
+inline bool Object_Pos::_internal_has_vpos() const {
   return this != internal_default_instance() && vpos_ != nullptr;
 }
-inline bool Player_Pos::has_vpos() const {
+inline bool Object_Pos::has_vpos() const {
   return _internal_has_vpos();
 }
-inline void Player_Pos::clear_vpos() {
+inline void Object_Pos::clear_vpos() {
   if (GetArenaForAllocation() == nullptr && vpos_ != nullptr) {
     delete vpos_;
   }
   vpos_ = nullptr;
 }
-inline const ::Protocol::D3DVECTOR& Player_Pos::_internal_vpos() const {
+inline const ::Protocol::D3DVECTOR& Object_Pos::_internal_vpos() const {
   const ::Protocol::D3DVECTOR* p = vpos_;
   return p != nullptr ? *p : reinterpret_cast<const ::Protocol::D3DVECTOR&>(
       ::Protocol::_D3DVECTOR_default_instance_);
 }
-inline const ::Protocol::D3DVECTOR& Player_Pos::vpos() const {
-  // @@protoc_insertion_point(field_get:Protocol.Player_Pos.vPos)
+inline const ::Protocol::D3DVECTOR& Object_Pos::vpos() const {
+  // @@protoc_insertion_point(field_get:Protocol.Object_Pos.vPos)
   return _internal_vpos();
 }
-inline void Player_Pos::unsafe_arena_set_allocated_vpos(
+inline void Object_Pos::unsafe_arena_set_allocated_vpos(
     ::Protocol::D3DVECTOR* vpos) {
   if (GetArenaForAllocation() == nullptr) {
     delete reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(vpos_);
@@ -754,9 +754,9 @@ inline void Player_Pos::unsafe_arena_set_allocated_vpos(
   } else {
     
   }
-  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:Protocol.Player_Pos.vPos)
+  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:Protocol.Object_Pos.vPos)
 }
-inline ::Protocol::D3DVECTOR* Player_Pos::release_vpos() {
+inline ::Protocol::D3DVECTOR* Object_Pos::release_vpos() {
   
   ::Protocol::D3DVECTOR* temp = vpos_;
   vpos_ = nullptr;
@@ -765,14 +765,14 @@ inline ::Protocol::D3DVECTOR* Player_Pos::release_vpos() {
   }
   return temp;
 }
-inline ::Protocol::D3DVECTOR* Player_Pos::unsafe_arena_release_vpos() {
-  // @@protoc_insertion_point(field_release:Protocol.Player_Pos.vPos)
+inline ::Protocol::D3DVECTOR* Object_Pos::unsafe_arena_release_vpos() {
+  // @@protoc_insertion_point(field_release:Protocol.Object_Pos.vPos)
   
   ::Protocol::D3DVECTOR* temp = vpos_;
   vpos_ = nullptr;
   return temp;
 }
-inline ::Protocol::D3DVECTOR* Player_Pos::_internal_mutable_vpos() {
+inline ::Protocol::D3DVECTOR* Object_Pos::_internal_mutable_vpos() {
   
   if (vpos_ == nullptr) {
     auto* p = CreateMaybeMessage<::Protocol::D3DVECTOR>(GetArenaForAllocation());
@@ -780,11 +780,11 @@ inline ::Protocol::D3DVECTOR* Player_Pos::_internal_mutable_vpos() {
   }
   return vpos_;
 }
-inline ::Protocol::D3DVECTOR* Player_Pos::mutable_vpos() {
-  // @@protoc_insertion_point(field_mutable:Protocol.Player_Pos.vPos)
+inline ::Protocol::D3DVECTOR* Object_Pos::mutable_vpos() {
+  // @@protoc_insertion_point(field_mutable:Protocol.Object_Pos.vPos)
   return _internal_mutable_vpos();
 }
-inline void Player_Pos::set_allocated_vpos(::Protocol::D3DVECTOR* vpos) {
+inline void Object_Pos::set_allocated_vpos(::Protocol::D3DVECTOR* vpos) {
   ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaForAllocation();
   if (message_arena == nullptr) {
     delete vpos_;
@@ -801,7 +801,7 @@ inline void Player_Pos::set_allocated_vpos(::Protocol::D3DVECTOR* vpos) {
     
   }
   vpos_ = vpos;
-  // @@protoc_insertion_point(field_set_allocated:Protocol.Player_Pos.vPos)
+  // @@protoc_insertion_point(field_set_allocated:Protocol.Object_Pos.vPos)
 }
 
 #ifdef __GNUC__

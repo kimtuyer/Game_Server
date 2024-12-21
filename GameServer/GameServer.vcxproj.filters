@@ -19,6 +19,9 @@
     <Filter Include="UI">
       <UniqueIdentifier>{5afcae3c-2e1c-4833-a529-3e5e5d08056c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Zone">
+      <UniqueIdentifier>{ecc0c0a5-a921-4aba-82cd-7e2c1d111fce}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameServer.cpp">
@@ -45,12 +48,6 @@
     <ClCompile Include="Room.cpp">
       <Filter>GameContents</Filter>
     </ClCompile>
-    <ClCompile Include="CZone.cpp">
-      <Filter>GameContents</Filter>
-    </ClCompile>
-    <ClCompile Include="CZone_Manager.cpp">
-      <Filter>GameContents</Filter>
-    </ClCompile>
     <ClCompile Include="CObject.cpp">
       <Filter>GameContents</Filter>
     </ClCompile>
@@ -68,6 +65,15 @@
     </ClCompile>
     <ClCompile Include="ConsoleMapViewer.cpp">
       <Filter>UI</Filter>
+    </ClCompile>
+    <ClCompile Include="CSector.cpp">
+      <Filter>Zone</Filter>
+    </ClCompile>
+    <ClCompile Include="CZone.cpp">
+      <Filter>Zone</Filter>
+    </ClCompile>
+    <ClCompile Include="CZone_Manager.cpp">
+      <Filter>Zone</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -92,12 +98,6 @@
     <ClInclude Include="Player.h">
       <Filter>GameContents</Filter>
     </ClInclude>
-    <ClInclude Include="CZone.h">
-      <Filter>GameContents</Filter>
-    </ClInclude>
-    <ClInclude Include="CZone_Manager.h">
-      <Filter>GameContents</Filter>
-    </ClInclude>
     <ClInclude Include="CObject.h">
       <Filter>GameContents</Filter>
     </ClInclude>
@@ -115,6 +115,15 @@
     </ClInclude>
     <ClInclude Include="ConsoleMapViewer.h">
       <Filter>UI</Filter>
+    </ClInclude>
+    <ClInclude Include="CSector.h">
+      <Filter>Zone</Filter>
+    </ClInclude>
+    <ClInclude Include="CZone.h">
+      <Filter>Zone</Filter>
+    </ClInclude>
+    <ClInclude Include="CZone_Manager.h">
+      <Filter>Zone</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

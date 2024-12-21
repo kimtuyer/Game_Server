@@ -77,6 +77,7 @@ bool CZone_Manager::Enter(OUT int& nZoneID, ObjectRef object)
 		auto zone= m_listZone[zoneid];
 		if (zone->_Enter(object->ObjectType(), object))
 		{
+			object->SetZoneID(zoneid);
 			nZoneID = zoneid;
 			return true;
 		}

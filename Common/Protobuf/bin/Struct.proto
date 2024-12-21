@@ -17,7 +17,7 @@ message D3DVECTOR
     float y=2;
     float z=3;
 } 
-message Player_Pos
+message Object_Pos
 {
 	uint64 id = 1;
 	D3DVECTOR vPos=2;

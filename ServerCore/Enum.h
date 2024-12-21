@@ -13,6 +13,7 @@ namespace Tick
 
 	};
 }
+static const	int	g_nClientMaxCount = 1000;
 
 namespace Zone
 {
@@ -25,8 +26,10 @@ namespace Zone
 	static const int ZONES_PER_ROW = 5;
 	static const int ZONES_PER_COL = 3;
 
-}
+	static const int MonsterMaxCount = 200;
 
+
+}
 
 namespace Object
 {
@@ -46,10 +49,4 @@ namespace Object
 	};
 }
 
-namespace Monster
-{
-	static const int MonsterMaxCount = 200;
 
-
-
-}

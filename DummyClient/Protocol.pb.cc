@@ -100,9 +100,8 @@ struct S_MOVE_ACKDefaultTypeInternal {
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT S_MOVE_ACKDefaultTypeInternal _S_MOVE_ACK_default_instance_;
 constexpr S_MOVE_MONSTER::S_MOVE_MONSTER(
   ::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized)
-  : pos_(nullptr)
-  , sendtime_(uint64_t{0u})
-  , objectid_(uint64_t{0u}){}
+  : pos_()
+  , sendtime_(uint64_t{0u}){}
 struct S_MOVE_MONSTERDefaultTypeInternal {
   constexpr S_MOVE_MONSTERDefaultTypeInternal()
     : _instance(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized{}) {}
@@ -259,7 +258,6 @@ const ::PROTOBUF_NAMESPACE_ID::uint32 TableStruct_Protocol_2eproto::offsets[] PR
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
   PROTOBUF_FIELD_OFFSET(::Protocol::S_MOVE_MONSTER, sendtime_),
-  PROTOBUF_FIELD_OFFSET(::Protocol::S_MOVE_MONSTER, objectid_),
   PROTOBUF_FIELD_OFFSET(::Protocol::S_MOVE_MONSTER, pos_),
   ~0u,  // no _has_bits_
   PROTOBUF_FIELD_OFFSET(::Protocol::S_MOVE_PLAYER, _internal_metadata_),
@@ -318,13 +316,13 @@ static const ::PROTOBUF_NAMESPACE_ID::internal::MigrationSchema schemas[] PROTOB
   { 30, -1, sizeof(::Protocol::C_MOVE)},
   { 38, -1, sizeof(::Protocol::S_MOVE_ACK)},
   { 45, -1, sizeof(::Protocol::S_MOVE_MONSTER)},
-  { 53, -1, sizeof(::Protocol::S_MOVE_PLAYER)},
-  { 60, -1, sizeof(::Protocol::C_ATTACK)},
-  { 67, -1, sizeof(::Protocol::S_ATTACK_ACK)},
-  { 74, -1, sizeof(::Protocol::S_OBJ_LIST)},
-  { 81, -1, sizeof(::Protocol::S_OBJ_REMOVE_ACK)},
-  { 88, -1, sizeof(::Protocol::C_CHAT)},
-  { 94, -1, sizeof(::Protocol::S_CHAT)},
+  { 52, -1, sizeof(::Protocol::S_MOVE_PLAYER)},
+  { 59, -1, sizeof(::Protocol::C_ATTACK)},
+  { 66, -1, sizeof(::Protocol::S_ATTACK_ACK)},
+  { 73, -1, sizeof(::Protocol::S_OBJ_LIST)},
+  { 80, -1, sizeof(::Protocol::S_OBJ_REMOVE_ACK)},
+  { 87, -1, sizeof(::Protocol::C_CHAT)},
+  { 93, -1, sizeof(::Protocol::S_CHAT)},
 };
 
 static ::PROTOBUF_NAMESPACE_ID::Message const * const file_default_instances[] = {
@@ -356,17 +354,17 @@ const char descriptor_table_protodef_Protocol_2eproto[] PROTOBUF_SECTION_VARIABL
   "\022\020\n\010sendTime\030\001 \001(\004\022\020\n\010playerID\030\002 \001(\004\022 \n\003"
   "pos\030\003 \001(\0132\023.Protocol.D3DVECTOR\"/\n\nS_MOVE"
   "_ACK\022\020\n\010sendTime\030\001 \001(\004\022\017\n\007success\030\002 \001(\010\""
-  "V\n\016S_MOVE_MONSTER\022\020\n\010sendTime\030\001 \001(\004\022\020\n\010o"
-  "bjectID\030\002 \001(\004\022 \n\003pos\030\003 \001(\0132\023.Protocol.D3"
-  "DVECTOR\"D\n\rS_MOVE_PLAYER\022\020\n\010sendTime\030\001 \001"
-  "(\004\022!\n\003pos\030\002 \003(\0132\024.Protocol.Player_Pos\".\n"
-  "\010C_ATTACK\022\020\n\010sendTime\030\001 \001(\004\022\020\n\010playerID\030"
-  "\002 \001(\004\"1\n\014S_ATTACK_ACK\022\020\n\010sendTime\030\001 \001(\004\022"
-  "\017\n\007success\030\002 \001(\010\"/\n\nS_OBJ_LIST\022\020\n\010sendTi"
-  "me\030\001 \001(\004\022\017\n\007success\030\002 \001(\010\"5\n\020S_OBJ_REMOV"
-  "E_ACK\022\020\n\010sendTime\030\001 \001(\004\022\017\n\007success\030\002 \001(\010"
-  "\"\025\n\006C_CHAT\022\013\n\003msg\030\001 \001(\t\"\'\n\006S_CHAT\022\020\n\010pla"
-  "yerId\030\001 \001(\004\022\013\n\003msg\030\002 \001(\tb\006proto3"
+  "E\n\016S_MOVE_MONSTER\022\020\n\010sendTime\030\001 \001(\004\022!\n\003p"
+  "os\030\002 \003(\0132\024.Protocol.Object_Pos\"D\n\rS_MOVE"
+  "_PLAYER\022\020\n\010sendTime\030\001 \001(\004\022!\n\003pos\030\002 \003(\0132\024"
+  ".Protocol.Object_Pos\".\n\010C_ATTACK\022\020\n\010send"
+  "Time\030\001 \001(\004\022\020\n\010playerID\030\002 \001(\004\"1\n\014S_ATTACK"
+  "_ACK\022\020\n\010sendTime\030\001 \001(\004\022\017\n\007success\030\002 \001(\010\""
+  "/\n\nS_OBJ_LIST\022\020\n\010sendTime\030\001 \001(\004\022\017\n\007succe"
+  "ss\030\002 \001(\010\"5\n\020S_OBJ_REMOVE_ACK\022\020\n\010sendTime"
+  "\030\001 \001(\004\022\017\n\007success\030\002 \001(\010\"\025\n\006C_CHAT\022\013\n\003msg"
+  "\030\001 \001(\t\"\'\n\006S_CHAT\022\020\n\010playerId\030\001 \001(\004\022\013\n\003ms"
+  "g\030\002 \001(\tb\006proto3"
   ;
 static const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable*const descriptor_table_Protocol_2eproto_deps[2] = {
   &::descriptor_table_Enum_2eproto,
@@ -374,7 +372,7 @@ static const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable*const descriptor
 };
 static ::PROTOBUF_NAMESPACE_ID::internal::once_flag descriptor_table_Protocol_2eproto_once;
 const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_Protocol_2eproto = {
-  false, false, 872, descriptor_table_protodef_Protocol_2eproto, "Protocol.proto", 
+  false, false, 855, descriptor_table_protodef_Protocol_2eproto, "Protocol.proto", 
   &descriptor_table_Protocol_2eproto_once, descriptor_table_Protocol_2eproto_deps, 2, 14,
   schemas, file_default_instances, TableStruct_Protocol_2eproto::offsets,
   file_level_metadata_Protocol_2eproto, file_level_enum_descriptors_Protocol_2eproto, file_level_service_descriptors_Protocol_2eproto,
@@ -1852,44 +1850,28 @@ void S_MOVE_ACK::InternalSwap(S_MOVE_ACK* other) {
 
 class S_MOVE_MONSTER::_Internal {
  public:
-  static const ::Protocol::D3DVECTOR& pos(const S_MOVE_MONSTER* msg);
 };
 
-const ::Protocol::D3DVECTOR&
-S_MOVE_MONSTER::_Internal::pos(const S_MOVE_MONSTER* msg) {
-  return *msg->pos_;
-}
 void S_MOVE_MONSTER::clear_pos() {
-  if (GetArenaForAllocation() == nullptr && pos_ != nullptr) {
-    delete pos_;
-  }
-  pos_ = nullptr;
+  pos_.Clear();
 }
 S_MOVE_MONSTER::S_MOVE_MONSTER(::PROTOBUF_NAMESPACE_ID::Arena* arena)
-  : ::PROTOBUF_NAMESPACE_ID::Message(arena) {
+  : ::PROTOBUF_NAMESPACE_ID::Message(arena),
+  pos_(arena) {
   SharedCtor();
   RegisterArenaDtor(arena);
   // @@protoc_insertion_point(arena_constructor:Protocol.S_MOVE_MONSTER)
 }
 S_MOVE_MONSTER::S_MOVE_MONSTER(const S_MOVE_MONSTER& from)
-  : ::PROTOBUF_NAMESPACE_ID::Message() {
+  : ::PROTOBUF_NAMESPACE_ID::Message(),
+      pos_(from.pos_) {
   _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
-  if (from._internal_has_pos()) {
-    pos_ = new ::Protocol::D3DVECTOR(*from.pos_);
-  } else {
-    pos_ = nullptr;
-  }
-  ::memcpy(&sendtime_, &from.sendtime_,
-    static_cast<size_t>(reinterpret_cast<char*>(&objectid_) -
-    reinterpret_cast<char*>(&sendtime_)) + sizeof(objectid_));
+  sendtime_ = from.sendtime_;
   // @@protoc_insertion_point(copy_constructor:Protocol.S_MOVE_MONSTER)
 }
 
 void S_MOVE_MONSTER::SharedCtor() {
-::memset(reinterpret_cast<char*>(this) + static_cast<size_t>(
-    reinterpret_cast<char*>(&pos_) - reinterpret_cast<char*>(this)),
-    0, static_cast<size_t>(reinterpret_cast<char*>(&objectid_) -
-    reinterpret_cast<char*>(&pos_)) + sizeof(objectid_));
+sendtime_ = uint64_t{0u};
 }
 
 S_MOVE_MONSTER::~S_MOVE_MONSTER() {
@@ -1900,7 +1882,6 @@ S_MOVE_MONSTER::~S_MOVE_MONSTER() {
 
 void S_MOVE_MONSTER::SharedDtor() {
   GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
-  if (this != internal_default_instance()) delete pos_;
 }
 
 void S_MOVE_MONSTER::ArenaDtor(void* object) {
@@ -1919,13 +1900,8 @@ void S_MOVE_MONSTER::Clear() {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  if (GetArenaForAllocation() == nullptr && pos_ != nullptr) {
-    delete pos_;
-  }
-  pos_ = nullptr;
-  ::memset(&sendtime_, 0, static_cast<size_t>(
-      reinterpret_cast<char*>(&objectid_) -
-      reinterpret_cast<char*>(&sendtime_)) + sizeof(objectid_));
+  pos_.Clear();
+  sendtime_ = uint64_t{0u};
   _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
@@ -1942,18 +1918,16 @@ const char* S_MOVE_MONSTER::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE
           CHK_(ptr);
         } else goto handle_unusual;
         continue;
-      // uint64 objectID = 2;
+      // repeated .Protocol.Object_Pos pos = 2;
       case 2:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 16)) {
-          objectid_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
-          CHK_(ptr);
-        } else goto handle_unusual;
-        continue;
-      // .Protocol.D3DVECTOR pos = 3;
-      case 3:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 26)) {
-          ptr = ctx->ParseMessage(_internal_mutable_pos(), ptr);
-          CHK_(ptr);
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 18)) {
+          ptr -= 1;
+          do {
+            ptr += 1;
+            ptr = ctx->ParseMessage(_internal_add_pos(), ptr);
+            CHK_(ptr);
+            if (!ctx->DataAvailable(ptr)) break;
+          } while (::PROTOBUF_NAMESPACE_ID::internal::ExpectTag<18>(ptr));
         } else goto handle_unusual;
         continue;
       default: {
@@ -1991,18 +1965,12 @@ failure:
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteUInt64ToArray(1, this->_internal_sendtime(), target);
   }
 
-  // uint64 objectID = 2;
-  if (this->objectid() != 0) {
-    target = stream->EnsureSpace(target);
-    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteUInt64ToArray(2, this->_internal_objectid(), target);
-  }
-
-  // .Protocol.D3DVECTOR pos = 3;
-  if (this->has_pos()) {
+  // repeated .Protocol.Object_Pos pos = 2;
+  for (unsigned int i = 0,
+      n = static_cast<unsigned int>(this->_internal_pos_size()); i < n; i++) {
     target = stream->EnsureSpace(target);
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
-      InternalWriteMessage(
-        3, _Internal::pos(this), target, stream);
+      InternalWriteMessage(2, this->_internal_pos(i), target, stream);
   }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
@@ -2021,11 +1989,11 @@ size_t S_MOVE_MONSTER::ByteSizeLong() const {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  // .Protocol.D3DVECTOR pos = 3;
-  if (this->has_pos()) {
-    total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
-        *pos_);
+  // repeated .Protocol.Object_Pos pos = 2;
+  total_size += 1UL * this->_internal_pos_size();
+  for (const auto& msg : this->pos_) {
+    total_size +=
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(msg);
   }
 
   // uint64 sendTime = 1;
@@ -2033,13 +2001,6 @@ size_t S_MOVE_MONSTER::ByteSizeLong() const {
     total_size += 1 +
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::UInt64Size(
         this->_internal_sendtime());
-  }
-
-  // uint64 objectID = 2;
-  if (this->objectid() != 0) {
-    total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::UInt64Size(
-        this->_internal_objectid());
   }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
@@ -2073,14 +2034,9 @@ void S_MOVE_MONSTER::MergeFrom(const S_MOVE_MONSTER& from) {
   ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
-  if (from.has_pos()) {
-    _internal_mutable_pos()->::Protocol::D3DVECTOR::MergeFrom(from._internal_pos());
-  }
+  pos_.MergeFrom(from.pos_);
   if (from.sendtime() != 0) {
     _internal_set_sendtime(from._internal_sendtime());
-  }
-  if (from.objectid() != 0) {
-    _internal_set_objectid(from._internal_objectid());
   }
 }
 
@@ -2105,12 +2061,8 @@ bool S_MOVE_MONSTER::IsInitialized() const {
 void S_MOVE_MONSTER::InternalSwap(S_MOVE_MONSTER* other) {
   using std::swap;
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
-  ::PROTOBUF_NAMESPACE_ID::internal::memswap<
-      PROTOBUF_FIELD_OFFSET(S_MOVE_MONSTER, objectid_)
-      + sizeof(S_MOVE_MONSTER::objectid_)
-      - PROTOBUF_FIELD_OFFSET(S_MOVE_MONSTER, pos_)>(
-          reinterpret_cast<char*>(&pos_),
-          reinterpret_cast<char*>(&other->pos_));
+  pos_.InternalSwap(&other->pos_);
+  swap(sendtime_, other->sendtime_);
 }
 
 ::PROTOBUF_NAMESPACE_ID::Metadata S_MOVE_MONSTER::GetMetadata() const {
@@ -2191,7 +2143,7 @@ const char* S_MOVE_PLAYER::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_
           CHK_(ptr);
         } else goto handle_unusual;
         continue;
-      // repeated .Protocol.Player_Pos pos = 2;
+      // repeated .Protocol.Object_Pos pos = 2;
       case 2:
         if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 18)) {
           ptr -= 1;
@@ -2238,7 +2190,7 @@ failure:
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteUInt64ToArray(1, this->_internal_sendtime(), target);
   }
 
-  // repeated .Protocol.Player_Pos pos = 2;
+  // repeated .Protocol.Object_Pos pos = 2;
   for (unsigned int i = 0,
       n = static_cast<unsigned int>(this->_internal_pos_size()); i < n; i++) {
     target = stream->EnsureSpace(target);
@@ -2262,7 +2214,7 @@ size_t S_MOVE_PLAYER::ByteSizeLong() const {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  // repeated .Protocol.Player_Pos pos = 2;
+  // repeated .Protocol.Object_Pos pos = 2;
   total_size += 1UL * this->_internal_pos_size();
   for (const auto& msg : this->pos_) {
     total_size +=
