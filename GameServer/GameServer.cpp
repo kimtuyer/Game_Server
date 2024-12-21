@@ -14,22 +14,21 @@
 #include "CZone_Manager.h"
 #include "ConsoleMapViewer.h"
 //atomic<int>	g_nPacketCount = 0;
-const	int	g_nZoneCount = 15;
-const	int g_nZoneUserMax = 200;
+
 //class CZone_Manager;
 void DoMainJob(ServerServiceRef& service)
 {
 	while (true)
 	{
-		if (LSecondTickCount < GetTickCount64())
-		{
-			LSecondTickCount = GetTickCount64() + Tick::SECOND_TICK;
-			
-			GConsoleViewer->gotoxy(0, 0);
-			cout << "전체 초당 패킷 처리량:" << g_nPacketCount << endl;
-
-			g_nPacketCount.store(0);
-		}
+		//if (LSecondTickCount < GetTickCount64())
+		//{
+		//	LSecondTickCount = GetTickCount64() + Tick::SECOND_TICK;
+		//	
+		//	GConsoleViewer->gotoxy(0, 0);
+		//	cout << "전체 초당 패킷 처리량:" << g_nPacketCount << endl;
+		//
+		//	g_nPacketCount.store(0);
+		//}
 
 		//LEndTickCount = ::GetTickCount64() + Tick::WORKER_TICK;
 

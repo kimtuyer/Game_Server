@@ -17,7 +17,7 @@ private:
 		int zoneId;
 		int x, y;
 	};
-	struct PlayerPos {
+	struct ObjectPos {
 		int zoneId;
 		int x, y;
 
@@ -30,7 +30,7 @@ private:
 	concurrent_queue<Update> updateQueue;  // lock-free 큐
 
 	//더블 버퍼링+주기적 업데이트
-	std::map<int/*playerid*/, PlayerPos> pendingUpdates;  // 업데이트 버퍼
+	std::map<int/*Objectid*/, ObjectPos> pendingUpdates;  // 업데이트 버퍼
 	std::map<int, std::pair<int, int>> currentDisplay;  // 현재 화면
 
 
@@ -155,38 +155,42 @@ public:
 /* 더블 버퍼링+	주기적 업데이트							*/	
 
 	// 패킷 수신 시 호출 (lock 최소화)
-	void queuePlayerUpdate(int playerId, int zoneId, int x, int y) {
+	void queuePlayerUpdate(int objectid, int zoneId, int x, int y) {
 		std::lock_guard<std::mutex> lock(mtx);
 		//gotoxy(1,0);
 		//cout << "x ,y : " << x << "," << y << endl;
-		pendingUpdates[playerId]={ zoneId, x, y };
+		pendingUpdates[objectid]={ zoneId, x, y };
 	}
 
 	// 주기적으로 호출 (예: 16ms 마다)
 	void renderFrame() {
 
-		//displayPacketCnt();
+		displayPacketCnt();
 
-		std::map<int, PlayerPos> updates;
+		std::map<int, ObjectPos> updates;
 		{
 			std::lock_guard<std::mutex> lock(mtx);
 			updates.swap(pendingUpdates);  // 빠른 스왑으로 lock 시간 최소화
 		}
 
 		// lock 없이 화면 갱신
-		for (const auto& [playerId, pos] : updates) {
+		for (const auto& [objectid, pos] : updates) {
 			// 이전 위치 지우기
-			if (currentDisplay.count(playerId)) {
-				auto& prevPos = currentDisplay[playerId];
+			if (currentDisplay.count(objectid)) {
+				auto& prevPos = currentDisplay[objectid];
 				gotoxy(prevPos.first, prevPos.second);
 				std::cout << " ";
 			}
 
 			// 새 위치 그리기
 			auto screenPos = getScreenPosition(pos.zoneId, pos.x, pos.y);
-			currentDisplay[playerId] = screenPos;
+			currentDisplay[objectid] = screenPos;
 			gotoxy(screenPos.first, screenPos.second);
-			std::cout << ".";
+			if(objectid< g_nZoneCount*g_nZoneUserMax)
+				std::cout << ".";
+			else
+				std::cout << "m";
+
 		}
 	}
 
@@ -196,11 +200,11 @@ public:
 
 	void removePlayer(int playerId) {
 		std::lock_guard<std::mutex> lock(mtx);
-		if (playerPositions.find(playerId) != playerPositions.end()) {
-			auto pos = playerPositions[playerId];
+		if (currentDisplay.find(playerId) != currentDisplay.end()) {
+			auto pos = currentDisplay[playerId];
 			gotoxy(pos.first, pos.second);
 			std::cout << " ";
-			playerPositions.erase(playerId);
+			currentDisplay.erase(playerId);
 		}
 	}
 
@@ -211,7 +215,7 @@ public:
 		drawZoneBorders();
 
 		// 모든 플레이어 재표시
-		for (const auto& player : playerPositions) {
+		for (const auto& player : currentDisplay) {
 			gotoxy(player.second.first, player.second.second);
 			std::cout << player.first;
 		}

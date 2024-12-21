@@ -158,8 +158,7 @@ bool Handle_C_MOVE(PacketSessionRef& session, Protocol::C_MOVE& pkt)
 	gameSession->_currentPlayer->UpdatePos(true);
 
 	//비동기로 호출해서 그릴지,바로 그리고 나올지..
-	int zoneid = Zone->ZoneID();
-	float y = vPos.y();
+	
 	GConsoleViewer->queuePlayerUpdate(pkt.playerid(), Zone->ZoneID(), vPos.x(), vPos.y());
 	//GConsoleViewer->Concurrent_queueUpdate(pkt.playerid(), Zone->ZoneID(), vPos.x(), vPos.y());
 	//GConsoleViewer->updatePlayerPosition(pkt.playerid(), Zone->ZoneID(), vPos.x(), vPos.y());

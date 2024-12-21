@@ -4,7 +4,7 @@
 #include "CMonster.h"
 #include "GameSession.h"
 #include "ClientPacketHandler.h"
-
+using namespace Zone;
 CZone::CZone(int nMaxUserCnt,int nZoneID, Protocol::D3DVECTOR vPos) :m_bActivate(false), m_nMaxUserCnt(nMaxUserCnt), m_nZoneID(nZoneID)
 , m_vStartpos(vPos)
 {
@@ -13,7 +13,34 @@ CZone::CZone(int nMaxUserCnt,int nZoneID, Protocol::D3DVECTOR vPos) :m_bActivate
 	/*
 		맵/ 몬스터 세팅
 
+		몬스터 필요정보
+		몬스터 id 5001~
+		존에 따른 초기 위치 정보 -랜덤
+		속한 존 id
+		
+
 	*/
+	//임시 활성화,몹 테스트
+	m_bActivate = true;
+
+	int startID =( g_nZoneCount * g_nZoneUserMax) + (Monster::MonsterMaxCount* (m_nZoneID-1)) +1;
+	int EndMaxID = (startID-1) + Monster::MonsterMaxCount;
+
+	//for (;startID < EndMaxID; startID++)
+	//{
+	//	MonsterRef Monster = MakeShared<CMonster>(startID, m_nZoneID, m_vStartpos,true);
+	//
+	//	m_nlistObject[Object::Monster].insert({startID,Monster});
+	//}
+
+
+	
+
+
+
+
+
+
 }
 
 CZone::~CZone()
@@ -99,11 +126,12 @@ void CZone::Remove(ObjectType eObjectType, int objectID)
 
 void CZone::Update()
 {
-	if (m_nlistObject[Object::Player].empty())
-	{
-		m_bActivate = false;
-		return;
-	}
+	//임시로 주석,몹 테스트
+	//if (m_nlistObject[Object::Player].empty())
+	//{
+	//	m_bActivate = false;
+	//	return;
+	//}
 
 	vector<CMonster*> vecMonsterlist;
 	{
@@ -167,6 +195,8 @@ void CZone::Update()
 		//pPlayer->Update();
 	}
 
+	if (PlayerList.empty())
+		return;
 	BroadCasting(pkt);
 	//ZoneManager에서 모든 zone update 호출중
 	//DoTimer(Tick::AI_TICK, &CZone::Update);

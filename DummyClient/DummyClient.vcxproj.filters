@@ -42,9 +42,6 @@
     <ClCompile Include="ClientSession.cpp">
       <Filter>Contents</Filter>
     </ClCompile>
-    <ClCompile Include="RandomMove.cpp">
-      <Filter>Utils</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -70,9 +67,6 @@
     </ClInclude>
     <ClInclude Include="ClientSession.h">
       <Filter>Contents</Filter>
-    </ClInclude>
-    <ClInclude Include="RandomMove.h">
-      <Filter>Utils</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

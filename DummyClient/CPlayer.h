@@ -23,7 +23,7 @@ public:
 
 
 private:
-	shared_ptr<RandomMove> m_RandomMovement;
+	//shared_ptr<RandomMove> m_RandomMovement;
 	//RandomMove* m_RandomMovement;
 	//m_nf
 

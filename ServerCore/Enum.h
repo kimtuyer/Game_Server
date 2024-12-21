@@ -16,6 +16,10 @@ namespace Tick
 
 namespace Zone
 {
+	static const	int	g_nZoneCount = 15;
+	static	const	int g_nZoneUserMax = 200;
+	//class CZone_Manager;
+
 	static const int ZONE_WIDTH = 20;  // 각 존의 가로 크기
 	static const int ZONE_HEIGHT = 10; // 각 존의 세로 크기
 	static const int ZONES_PER_ROW = 5;
@@ -37,6 +41,15 @@ namespace Object
 	{
 		Idle = 1,
 		Move = 2,
-		Attack
+		Attack=3,
+		End=4
 	};
+}
+
+namespace Monster
+{
+	static const int MonsterMaxCount = 200;
+
+
+
 }

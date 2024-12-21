@@ -127,6 +127,9 @@
     <ClInclude Include="Struct.h">
       <Filter>Main</Filter>
     </ClInclude>
+    <ClInclude Include="RandomMove.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CorePch.cpp">
@@ -211,5 +214,8 @@
       <Filter>Job</Filter>
     </ClCompile>
     <ClCompile Include="CSingleton.cpp" />
+    <ClCompile Include="RandomMove.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

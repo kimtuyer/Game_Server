@@ -10,4 +10,5 @@ extern class JobTimer*			GBroadCastTimer;
 extern class GlobalQueue*		GBroadQueue;
 
 extern class DeadLockProfiler*	GDeadLockProfiler;
+extern class RandomMove* GRandomMove;
 

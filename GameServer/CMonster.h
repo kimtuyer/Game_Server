@@ -1,5 +1,6 @@
 #pragma once
 
+#include <random>
 
 
 struct StMonsterAction
@@ -10,7 +11,7 @@ struct StMonsterAction
 class CMonster : public CObject
 {
 public:
-	CMonster();
+	CMonster(int nObjectID,int nZoneID,Protocol::D3DVECTOR vStartPos, bool bActivate);
 
 	virtual void Update();
 	virtual void AI_Idle();
@@ -34,7 +35,13 @@ private:
 	int64	nLastTickCount;
 	CObject* pTarget;
 
-	
+	int m_nStateTime[Object::End];
+
+	std::uniform_int_distribution<> m_ndistribute;
+	std::random_device rd;
+	std::mt19937 gen;
+	   // 0 ~ MAX_STEP
+
 
 
 

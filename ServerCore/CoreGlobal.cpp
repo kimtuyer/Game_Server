@@ -7,6 +7,7 @@
 #include "SendBuffer.h"
 #include "GlobalQueue.h"
 #include "JobTimer.h"
+#include  "RandomMove.h"
 
 ThreadManager*		GThreadManager = nullptr;
 Memory*				GMemory = nullptr;
@@ -16,6 +17,7 @@ JobTimer*			GJobTimer = nullptr;
 JobTimer*			GLogicTimer = nullptr;
 JobTimer*			GBroadCastTimer = nullptr;
 GlobalQueue*		GBroadQueue = nullptr;
+RandomMove* GRandomMove = nullptr;
 
 
 DeadLockProfiler*	GDeadLockProfiler = nullptr;
@@ -35,6 +37,7 @@ public:
 		GBroadCastTimer = new JobTimer();
 
 		GDeadLockProfiler = new DeadLockProfiler();
+		GRandomMove = new RandomMove();
 		SocketUtils::Init();
 	}
 
