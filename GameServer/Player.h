@@ -4,6 +4,7 @@ class CPlayer: public CObject
 {
 public:
 	CPlayer();
+	CPlayer(int playerid, int zoneid, int sectorid);
 	//void	SetActivate(bool bFlag)
 	//{
 	//	m_bActivate = bFlag;

@@ -48,6 +48,12 @@ bool Handle_C_LOGIN(PacketSessionRef& session, Protocol::C_LOGIN& pkt)
 		playerRef->ownerSession = gameSession;
 		playerRef->SetZoneID(GZoneManager->IssueZoneID());
 
+		{
+			CZoneRef Zone = GZoneManager->GetZone(playerRef->GetZoneID());
+			int nSectorID = Zone->GetInitSectorID();
+			playerRef->SetSectorID(nSectorID);
+		}
+
 		gameSession->_currentPlayer = playerRef;
 		player->set_id(playerRef->playerId);
 		//gameSession->_players.push_back(playerRef);
@@ -56,6 +62,8 @@ bool Handle_C_LOGIN(PacketSessionRef& session, Protocol::C_LOGIN& pkt)
 
 		//int nzoneid = GZoneManager->IssueZoneID();
 		loginPkt.set_zoneid(playerRef->GetZoneID());
+		loginPkt.set_sectorid(playerRef->GetSectorID());
+		//loginPkt.set_
 	}
 
 	//{
@@ -107,12 +115,25 @@ bool Handle_C_ENTER_ZONE(PacketSessionRef& session, Protocol::C_ENTER_ZONE& pkt)
 	{
 		/* 입장 존 최초 위치 받음.	*/
 		Protocol::D3DVECTOR* vPos = enterpkt.mutable_pos();
-		if (GZoneManager->GetStartPos(nZoneid, vPos) == false)
-			return false;
+		CSectorRef Sector = GZoneManager->GetZone(enterpkt.zoneid())->GetSector(enterpkt.sectorid());
+		if (Sector == nullptr)
+		{
 
-		enterpkt.set_success(true);
-		enterpkt.set_zoneid(nZoneid);
+			enterpkt.set_success(false);
+		}
+		else
+		{
+			vPos->set_x(Sector->StartPos().x());
+			vPos->set_y(Sector->StartPos().y());
+			vPos->set_z(Sector->StartPos().z());
 
+			//if (GZoneManager->GetStartPos(nZoneid, vPos) == false)
+			//	return false;
+
+			enterpkt.set_success(true);
+			enterpkt.set_zoneid(nZoneid);
+			enterpkt.set_sectorid(enterpkt.sectorid());
+		}
 	}
 
 	auto sendBuffer = ClientPacketHandler::MakeSendBuffer(enterpkt);
@@ -165,6 +186,40 @@ bool Handle_C_MOVE(PacketSessionRef& session, Protocol::C_MOVE& pkt)
 	//GConsoleViewer->Concurrent_queueUpdate(pkt.playerid(), Zone->ZoneID(), vPos.x(), vPos.y());
 	//GConsoleViewer->updatePlayerPosition(pkt.playerid(), Zone->ZoneID(), vPos.x(), vPos.y());
 	Zone->Update_Pos(pkt.playerid(), pkt.pos());
+
+
+	int nCurSectorID = gameSession->_currentPlayer->GetSectorID();
+	int nPrevSectorID = nCurSectorID;
+	if (Zone->UpdateSectorID(nCurSectorID, vPos))
+	{
+		//Sector 변경
+
+		Sector::ObjectInfo info;
+		{
+			info.nSectorID = nCurSectorID;
+			info.nObjectID = pkt.playerid();
+			info.vPos.x = vPos.x();
+			info.vPos.y = vPos.y();
+			info.nObjectType = Object::Player;
+
+			Zone->Insert_ObjecttoSector(info);
+		}
+
+		//이전에 위치했던 섹터id로 변경후 제거
+		info.nSectorID = nPrevSectorID;
+		Zone->Remove_ObjecttoSector(info);
+		//섹터 위치 변경
+
+		//섹터 위치 변경시에만 알려줌.
+		Protocol::S_MOVE_ACK moveackpkt;
+		moveackpkt.set_sendtime(pkt.sendtime());
+		moveackpkt.set_success(true);
+		moveackpkt.set_sectorid(nCurSectorID);
+
+		auto sendBuffer = ClientPacketHandler::MakeSendBuffer(moveackpkt);
+		session->Send(sendBuffer);
+	}
+
 		
 	//Protocol::D3DVECTOR* vec = movepkt.mutable_pos();
 	//vec->set_x(pkt.pos().x());

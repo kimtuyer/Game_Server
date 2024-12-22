@@ -24,3 +24,5 @@ using namespace std;
 #include "JobQueue.h"
 #include "Enum.h"
 #include "Struct.h"
+
+#include "Dev_define.h"

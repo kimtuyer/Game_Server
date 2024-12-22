@@ -346,11 +346,12 @@ class S_LOGIN final :
   // accessors -------------------------------------------------------
 
   enum : int {
-    kPlayersFieldNumber = 3,
+    kPlayersFieldNumber = 4,
     kSuccessFieldNumber = 1,
     kZoneidFieldNumber = 2,
+    kSectoridFieldNumber = 3,
   };
-  // .Protocol.Player players = 3;
+  // .Protocol.Player players = 4;
   bool has_players() const;
   private:
   bool _internal_has_players() const;
@@ -386,6 +387,15 @@ class S_LOGIN final :
   void _internal_set_zoneid(::PROTOBUF_NAMESPACE_ID::uint32 value);
   public:
 
+  // uint32 sectorid = 3;
+  void clear_sectorid();
+  ::PROTOBUF_NAMESPACE_ID::uint32 sectorid() const;
+  void set_sectorid(::PROTOBUF_NAMESPACE_ID::uint32 value);
+  private:
+  ::PROTOBUF_NAMESPACE_ID::uint32 _internal_sectorid() const;
+  void _internal_set_sectorid(::PROTOBUF_NAMESPACE_ID::uint32 value);
+  public:
+
   // @@protoc_insertion_point(class_scope:Protocol.S_LOGIN)
  private:
   class _Internal;
@@ -396,6 +406,7 @@ class S_LOGIN final :
   ::Protocol::Player* players_;
   bool success_;
   ::PROTOBUF_NAMESPACE_ID::uint32 zoneid_;
+  ::PROTOBUF_NAMESPACE_ID::uint32 sectorid_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_Protocol_2eproto;
 };
@@ -512,6 +523,7 @@ class C_ENTER_ZONE final :
     kSendTimeFieldNumber = 1,
     kPlayerIDFieldNumber = 2,
     kZoneidFieldNumber = 3,
+    kSectoridFieldNumber = 4,
   };
   // uint64 sendTime = 1;
   void clear_sendtime();
@@ -540,6 +552,15 @@ class C_ENTER_ZONE final :
   void _internal_set_zoneid(::PROTOBUF_NAMESPACE_ID::uint32 value);
   public:
 
+  // uint32 sectorid = 4;
+  void clear_sectorid();
+  ::PROTOBUF_NAMESPACE_ID::uint32 sectorid() const;
+  void set_sectorid(::PROTOBUF_NAMESPACE_ID::uint32 value);
+  private:
+  ::PROTOBUF_NAMESPACE_ID::uint32 _internal_sectorid() const;
+  void _internal_set_sectorid(::PROTOBUF_NAMESPACE_ID::uint32 value);
+  public:
+
   // @@protoc_insertion_point(class_scope:Protocol.C_ENTER_ZONE)
  private:
   class _Internal;
@@ -550,6 +571,7 @@ class C_ENTER_ZONE final :
   ::PROTOBUF_NAMESPACE_ID::uint64 sendtime_;
   ::PROTOBUF_NAMESPACE_ID::uint64 playerid_;
   ::PROTOBUF_NAMESPACE_ID::uint32 zoneid_;
+  ::PROTOBUF_NAMESPACE_ID::uint32 sectorid_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_Protocol_2eproto;
 };
@@ -663,12 +685,13 @@ class S_ENTER_ACK final :
   // accessors -------------------------------------------------------
 
   enum : int {
-    kPosFieldNumber = 4,
+    kPosFieldNumber = 5,
     kSendTimeFieldNumber = 1,
     kSuccessFieldNumber = 2,
     kZoneIDFieldNumber = 3,
+    kSectoridFieldNumber = 4,
   };
-  // .Protocol.D3DVECTOR pos = 4;
+  // .Protocol.D3DVECTOR pos = 5;
   bool has_pos() const;
   private:
   bool _internal_has_pos() const;
@@ -713,6 +736,15 @@ class S_ENTER_ACK final :
   void _internal_set_zoneid(::PROTOBUF_NAMESPACE_ID::uint32 value);
   public:
 
+  // uint32 sectorid = 4;
+  void clear_sectorid();
+  ::PROTOBUF_NAMESPACE_ID::uint32 sectorid() const;
+  void set_sectorid(::PROTOBUF_NAMESPACE_ID::uint32 value);
+  private:
+  ::PROTOBUF_NAMESPACE_ID::uint32 _internal_sectorid() const;
+  void _internal_set_sectorid(::PROTOBUF_NAMESPACE_ID::uint32 value);
+  public:
+
   // @@protoc_insertion_point(class_scope:Protocol.S_ENTER_ACK)
  private:
   class _Internal;
@@ -724,6 +756,7 @@ class S_ENTER_ACK final :
   ::PROTOBUF_NAMESPACE_ID::uint64 sendtime_;
   bool success_;
   ::PROTOBUF_NAMESPACE_ID::uint32 zoneid_;
+  ::PROTOBUF_NAMESPACE_ID::uint32 sectorid_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_Protocol_2eproto;
 };
@@ -1002,6 +1035,7 @@ class S_MOVE_ACK final :
   enum : int {
     kSendTimeFieldNumber = 1,
     kSuccessFieldNumber = 2,
+    kSectoridFieldNumber = 3,
   };
   // uint64 sendTime = 1;
   void clear_sendtime();
@@ -1021,6 +1055,15 @@ class S_MOVE_ACK final :
   void _internal_set_success(bool value);
   public:
 
+  // uint32 sectorid = 3;
+  void clear_sectorid();
+  ::PROTOBUF_NAMESPACE_ID::uint32 sectorid() const;
+  void set_sectorid(::PROTOBUF_NAMESPACE_ID::uint32 value);
+  private:
+  ::PROTOBUF_NAMESPACE_ID::uint32 _internal_sectorid() const;
+  void _internal_set_sectorid(::PROTOBUF_NAMESPACE_ID::uint32 value);
+  public:
+
   // @@protoc_insertion_point(class_scope:Protocol.S_MOVE_ACK)
  private:
   class _Internal;
@@ -1030,6 +1073,7 @@ class S_MOVE_ACK final :
   typedef void DestructorSkippable_;
   ::PROTOBUF_NAMESPACE_ID::uint64 sendtime_;
   bool success_;
+  ::PROTOBUF_NAMESPACE_ID::uint32 sectorid_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_Protocol_2eproto;
 };
@@ -1733,9 +1777,28 @@ class S_OBJ_LIST final :
   // accessors -------------------------------------------------------
 
   enum : int {
+    kPosFieldNumber = 3,
     kSendTimeFieldNumber = 1,
-    kSuccessFieldNumber = 2,
+    kSectoridFieldNumber = 2,
   };
+  // repeated .Protocol.Object_Pos pos = 3;
+  int pos_size() const;
+  private:
+  int _internal_pos_size() const;
+  public:
+  void clear_pos();
+  ::Protocol::Object_Pos* mutable_pos(int index);
+  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Protocol::Object_Pos >*
+      mutable_pos();
+  private:
+  const ::Protocol::Object_Pos& _internal_pos(int index) const;
+  ::Protocol::Object_Pos* _internal_add_pos();
+  public:
+  const ::Protocol::Object_Pos& pos(int index) const;
+  ::Protocol::Object_Pos* add_pos();
+  const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Protocol::Object_Pos >&
+      pos() const;
+
   // uint64 sendTime = 1;
   void clear_sendtime();
   ::PROTOBUF_NAMESPACE_ID::uint64 sendtime() const;
@@ -1745,13 +1808,13 @@ class S_OBJ_LIST final :
   void _internal_set_sendtime(::PROTOBUF_NAMESPACE_ID::uint64 value);
   public:
 
-  // bool success = 2;
-  void clear_success();
-  bool success() const;
-  void set_success(bool value);
+  // uint32 sectorid = 2;
+  void clear_sectorid();
+  ::PROTOBUF_NAMESPACE_ID::uint32 sectorid() const;
+  void set_sectorid(::PROTOBUF_NAMESPACE_ID::uint32 value);
   private:
-  bool _internal_success() const;
-  void _internal_set_success(bool value);
+  ::PROTOBUF_NAMESPACE_ID::uint32 _internal_sectorid() const;
+  void _internal_set_sectorid(::PROTOBUF_NAMESPACE_ID::uint32 value);
   public:
 
   // @@protoc_insertion_point(class_scope:Protocol.S_OBJ_LIST)
@@ -1761,8 +1824,9 @@ class S_OBJ_LIST final :
   template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
   typedef void InternalArenaConstructable_;
   typedef void DestructorSkippable_;
+  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Protocol::Object_Pos > pos_;
   ::PROTOBUF_NAMESPACE_ID::uint64 sendtime_;
-  bool success_;
+  ::PROTOBUF_NAMESPACE_ID::uint32 sectorid_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_Protocol_2eproto;
 };
@@ -1876,9 +1940,28 @@ class S_OBJ_REMOVE_ACK final :
   // accessors -------------------------------------------------------
 
   enum : int {
+    kPosFieldNumber = 3,
     kSendTimeFieldNumber = 1,
-    kSuccessFieldNumber = 2,
+    kSectoridFieldNumber = 2,
   };
+  // repeated .Protocol.Object_Pos pos = 3;
+  int pos_size() const;
+  private:
+  int _internal_pos_size() const;
+  public:
+  void clear_pos();
+  ::Protocol::Object_Pos* mutable_pos(int index);
+  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Protocol::Object_Pos >*
+      mutable_pos();
+  private:
+  const ::Protocol::Object_Pos& _internal_pos(int index) const;
+  ::Protocol::Object_Pos* _internal_add_pos();
+  public:
+  const ::Protocol::Object_Pos& pos(int index) const;
+  ::Protocol::Object_Pos* add_pos();
+  const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Protocol::Object_Pos >&
+      pos() const;
+
   // uint64 sendTime = 1;
   void clear_sendtime();
   ::PROTOBUF_NAMESPACE_ID::uint64 sendtime() const;
@@ -1888,13 +1971,13 @@ class S_OBJ_REMOVE_ACK final :
   void _internal_set_sendtime(::PROTOBUF_NAMESPACE_ID::uint64 value);
   public:
 
-  // bool success = 2;
-  void clear_success();
-  bool success() const;
-  void set_success(bool value);
+  // uint32 sectorid = 2;
+  void clear_sectorid();
+  ::PROTOBUF_NAMESPACE_ID::uint32 sectorid() const;
+  void set_sectorid(::PROTOBUF_NAMESPACE_ID::uint32 value);
   private:
-  bool _internal_success() const;
-  void _internal_set_success(bool value);
+  ::PROTOBUF_NAMESPACE_ID::uint32 _internal_sectorid() const;
+  void _internal_set_sectorid(::PROTOBUF_NAMESPACE_ID::uint32 value);
   public:
 
   // @@protoc_insertion_point(class_scope:Protocol.S_OBJ_REMOVE_ACK)
@@ -1904,8 +1987,9 @@ class S_OBJ_REMOVE_ACK final :
   template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
   typedef void InternalArenaConstructable_;
   typedef void DestructorSkippable_;
+  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Protocol::Object_Pos > pos_;
   ::PROTOBUF_NAMESPACE_ID::uint64 sendtime_;
-  bool success_;
+  ::PROTOBUF_NAMESPACE_ID::uint32 sectorid_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_Protocol_2eproto;
 };
@@ -2249,7 +2333,27 @@ inline void S_LOGIN::set_zoneid(::PROTOBUF_NAMESPACE_ID::uint32 value) {
   // @@protoc_insertion_point(field_set:Protocol.S_LOGIN.zoneid)
 }
 
-// .Protocol.Player players = 3;
+// uint32 sectorid = 3;
+inline void S_LOGIN::clear_sectorid() {
+  sectorid_ = 0u;
+}
+inline ::PROTOBUF_NAMESPACE_ID::uint32 S_LOGIN::_internal_sectorid() const {
+  return sectorid_;
+}
+inline ::PROTOBUF_NAMESPACE_ID::uint32 S_LOGIN::sectorid() const {
+  // @@protoc_insertion_point(field_get:Protocol.S_LOGIN.sectorid)
+  return _internal_sectorid();
+}
+inline void S_LOGIN::_internal_set_sectorid(::PROTOBUF_NAMESPACE_ID::uint32 value) {
+  
+  sectorid_ = value;
+}
+inline void S_LOGIN::set_sectorid(::PROTOBUF_NAMESPACE_ID::uint32 value) {
+  _internal_set_sectorid(value);
+  // @@protoc_insertion_point(field_set:Protocol.S_LOGIN.sectorid)
+}
+
+// .Protocol.Player players = 4;
 inline bool S_LOGIN::_internal_has_players() const {
   return this != internal_default_instance() && players_ != nullptr;
 }
@@ -2392,6 +2496,26 @@ inline void C_ENTER_ZONE::set_zoneid(::PROTOBUF_NAMESPACE_ID::uint32 value) {
   // @@protoc_insertion_point(field_set:Protocol.C_ENTER_ZONE.zoneid)
 }
 
+// uint32 sectorid = 4;
+inline void C_ENTER_ZONE::clear_sectorid() {
+  sectorid_ = 0u;
+}
+inline ::PROTOBUF_NAMESPACE_ID::uint32 C_ENTER_ZONE::_internal_sectorid() const {
+  return sectorid_;
+}
+inline ::PROTOBUF_NAMESPACE_ID::uint32 C_ENTER_ZONE::sectorid() const {
+  // @@protoc_insertion_point(field_get:Protocol.C_ENTER_ZONE.sectorid)
+  return _internal_sectorid();
+}
+inline void C_ENTER_ZONE::_internal_set_sectorid(::PROTOBUF_NAMESPACE_ID::uint32 value) {
+  
+  sectorid_ = value;
+}
+inline void C_ENTER_ZONE::set_sectorid(::PROTOBUF_NAMESPACE_ID::uint32 value) {
+  _internal_set_sectorid(value);
+  // @@protoc_insertion_point(field_set:Protocol.C_ENTER_ZONE.sectorid)
+}
+
 // -------------------------------------------------------------------
 
 // S_ENTER_ACK
@@ -2456,7 +2580,27 @@ inline void S_ENTER_ACK::set_zoneid(::PROTOBUF_NAMESPACE_ID::uint32 value) {
   // @@protoc_insertion_point(field_set:Protocol.S_ENTER_ACK.zoneID)
 }
 
-// .Protocol.D3DVECTOR pos = 4;
+// uint32 sectorid = 4;
+inline void S_ENTER_ACK::clear_sectorid() {
+  sectorid_ = 0u;
+}
+inline ::PROTOBUF_NAMESPACE_ID::uint32 S_ENTER_ACK::_internal_sectorid() const {
+  return sectorid_;
+}
+inline ::PROTOBUF_NAMESPACE_ID::uint32 S_ENTER_ACK::sectorid() const {
+  // @@protoc_insertion_point(field_get:Protocol.S_ENTER_ACK.sectorid)
+  return _internal_sectorid();
+}
+inline void S_ENTER_ACK::_internal_set_sectorid(::PROTOBUF_NAMESPACE_ID::uint32 value) {
+  
+  sectorid_ = value;
+}
+inline void S_ENTER_ACK::set_sectorid(::PROTOBUF_NAMESPACE_ID::uint32 value) {
+  _internal_set_sectorid(value);
+  // @@protoc_insertion_point(field_set:Protocol.S_ENTER_ACK.sectorid)
+}
+
+// .Protocol.D3DVECTOR pos = 5;
 inline bool S_ENTER_ACK::_internal_has_pos() const {
   return this != internal_default_instance() && pos_ != nullptr;
 }
@@ -2702,6 +2846,26 @@ inline void S_MOVE_ACK::set_success(bool value) {
   // @@protoc_insertion_point(field_set:Protocol.S_MOVE_ACK.success)
 }
 
+// uint32 sectorid = 3;
+inline void S_MOVE_ACK::clear_sectorid() {
+  sectorid_ = 0u;
+}
+inline ::PROTOBUF_NAMESPACE_ID::uint32 S_MOVE_ACK::_internal_sectorid() const {
+  return sectorid_;
+}
+inline ::PROTOBUF_NAMESPACE_ID::uint32 S_MOVE_ACK::sectorid() const {
+  // @@protoc_insertion_point(field_get:Protocol.S_MOVE_ACK.sectorid)
+  return _internal_sectorid();
+}
+inline void S_MOVE_ACK::_internal_set_sectorid(::PROTOBUF_NAMESPACE_ID::uint32 value) {
+  
+  sectorid_ = value;
+}
+inline void S_MOVE_ACK::set_sectorid(::PROTOBUF_NAMESPACE_ID::uint32 value) {
+  _internal_set_sectorid(value);
+  // @@protoc_insertion_point(field_set:Protocol.S_MOVE_ACK.sectorid)
+}
+
 // -------------------------------------------------------------------
 
 // S_MOVE_MONSTER
@@ -2934,24 +3098,60 @@ inline void S_OBJ_LIST::set_sendtime(::PROTOBUF_NAMESPACE_ID::uint64 value) {
   // @@protoc_insertion_point(field_set:Protocol.S_OBJ_LIST.sendTime)
 }
 
-// bool success = 2;
-inline void S_OBJ_LIST::clear_success() {
-  success_ = false;
+// uint32 sectorid = 2;
+inline void S_OBJ_LIST::clear_sectorid() {
+  sectorid_ = 0u;
 }
-inline bool S_OBJ_LIST::_internal_success() const {
-  return success_;
+inline ::PROTOBUF_NAMESPACE_ID::uint32 S_OBJ_LIST::_internal_sectorid() const {
+  return sectorid_;
 }
-inline bool S_OBJ_LIST::success() const {
-  // @@protoc_insertion_point(field_get:Protocol.S_OBJ_LIST.success)
-  return _internal_success();
+inline ::PROTOBUF_NAMESPACE_ID::uint32 S_OBJ_LIST::sectorid() const {
+  // @@protoc_insertion_point(field_get:Protocol.S_OBJ_LIST.sectorid)
+  return _internal_sectorid();
 }
-inline void S_OBJ_LIST::_internal_set_success(bool value) {
+inline void S_OBJ_LIST::_internal_set_sectorid(::PROTOBUF_NAMESPACE_ID::uint32 value) {
   
-  success_ = value;
+  sectorid_ = value;
 }
-inline void S_OBJ_LIST::set_success(bool value) {
-  _internal_set_success(value);
-  // @@protoc_insertion_point(field_set:Protocol.S_OBJ_LIST.success)
+inline void S_OBJ_LIST::set_sectorid(::PROTOBUF_NAMESPACE_ID::uint32 value) {
+  _internal_set_sectorid(value);
+  // @@protoc_insertion_point(field_set:Protocol.S_OBJ_LIST.sectorid)
+}
+
+// repeated .Protocol.Object_Pos pos = 3;
+inline int S_OBJ_LIST::_internal_pos_size() const {
+  return pos_.size();
+}
+inline int S_OBJ_LIST::pos_size() const {
+  return _internal_pos_size();
+}
+inline ::Protocol::Object_Pos* S_OBJ_LIST::mutable_pos(int index) {
+  // @@protoc_insertion_point(field_mutable:Protocol.S_OBJ_LIST.pos)
+  return pos_.Mutable(index);
+}
+inline ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Protocol::Object_Pos >*
+S_OBJ_LIST::mutable_pos() {
+  // @@protoc_insertion_point(field_mutable_list:Protocol.S_OBJ_LIST.pos)
+  return &pos_;
+}
+inline const ::Protocol::Object_Pos& S_OBJ_LIST::_internal_pos(int index) const {
+  return pos_.Get(index);
+}
+inline const ::Protocol::Object_Pos& S_OBJ_LIST::pos(int index) const {
+  // @@protoc_insertion_point(field_get:Protocol.S_OBJ_LIST.pos)
+  return _internal_pos(index);
+}
+inline ::Protocol::Object_Pos* S_OBJ_LIST::_internal_add_pos() {
+  return pos_.Add();
+}
+inline ::Protocol::Object_Pos* S_OBJ_LIST::add_pos() {
+  // @@protoc_insertion_point(field_add:Protocol.S_OBJ_LIST.pos)
+  return _internal_add_pos();
+}
+inline const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Protocol::Object_Pos >&
+S_OBJ_LIST::pos() const {
+  // @@protoc_insertion_point(field_list:Protocol.S_OBJ_LIST.pos)
+  return pos_;
 }
 
 // -------------------------------------------------------------------
@@ -2978,24 +3178,60 @@ inline void S_OBJ_REMOVE_ACK::set_sendtime(::PROTOBUF_NAMESPACE_ID::uint64 value
   // @@protoc_insertion_point(field_set:Protocol.S_OBJ_REMOVE_ACK.sendTime)
 }
 
-// bool success = 2;
-inline void S_OBJ_REMOVE_ACK::clear_success() {
-  success_ = false;
+// uint32 sectorid = 2;
+inline void S_OBJ_REMOVE_ACK::clear_sectorid() {
+  sectorid_ = 0u;
 }
-inline bool S_OBJ_REMOVE_ACK::_internal_success() const {
-  return success_;
+inline ::PROTOBUF_NAMESPACE_ID::uint32 S_OBJ_REMOVE_ACK::_internal_sectorid() const {
+  return sectorid_;
 }
-inline bool S_OBJ_REMOVE_ACK::success() const {
-  // @@protoc_insertion_point(field_get:Protocol.S_OBJ_REMOVE_ACK.success)
-  return _internal_success();
+inline ::PROTOBUF_NAMESPACE_ID::uint32 S_OBJ_REMOVE_ACK::sectorid() const {
+  // @@protoc_insertion_point(field_get:Protocol.S_OBJ_REMOVE_ACK.sectorid)
+  return _internal_sectorid();
 }
-inline void S_OBJ_REMOVE_ACK::_internal_set_success(bool value) {
+inline void S_OBJ_REMOVE_ACK::_internal_set_sectorid(::PROTOBUF_NAMESPACE_ID::uint32 value) {
   
-  success_ = value;
+  sectorid_ = value;
 }
-inline void S_OBJ_REMOVE_ACK::set_success(bool value) {
-  _internal_set_success(value);
-  // @@protoc_insertion_point(field_set:Protocol.S_OBJ_REMOVE_ACK.success)
+inline void S_OBJ_REMOVE_ACK::set_sectorid(::PROTOBUF_NAMESPACE_ID::uint32 value) {
+  _internal_set_sectorid(value);
+  // @@protoc_insertion_point(field_set:Protocol.S_OBJ_REMOVE_ACK.sectorid)
+}
+
+// repeated .Protocol.Object_Pos pos = 3;
+inline int S_OBJ_REMOVE_ACK::_internal_pos_size() const {
+  return pos_.size();
+}
+inline int S_OBJ_REMOVE_ACK::pos_size() const {
+  return _internal_pos_size();
+}
+inline ::Protocol::Object_Pos* S_OBJ_REMOVE_ACK::mutable_pos(int index) {
+  // @@protoc_insertion_point(field_mutable:Protocol.S_OBJ_REMOVE_ACK.pos)
+  return pos_.Mutable(index);
+}
+inline ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Protocol::Object_Pos >*
+S_OBJ_REMOVE_ACK::mutable_pos() {
+  // @@protoc_insertion_point(field_mutable_list:Protocol.S_OBJ_REMOVE_ACK.pos)
+  return &pos_;
+}
+inline const ::Protocol::Object_Pos& S_OBJ_REMOVE_ACK::_internal_pos(int index) const {
+  return pos_.Get(index);
+}
+inline const ::Protocol::Object_Pos& S_OBJ_REMOVE_ACK::pos(int index) const {
+  // @@protoc_insertion_point(field_get:Protocol.S_OBJ_REMOVE_ACK.pos)
+  return _internal_pos(index);
+}
+inline ::Protocol::Object_Pos* S_OBJ_REMOVE_ACK::_internal_add_pos() {
+  return pos_.Add();
+}
+inline ::Protocol::Object_Pos* S_OBJ_REMOVE_ACK::add_pos() {
+  // @@protoc_insertion_point(field_add:Protocol.S_OBJ_REMOVE_ACK.pos)
+  return _internal_add_pos();
+}
+inline const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Protocol::Object_Pos >&
+S_OBJ_REMOVE_ACK::pos() const {
+  // @@protoc_insertion_point(field_list:Protocol.S_OBJ_REMOVE_ACK.pos)
+  return pos_;
 }
 
 // -------------------------------------------------------------------

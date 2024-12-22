@@ -11,7 +11,7 @@ struct StMonsterAction
 class CMonster : public CObject
 {
 public:
-	CMonster(int nObjectID,int nZoneID,Protocol::D3DVECTOR vStartPos, bool bActivate);
+	CMonster(int nObjectID,int nZoneID, int nSectorID,Protocol::D3DVECTOR vStartPos, bool bActivate);
 
 	virtual void Update();
 	virtual void AI_Idle();

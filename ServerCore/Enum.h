@@ -26,7 +26,17 @@ namespace Zone
 	static const int ZONES_PER_ROW = 5;
 	static const int ZONES_PER_COL = 3;
 
+	static const int  Sector_Count = 16;
+	static const int  Sector_WIDTH = ZONE_WIDTH/4;  // 각 섹터의 가로 크기
+	static const float  Sector_HEIGHT = (float)ZONE_HEIGHT/4; // 각 섹터의 세로 크기
+
+	static const int  Sector_PER_ROW = 4;
+	static const int  Sector_PER_COL = 4;
+
+
 	static const int MonsterMaxCount = 200;
+
+
 
 
 }

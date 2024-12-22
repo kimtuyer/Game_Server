@@ -48,6 +48,17 @@ public:
 		return m_nZoneID;
 	}
 
+	virtual void	SetSectorID(int nZoneid)
+	{
+		m_nSectorID = nZoneid;
+	}
+
+	virtual int		GetSectorID()
+	{
+		return m_nSectorID;
+	}
+
+
 	virtual int		ObjectType()
 	{
 		return (int)eObjectType;
@@ -92,9 +103,10 @@ public:
 
 protected:
 	int	m_nZoneID;
+	int m_nSectorID;
+	int		m_nObjectID;
 	bool	m_bActivate;
 	Object::ObjectType eObjectType; 
-	int		m_nObjectID;
 	Protocol::D3DVECTOR m_vPos;
 	atomic<bool>	m_bPos = false;		//이전 위치 다를시 체크용
 	//int	m_nHP;

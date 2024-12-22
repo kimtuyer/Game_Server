@@ -84,8 +84,20 @@ public:
 
 
 
+	virtual void	SetSectorID(int nSectorID)
+	{
+		m_nSectorID = nSectorID;
+	}
+
+	virtual int		GetSectorID()
+	{
+		return m_nSectorID;
+	}
+
+
 protected:
 	int	m_nZoneID;
+	int	m_nSectorID;
 	bool	m_bActivate;
 	Object::ObjectType eObjectType;
 	int		m_nObjectID;

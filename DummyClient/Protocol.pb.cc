@@ -32,7 +32,8 @@ constexpr S_LOGIN::S_LOGIN(
   ::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized)
   : players_(nullptr)
   , success_(false)
-  , zoneid_(0u){}
+  , zoneid_(0u)
+  , sectorid_(0u){}
 struct S_LOGINDefaultTypeInternal {
   constexpr S_LOGINDefaultTypeInternal()
     : _instance(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized{}) {}
@@ -46,7 +47,8 @@ constexpr C_ENTER_ZONE::C_ENTER_ZONE(
   ::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized)
   : sendtime_(uint64_t{0u})
   , playerid_(uint64_t{0u})
-  , zoneid_(0u){}
+  , zoneid_(0u)
+  , sectorid_(0u){}
 struct C_ENTER_ZONEDefaultTypeInternal {
   constexpr C_ENTER_ZONEDefaultTypeInternal()
     : _instance(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized{}) {}
@@ -61,7 +63,8 @@ constexpr S_ENTER_ACK::S_ENTER_ACK(
   : pos_(nullptr)
   , sendtime_(uint64_t{0u})
   , success_(false)
-  , zoneid_(0u){}
+  , zoneid_(0u)
+  , sectorid_(0u){}
 struct S_ENTER_ACKDefaultTypeInternal {
   constexpr S_ENTER_ACKDefaultTypeInternal()
     : _instance(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized{}) {}
@@ -88,7 +91,8 @@ PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT C_MOVEDefaultTypeInternal _C_MO
 constexpr S_MOVE_ACK::S_MOVE_ACK(
   ::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized)
   : sendtime_(uint64_t{0u})
-  , success_(false){}
+  , success_(false)
+  , sectorid_(0u){}
 struct S_MOVE_ACKDefaultTypeInternal {
   constexpr S_MOVE_ACKDefaultTypeInternal()
     : _instance(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized{}) {}
@@ -152,8 +156,9 @@ struct S_ATTACK_ACKDefaultTypeInternal {
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT S_ATTACK_ACKDefaultTypeInternal _S_ATTACK_ACK_default_instance_;
 constexpr S_OBJ_LIST::S_OBJ_LIST(
   ::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized)
-  : sendtime_(uint64_t{0u})
-  , success_(false){}
+  : pos_()
+  , sendtime_(uint64_t{0u})
+  , sectorid_(0u){}
 struct S_OBJ_LISTDefaultTypeInternal {
   constexpr S_OBJ_LISTDefaultTypeInternal()
     : _instance(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized{}) {}
@@ -165,8 +170,9 @@ struct S_OBJ_LISTDefaultTypeInternal {
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT S_OBJ_LISTDefaultTypeInternal _S_OBJ_LIST_default_instance_;
 constexpr S_OBJ_REMOVE_ACK::S_OBJ_REMOVE_ACK(
   ::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized)
-  : sendtime_(uint64_t{0u})
-  , success_(false){}
+  : pos_()
+  , sendtime_(uint64_t{0u})
+  , sectorid_(0u){}
 struct S_OBJ_REMOVE_ACKDefaultTypeInternal {
   constexpr S_OBJ_REMOVE_ACKDefaultTypeInternal()
     : _instance(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized{}) {}
@@ -219,6 +225,7 @@ const ::PROTOBUF_NAMESPACE_ID::uint32 TableStruct_Protocol_2eproto::offsets[] PR
   ~0u,  // no _weak_field_map_
   PROTOBUF_FIELD_OFFSET(::Protocol::S_LOGIN, success_),
   PROTOBUF_FIELD_OFFSET(::Protocol::S_LOGIN, zoneid_),
+  PROTOBUF_FIELD_OFFSET(::Protocol::S_LOGIN, sectorid_),
   PROTOBUF_FIELD_OFFSET(::Protocol::S_LOGIN, players_),
   ~0u,  // no _has_bits_
   PROTOBUF_FIELD_OFFSET(::Protocol::C_ENTER_ZONE, _internal_metadata_),
@@ -228,6 +235,7 @@ const ::PROTOBUF_NAMESPACE_ID::uint32 TableStruct_Protocol_2eproto::offsets[] PR
   PROTOBUF_FIELD_OFFSET(::Protocol::C_ENTER_ZONE, sendtime_),
   PROTOBUF_FIELD_OFFSET(::Protocol::C_ENTER_ZONE, playerid_),
   PROTOBUF_FIELD_OFFSET(::Protocol::C_ENTER_ZONE, zoneid_),
+  PROTOBUF_FIELD_OFFSET(::Protocol::C_ENTER_ZONE, sectorid_),
   ~0u,  // no _has_bits_
   PROTOBUF_FIELD_OFFSET(::Protocol::S_ENTER_ACK, _internal_metadata_),
   ~0u,  // no _extensions_
@@ -236,6 +244,7 @@ const ::PROTOBUF_NAMESPACE_ID::uint32 TableStruct_Protocol_2eproto::offsets[] PR
   PROTOBUF_FIELD_OFFSET(::Protocol::S_ENTER_ACK, sendtime_),
   PROTOBUF_FIELD_OFFSET(::Protocol::S_ENTER_ACK, success_),
   PROTOBUF_FIELD_OFFSET(::Protocol::S_ENTER_ACK, zoneid_),
+  PROTOBUF_FIELD_OFFSET(::Protocol::S_ENTER_ACK, sectorid_),
   PROTOBUF_FIELD_OFFSET(::Protocol::S_ENTER_ACK, pos_),
   ~0u,  // no _has_bits_
   PROTOBUF_FIELD_OFFSET(::Protocol::C_MOVE, _internal_metadata_),
@@ -252,6 +261,7 @@ const ::PROTOBUF_NAMESPACE_ID::uint32 TableStruct_Protocol_2eproto::offsets[] PR
   ~0u,  // no _weak_field_map_
   PROTOBUF_FIELD_OFFSET(::Protocol::S_MOVE_ACK, sendtime_),
   PROTOBUF_FIELD_OFFSET(::Protocol::S_MOVE_ACK, success_),
+  PROTOBUF_FIELD_OFFSET(::Protocol::S_MOVE_ACK, sectorid_),
   ~0u,  // no _has_bits_
   PROTOBUF_FIELD_OFFSET(::Protocol::S_MOVE_MONSTER, _internal_metadata_),
   ~0u,  // no _extensions_
@@ -286,14 +296,16 @@ const ::PROTOBUF_NAMESPACE_ID::uint32 TableStruct_Protocol_2eproto::offsets[] PR
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
   PROTOBUF_FIELD_OFFSET(::Protocol::S_OBJ_LIST, sendtime_),
-  PROTOBUF_FIELD_OFFSET(::Protocol::S_OBJ_LIST, success_),
+  PROTOBUF_FIELD_OFFSET(::Protocol::S_OBJ_LIST, sectorid_),
+  PROTOBUF_FIELD_OFFSET(::Protocol::S_OBJ_LIST, pos_),
   ~0u,  // no _has_bits_
   PROTOBUF_FIELD_OFFSET(::Protocol::S_OBJ_REMOVE_ACK, _internal_metadata_),
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
   PROTOBUF_FIELD_OFFSET(::Protocol::S_OBJ_REMOVE_ACK, sendtime_),
-  PROTOBUF_FIELD_OFFSET(::Protocol::S_OBJ_REMOVE_ACK, success_),
+  PROTOBUF_FIELD_OFFSET(::Protocol::S_OBJ_REMOVE_ACK, sectorid_),
+  PROTOBUF_FIELD_OFFSET(::Protocol::S_OBJ_REMOVE_ACK, pos_),
   ~0u,  // no _has_bits_
   PROTOBUF_FIELD_OFFSET(::Protocol::C_CHAT, _internal_metadata_),
   ~0u,  // no _extensions_
@@ -311,18 +323,18 @@ const ::PROTOBUF_NAMESPACE_ID::uint32 TableStruct_Protocol_2eproto::offsets[] PR
 static const ::PROTOBUF_NAMESPACE_ID::internal::MigrationSchema schemas[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
   { 0, -1, sizeof(::Protocol::C_LOGIN)},
   { 5, -1, sizeof(::Protocol::S_LOGIN)},
-  { 13, -1, sizeof(::Protocol::C_ENTER_ZONE)},
-  { 21, -1, sizeof(::Protocol::S_ENTER_ACK)},
-  { 30, -1, sizeof(::Protocol::C_MOVE)},
-  { 38, -1, sizeof(::Protocol::S_MOVE_ACK)},
-  { 45, -1, sizeof(::Protocol::S_MOVE_MONSTER)},
-  { 52, -1, sizeof(::Protocol::S_MOVE_PLAYER)},
-  { 59, -1, sizeof(::Protocol::C_ATTACK)},
-  { 66, -1, sizeof(::Protocol::S_ATTACK_ACK)},
-  { 73, -1, sizeof(::Protocol::S_OBJ_LIST)},
-  { 80, -1, sizeof(::Protocol::S_OBJ_REMOVE_ACK)},
-  { 87, -1, sizeof(::Protocol::C_CHAT)},
-  { 93, -1, sizeof(::Protocol::S_CHAT)},
+  { 14, -1, sizeof(::Protocol::C_ENTER_ZONE)},
+  { 23, -1, sizeof(::Protocol::S_ENTER_ACK)},
+  { 33, -1, sizeof(::Protocol::C_MOVE)},
+  { 41, -1, sizeof(::Protocol::S_MOVE_ACK)},
+  { 49, -1, sizeof(::Protocol::S_MOVE_MONSTER)},
+  { 56, -1, sizeof(::Protocol::S_MOVE_PLAYER)},
+  { 63, -1, sizeof(::Protocol::C_ATTACK)},
+  { 70, -1, sizeof(::Protocol::S_ATTACK_ACK)},
+  { 77, -1, sizeof(::Protocol::S_OBJ_LIST)},
+  { 85, -1, sizeof(::Protocol::S_OBJ_REMOVE_ACK)},
+  { 93, -1, sizeof(::Protocol::C_CHAT)},
+  { 99, -1, sizeof(::Protocol::S_CHAT)},
 };
 
 static ::PROTOBUF_NAMESPACE_ID::Message const * const file_default_instances[] = {
@@ -344,27 +356,30 @@ static ::PROTOBUF_NAMESPACE_ID::Message const * const file_default_instances[] =
 
 const char descriptor_table_protodef_Protocol_2eproto[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) =
   "\n\016Protocol.proto\022\010Protocol\032\nEnum.proto\032\014"
-  "Struct.proto\"\t\n\007C_LOGIN\"M\n\007S_LOGIN\022\017\n\007su"
-  "ccess\030\001 \001(\010\022\016\n\006zoneid\030\002 \001(\r\022!\n\007players\030\003"
-  " \001(\0132\020.Protocol.Player\"B\n\014C_ENTER_ZONE\022\020"
-  "\n\010sendTime\030\001 \001(\004\022\020\n\010playerID\030\002 \001(\004\022\016\n\006zo"
-  "neid\030\003 \001(\r\"b\n\013S_ENTER_ACK\022\020\n\010sendTime\030\001 "
-  "\001(\004\022\017\n\007success\030\002 \001(\010\022\016\n\006zoneID\030\003 \001(\r\022 \n\003"
-  "pos\030\004 \001(\0132\023.Protocol.D3DVECTOR\"N\n\006C_MOVE"
-  "\022\020\n\010sendTime\030\001 \001(\004\022\020\n\010playerID\030\002 \001(\004\022 \n\003"
-  "pos\030\003 \001(\0132\023.Protocol.D3DVECTOR\"/\n\nS_MOVE"
-  "_ACK\022\020\n\010sendTime\030\001 \001(\004\022\017\n\007success\030\002 \001(\010\""
-  "E\n\016S_MOVE_MONSTER\022\020\n\010sendTime\030\001 \001(\004\022!\n\003p"
-  "os\030\002 \003(\0132\024.Protocol.Object_Pos\"D\n\rS_MOVE"
-  "_PLAYER\022\020\n\010sendTime\030\001 \001(\004\022!\n\003pos\030\002 \003(\0132\024"
-  ".Protocol.Object_Pos\".\n\010C_ATTACK\022\020\n\010send"
-  "Time\030\001 \001(\004\022\020\n\010playerID\030\002 \001(\004\"1\n\014S_ATTACK"
-  "_ACK\022\020\n\010sendTime\030\001 \001(\004\022\017\n\007success\030\002 \001(\010\""
-  "/\n\nS_OBJ_LIST\022\020\n\010sendTime\030\001 \001(\004\022\017\n\007succe"
-  "ss\030\002 \001(\010\"5\n\020S_OBJ_REMOVE_ACK\022\020\n\010sendTime"
-  "\030\001 \001(\004\022\017\n\007success\030\002 \001(\010\"\025\n\006C_CHAT\022\013\n\003msg"
-  "\030\001 \001(\t\"\'\n\006S_CHAT\022\020\n\010playerId\030\001 \001(\004\022\013\n\003ms"
-  "g\030\002 \001(\tb\006proto3"
+  "Struct.proto\"\t\n\007C_LOGIN\"_\n\007S_LOGIN\022\017\n\007su"
+  "ccess\030\001 \001(\010\022\016\n\006zoneid\030\002 \001(\r\022\020\n\010sectorid\030"
+  "\003 \001(\r\022!\n\007players\030\004 \001(\0132\020.Protocol.Player"
+  "\"T\n\014C_ENTER_ZONE\022\020\n\010sendTime\030\001 \001(\004\022\020\n\010pl"
+  "ayerID\030\002 \001(\004\022\016\n\006zoneid\030\003 \001(\r\022\020\n\010sectorid"
+  "\030\004 \001(\r\"t\n\013S_ENTER_ACK\022\020\n\010sendTime\030\001 \001(\004\022"
+  "\017\n\007success\030\002 \001(\010\022\016\n\006zoneID\030\003 \001(\r\022\020\n\010sect"
+  "orid\030\004 \001(\r\022 \n\003pos\030\005 \001(\0132\023.Protocol.D3DVE"
+  "CTOR\"N\n\006C_MOVE\022\020\n\010sendTime\030\001 \001(\004\022\020\n\010play"
+  "erID\030\002 \001(\004\022 \n\003pos\030\003 \001(\0132\023.Protocol.D3DVE"
+  "CTOR\"A\n\nS_MOVE_ACK\022\020\n\010sendTime\030\001 \001(\004\022\017\n\007"
+  "success\030\002 \001(\010\022\020\n\010sectorid\030\003 \001(\r\"E\n\016S_MOV"
+  "E_MONSTER\022\020\n\010sendTime\030\001 \001(\004\022!\n\003pos\030\002 \003(\013"
+  "2\024.Protocol.Object_Pos\"D\n\rS_MOVE_PLAYER\022"
+  "\020\n\010sendTime\030\001 \001(\004\022!\n\003pos\030\002 \003(\0132\024.Protoco"
+  "l.Object_Pos\".\n\010C_ATTACK\022\020\n\010sendTime\030\001 \001"
+  "(\004\022\020\n\010playerID\030\002 \001(\004\"1\n\014S_ATTACK_ACK\022\020\n\010"
+  "sendTime\030\001 \001(\004\022\017\n\007success\030\002 \001(\010\"S\n\nS_OBJ"
+  "_LIST\022\020\n\010sendTime\030\001 \001(\004\022\020\n\010sectorid\030\002 \001("
+  "\r\022!\n\003pos\030\003 \003(\0132\024.Protocol.Object_Pos\"Y\n\020"
+  "S_OBJ_REMOVE_ACK\022\020\n\010sendTime\030\001 \001(\004\022\020\n\010se"
+  "ctorid\030\002 \001(\r\022!\n\003pos\030\003 \003(\0132\024.Protocol.Obj"
+  "ect_Pos\"\025\n\006C_CHAT\022\013\n\003msg\030\001 \001(\t\"\'\n\006S_CHAT"
+  "\022\020\n\010playerId\030\001 \001(\004\022\013\n\003msg\030\002 \001(\tb\006proto3"
   ;
 static const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable*const descriptor_table_Protocol_2eproto_deps[2] = {
   &::descriptor_table_Enum_2eproto,
@@ -372,7 +387,7 @@ static const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable*const descriptor
 };
 static ::PROTOBUF_NAMESPACE_ID::internal::once_flag descriptor_table_Protocol_2eproto_once;
 const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_Protocol_2eproto = {
-  false, false, 855, descriptor_table_protodef_Protocol_2eproto, "Protocol.proto", 
+  false, false, 999, descriptor_table_protodef_Protocol_2eproto, "Protocol.proto", 
   &descriptor_table_Protocol_2eproto_once, descriptor_table_Protocol_2eproto_deps, 2, 14,
   schemas, file_default_instances, TableStruct_Protocol_2eproto::offsets,
   file_level_metadata_Protocol_2eproto, file_level_enum_descriptors_Protocol_2eproto, file_level_service_descriptors_Protocol_2eproto,
@@ -575,16 +590,16 @@ S_LOGIN::S_LOGIN(const S_LOGIN& from)
     players_ = nullptr;
   }
   ::memcpy(&success_, &from.success_,
-    static_cast<size_t>(reinterpret_cast<char*>(&zoneid_) -
-    reinterpret_cast<char*>(&success_)) + sizeof(zoneid_));
+    static_cast<size_t>(reinterpret_cast<char*>(&sectorid_) -
+    reinterpret_cast<char*>(&success_)) + sizeof(sectorid_));
   // @@protoc_insertion_point(copy_constructor:Protocol.S_LOGIN)
 }
 
 void S_LOGIN::SharedCtor() {
 ::memset(reinterpret_cast<char*>(this) + static_cast<size_t>(
     reinterpret_cast<char*>(&players_) - reinterpret_cast<char*>(this)),
-    0, static_cast<size_t>(reinterpret_cast<char*>(&zoneid_) -
-    reinterpret_cast<char*>(&players_)) + sizeof(zoneid_));
+    0, static_cast<size_t>(reinterpret_cast<char*>(&sectorid_) -
+    reinterpret_cast<char*>(&players_)) + sizeof(sectorid_));
 }
 
 S_LOGIN::~S_LOGIN() {
@@ -619,8 +634,8 @@ void S_LOGIN::Clear() {
   }
   players_ = nullptr;
   ::memset(&success_, 0, static_cast<size_t>(
-      reinterpret_cast<char*>(&zoneid_) -
-      reinterpret_cast<char*>(&success_)) + sizeof(zoneid_));
+      reinterpret_cast<char*>(&sectorid_) -
+      reinterpret_cast<char*>(&success_)) + sizeof(sectorid_));
   _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
@@ -644,9 +659,16 @@ const char* S_LOGIN::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::in
           CHK_(ptr);
         } else goto handle_unusual;
         continue;
-      // .Protocol.Player players = 3;
+      // uint32 sectorid = 3;
       case 3:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 26)) {
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 24)) {
+          sectorid_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
+          CHK_(ptr);
+        } else goto handle_unusual;
+        continue;
+      // .Protocol.Player players = 4;
+      case 4:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 34)) {
           ptr = ctx->ParseMessage(_internal_mutable_players(), ptr);
           CHK_(ptr);
         } else goto handle_unusual;
@@ -692,12 +714,18 @@ failure:
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteUInt32ToArray(2, this->_internal_zoneid(), target);
   }
 
-  // .Protocol.Player players = 3;
+  // uint32 sectorid = 3;
+  if (this->sectorid() != 0) {
+    target = stream->EnsureSpace(target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteUInt32ToArray(3, this->_internal_sectorid(), target);
+  }
+
+  // .Protocol.Player players = 4;
   if (this->has_players()) {
     target = stream->EnsureSpace(target);
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
       InternalWriteMessage(
-        3, _Internal::players(this), target, stream);
+        4, _Internal::players(this), target, stream);
   }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
@@ -716,7 +744,7 @@ size_t S_LOGIN::ByteSizeLong() const {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  // .Protocol.Player players = 3;
+  // .Protocol.Player players = 4;
   if (this->has_players()) {
     total_size += 1 +
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
@@ -733,6 +761,13 @@ size_t S_LOGIN::ByteSizeLong() const {
     total_size += 1 +
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::UInt32Size(
         this->_internal_zoneid());
+  }
+
+  // uint32 sectorid = 3;
+  if (this->sectorid() != 0) {
+    total_size += 1 +
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::UInt32Size(
+        this->_internal_sectorid());
   }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
@@ -775,6 +810,9 @@ void S_LOGIN::MergeFrom(const S_LOGIN& from) {
   if (from.zoneid() != 0) {
     _internal_set_zoneid(from._internal_zoneid());
   }
+  if (from.sectorid() != 0) {
+    _internal_set_sectorid(from._internal_sectorid());
+  }
 }
 
 void S_LOGIN::CopyFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) {
@@ -799,8 +837,8 @@ void S_LOGIN::InternalSwap(S_LOGIN* other) {
   using std::swap;
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
   ::PROTOBUF_NAMESPACE_ID::internal::memswap<
-      PROTOBUF_FIELD_OFFSET(S_LOGIN, zoneid_)
-      + sizeof(S_LOGIN::zoneid_)
+      PROTOBUF_FIELD_OFFSET(S_LOGIN, sectorid_)
+      + sizeof(S_LOGIN::sectorid_)
       - PROTOBUF_FIELD_OFFSET(S_LOGIN, players_)>(
           reinterpret_cast<char*>(&players_),
           reinterpret_cast<char*>(&other->players_));
@@ -828,16 +866,16 @@ C_ENTER_ZONE::C_ENTER_ZONE(const C_ENTER_ZONE& from)
   : ::PROTOBUF_NAMESPACE_ID::Message() {
   _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
   ::memcpy(&sendtime_, &from.sendtime_,
-    static_cast<size_t>(reinterpret_cast<char*>(&zoneid_) -
-    reinterpret_cast<char*>(&sendtime_)) + sizeof(zoneid_));
+    static_cast<size_t>(reinterpret_cast<char*>(&sectorid_) -
+    reinterpret_cast<char*>(&sendtime_)) + sizeof(sectorid_));
   // @@protoc_insertion_point(copy_constructor:Protocol.C_ENTER_ZONE)
 }
 
 void C_ENTER_ZONE::SharedCtor() {
 ::memset(reinterpret_cast<char*>(this) + static_cast<size_t>(
     reinterpret_cast<char*>(&sendtime_) - reinterpret_cast<char*>(this)),
-    0, static_cast<size_t>(reinterpret_cast<char*>(&zoneid_) -
-    reinterpret_cast<char*>(&sendtime_)) + sizeof(zoneid_));
+    0, static_cast<size_t>(reinterpret_cast<char*>(&sectorid_) -
+    reinterpret_cast<char*>(&sendtime_)) + sizeof(sectorid_));
 }
 
 C_ENTER_ZONE::~C_ENTER_ZONE() {
@@ -867,8 +905,8 @@ void C_ENTER_ZONE::Clear() {
   (void) cached_has_bits;
 
   ::memset(&sendtime_, 0, static_cast<size_t>(
-      reinterpret_cast<char*>(&zoneid_) -
-      reinterpret_cast<char*>(&sendtime_)) + sizeof(zoneid_));
+      reinterpret_cast<char*>(&sectorid_) -
+      reinterpret_cast<char*>(&sendtime_)) + sizeof(sectorid_));
   _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
@@ -896,6 +934,13 @@ const char* C_ENTER_ZONE::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_I
       case 3:
         if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 24)) {
           zoneid_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
+          CHK_(ptr);
+        } else goto handle_unusual;
+        continue;
+      // uint32 sectorid = 4;
+      case 4:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 32)) {
+          sectorid_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
           CHK_(ptr);
         } else goto handle_unusual;
         continue;
@@ -946,6 +991,12 @@ failure:
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteUInt32ToArray(3, this->_internal_zoneid(), target);
   }
 
+  // uint32 sectorid = 4;
+  if (this->sectorid() != 0) {
+    target = stream->EnsureSpace(target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteUInt32ToArray(4, this->_internal_sectorid(), target);
+  }
+
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::InternalSerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
@@ -981,6 +1032,13 @@ size_t C_ENTER_ZONE::ByteSizeLong() const {
     total_size += 1 +
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::UInt32Size(
         this->_internal_zoneid());
+  }
+
+  // uint32 sectorid = 4;
+  if (this->sectorid() != 0) {
+    total_size += 1 +
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::UInt32Size(
+        this->_internal_sectorid());
   }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
@@ -1023,6 +1081,9 @@ void C_ENTER_ZONE::MergeFrom(const C_ENTER_ZONE& from) {
   if (from.zoneid() != 0) {
     _internal_set_zoneid(from._internal_zoneid());
   }
+  if (from.sectorid() != 0) {
+    _internal_set_sectorid(from._internal_sectorid());
+  }
 }
 
 void C_ENTER_ZONE::CopyFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) {
@@ -1047,8 +1108,8 @@ void C_ENTER_ZONE::InternalSwap(C_ENTER_ZONE* other) {
   using std::swap;
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
   ::PROTOBUF_NAMESPACE_ID::internal::memswap<
-      PROTOBUF_FIELD_OFFSET(C_ENTER_ZONE, zoneid_)
-      + sizeof(C_ENTER_ZONE::zoneid_)
+      PROTOBUF_FIELD_OFFSET(C_ENTER_ZONE, sectorid_)
+      + sizeof(C_ENTER_ZONE::sectorid_)
       - PROTOBUF_FIELD_OFFSET(C_ENTER_ZONE, sendtime_)>(
           reinterpret_cast<char*>(&sendtime_),
           reinterpret_cast<char*>(&other->sendtime_));
@@ -1092,16 +1153,16 @@ S_ENTER_ACK::S_ENTER_ACK(const S_ENTER_ACK& from)
     pos_ = nullptr;
   }
   ::memcpy(&sendtime_, &from.sendtime_,
-    static_cast<size_t>(reinterpret_cast<char*>(&zoneid_) -
-    reinterpret_cast<char*>(&sendtime_)) + sizeof(zoneid_));
+    static_cast<size_t>(reinterpret_cast<char*>(&sectorid_) -
+    reinterpret_cast<char*>(&sendtime_)) + sizeof(sectorid_));
   // @@protoc_insertion_point(copy_constructor:Protocol.S_ENTER_ACK)
 }
 
 void S_ENTER_ACK::SharedCtor() {
 ::memset(reinterpret_cast<char*>(this) + static_cast<size_t>(
     reinterpret_cast<char*>(&pos_) - reinterpret_cast<char*>(this)),
-    0, static_cast<size_t>(reinterpret_cast<char*>(&zoneid_) -
-    reinterpret_cast<char*>(&pos_)) + sizeof(zoneid_));
+    0, static_cast<size_t>(reinterpret_cast<char*>(&sectorid_) -
+    reinterpret_cast<char*>(&pos_)) + sizeof(sectorid_));
 }
 
 S_ENTER_ACK::~S_ENTER_ACK() {
@@ -1136,8 +1197,8 @@ void S_ENTER_ACK::Clear() {
   }
   pos_ = nullptr;
   ::memset(&sendtime_, 0, static_cast<size_t>(
-      reinterpret_cast<char*>(&zoneid_) -
-      reinterpret_cast<char*>(&sendtime_)) + sizeof(zoneid_));
+      reinterpret_cast<char*>(&sectorid_) -
+      reinterpret_cast<char*>(&sendtime_)) + sizeof(sectorid_));
   _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
@@ -1168,9 +1229,16 @@ const char* S_ENTER_ACK::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID
           CHK_(ptr);
         } else goto handle_unusual;
         continue;
-      // .Protocol.D3DVECTOR pos = 4;
+      // uint32 sectorid = 4;
       case 4:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 34)) {
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 32)) {
+          sectorid_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
+          CHK_(ptr);
+        } else goto handle_unusual;
+        continue;
+      // .Protocol.D3DVECTOR pos = 5;
+      case 5:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 42)) {
           ptr = ctx->ParseMessage(_internal_mutable_pos(), ptr);
           CHK_(ptr);
         } else goto handle_unusual;
@@ -1222,12 +1290,18 @@ failure:
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteUInt32ToArray(3, this->_internal_zoneid(), target);
   }
 
-  // .Protocol.D3DVECTOR pos = 4;
+  // uint32 sectorid = 4;
+  if (this->sectorid() != 0) {
+    target = stream->EnsureSpace(target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteUInt32ToArray(4, this->_internal_sectorid(), target);
+  }
+
+  // .Protocol.D3DVECTOR pos = 5;
   if (this->has_pos()) {
     target = stream->EnsureSpace(target);
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
       InternalWriteMessage(
-        4, _Internal::pos(this), target, stream);
+        5, _Internal::pos(this), target, stream);
   }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
@@ -1246,7 +1320,7 @@ size_t S_ENTER_ACK::ByteSizeLong() const {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  // .Protocol.D3DVECTOR pos = 4;
+  // .Protocol.D3DVECTOR pos = 5;
   if (this->has_pos()) {
     total_size += 1 +
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
@@ -1270,6 +1344,13 @@ size_t S_ENTER_ACK::ByteSizeLong() const {
     total_size += 1 +
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::UInt32Size(
         this->_internal_zoneid());
+  }
+
+  // uint32 sectorid = 4;
+  if (this->sectorid() != 0) {
+    total_size += 1 +
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::UInt32Size(
+        this->_internal_sectorid());
   }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
@@ -1315,6 +1396,9 @@ void S_ENTER_ACK::MergeFrom(const S_ENTER_ACK& from) {
   if (from.zoneid() != 0) {
     _internal_set_zoneid(from._internal_zoneid());
   }
+  if (from.sectorid() != 0) {
+    _internal_set_sectorid(from._internal_sectorid());
+  }
 }
 
 void S_ENTER_ACK::CopyFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) {
@@ -1339,8 +1423,8 @@ void S_ENTER_ACK::InternalSwap(S_ENTER_ACK* other) {
   using std::swap;
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
   ::PROTOBUF_NAMESPACE_ID::internal::memswap<
-      PROTOBUF_FIELD_OFFSET(S_ENTER_ACK, zoneid_)
-      + sizeof(S_ENTER_ACK::zoneid_)
+      PROTOBUF_FIELD_OFFSET(S_ENTER_ACK, sectorid_)
+      + sizeof(S_ENTER_ACK::sectorid_)
       - PROTOBUF_FIELD_OFFSET(S_ENTER_ACK, pos_)>(
           reinterpret_cast<char*>(&pos_),
           reinterpret_cast<char*>(&other->pos_));
@@ -1639,16 +1723,16 @@ S_MOVE_ACK::S_MOVE_ACK(const S_MOVE_ACK& from)
   : ::PROTOBUF_NAMESPACE_ID::Message() {
   _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
   ::memcpy(&sendtime_, &from.sendtime_,
-    static_cast<size_t>(reinterpret_cast<char*>(&success_) -
-    reinterpret_cast<char*>(&sendtime_)) + sizeof(success_));
+    static_cast<size_t>(reinterpret_cast<char*>(&sectorid_) -
+    reinterpret_cast<char*>(&sendtime_)) + sizeof(sectorid_));
   // @@protoc_insertion_point(copy_constructor:Protocol.S_MOVE_ACK)
 }
 
 void S_MOVE_ACK::SharedCtor() {
 ::memset(reinterpret_cast<char*>(this) + static_cast<size_t>(
     reinterpret_cast<char*>(&sendtime_) - reinterpret_cast<char*>(this)),
-    0, static_cast<size_t>(reinterpret_cast<char*>(&success_) -
-    reinterpret_cast<char*>(&sendtime_)) + sizeof(success_));
+    0, static_cast<size_t>(reinterpret_cast<char*>(&sectorid_) -
+    reinterpret_cast<char*>(&sendtime_)) + sizeof(sectorid_));
 }
 
 S_MOVE_ACK::~S_MOVE_ACK() {
@@ -1678,8 +1762,8 @@ void S_MOVE_ACK::Clear() {
   (void) cached_has_bits;
 
   ::memset(&sendtime_, 0, static_cast<size_t>(
-      reinterpret_cast<char*>(&success_) -
-      reinterpret_cast<char*>(&sendtime_)) + sizeof(success_));
+      reinterpret_cast<char*>(&sectorid_) -
+      reinterpret_cast<char*>(&sendtime_)) + sizeof(sectorid_));
   _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
@@ -1700,6 +1784,13 @@ const char* S_MOVE_ACK::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID:
       case 2:
         if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 16)) {
           success_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
+          CHK_(ptr);
+        } else goto handle_unusual;
+        continue;
+      // uint32 sectorid = 3;
+      case 3:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 24)) {
+          sectorid_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
           CHK_(ptr);
         } else goto handle_unusual;
         continue;
@@ -1744,6 +1835,12 @@ failure:
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteBoolToArray(2, this->_internal_success(), target);
   }
 
+  // uint32 sectorid = 3;
+  if (this->sectorid() != 0) {
+    target = stream->EnsureSpace(target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteUInt32ToArray(3, this->_internal_sectorid(), target);
+  }
+
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::InternalSerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
@@ -1770,6 +1867,13 @@ size_t S_MOVE_ACK::ByteSizeLong() const {
   // bool success = 2;
   if (this->success() != 0) {
     total_size += 1 + 1;
+  }
+
+  // uint32 sectorid = 3;
+  if (this->sectorid() != 0) {
+    total_size += 1 +
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::UInt32Size(
+        this->_internal_sectorid());
   }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
@@ -1809,6 +1913,9 @@ void S_MOVE_ACK::MergeFrom(const S_MOVE_ACK& from) {
   if (from.success() != 0) {
     _internal_set_success(from._internal_success());
   }
+  if (from.sectorid() != 0) {
+    _internal_set_sectorid(from._internal_sectorid());
+  }
 }
 
 void S_MOVE_ACK::CopyFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) {
@@ -1833,8 +1940,8 @@ void S_MOVE_ACK::InternalSwap(S_MOVE_ACK* other) {
   using std::swap;
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
   ::PROTOBUF_NAMESPACE_ID::internal::memswap<
-      PROTOBUF_FIELD_OFFSET(S_MOVE_ACK, success_)
-      + sizeof(S_MOVE_ACK::success_)
+      PROTOBUF_FIELD_OFFSET(S_MOVE_ACK, sectorid_)
+      + sizeof(S_MOVE_ACK::sectorid_)
       - PROTOBUF_FIELD_OFFSET(S_MOVE_ACK, sendtime_)>(
           reinterpret_cast<char*>(&sendtime_),
           reinterpret_cast<char*>(&other->sendtime_));
@@ -2750,26 +2857,31 @@ class S_OBJ_LIST::_Internal {
  public:
 };
 
+void S_OBJ_LIST::clear_pos() {
+  pos_.Clear();
+}
 S_OBJ_LIST::S_OBJ_LIST(::PROTOBUF_NAMESPACE_ID::Arena* arena)
-  : ::PROTOBUF_NAMESPACE_ID::Message(arena) {
+  : ::PROTOBUF_NAMESPACE_ID::Message(arena),
+  pos_(arena) {
   SharedCtor();
   RegisterArenaDtor(arena);
   // @@protoc_insertion_point(arena_constructor:Protocol.S_OBJ_LIST)
 }
 S_OBJ_LIST::S_OBJ_LIST(const S_OBJ_LIST& from)
-  : ::PROTOBUF_NAMESPACE_ID::Message() {
+  : ::PROTOBUF_NAMESPACE_ID::Message(),
+      pos_(from.pos_) {
   _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
   ::memcpy(&sendtime_, &from.sendtime_,
-    static_cast<size_t>(reinterpret_cast<char*>(&success_) -
-    reinterpret_cast<char*>(&sendtime_)) + sizeof(success_));
+    static_cast<size_t>(reinterpret_cast<char*>(&sectorid_) -
+    reinterpret_cast<char*>(&sendtime_)) + sizeof(sectorid_));
   // @@protoc_insertion_point(copy_constructor:Protocol.S_OBJ_LIST)
 }
 
 void S_OBJ_LIST::SharedCtor() {
 ::memset(reinterpret_cast<char*>(this) + static_cast<size_t>(
     reinterpret_cast<char*>(&sendtime_) - reinterpret_cast<char*>(this)),
-    0, static_cast<size_t>(reinterpret_cast<char*>(&success_) -
-    reinterpret_cast<char*>(&sendtime_)) + sizeof(success_));
+    0, static_cast<size_t>(reinterpret_cast<char*>(&sectorid_) -
+    reinterpret_cast<char*>(&sendtime_)) + sizeof(sectorid_));
 }
 
 S_OBJ_LIST::~S_OBJ_LIST() {
@@ -2798,9 +2910,10 @@ void S_OBJ_LIST::Clear() {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
+  pos_.Clear();
   ::memset(&sendtime_, 0, static_cast<size_t>(
-      reinterpret_cast<char*>(&success_) -
-      reinterpret_cast<char*>(&sendtime_)) + sizeof(success_));
+      reinterpret_cast<char*>(&sectorid_) -
+      reinterpret_cast<char*>(&sendtime_)) + sizeof(sectorid_));
   _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
@@ -2817,11 +2930,23 @@ const char* S_OBJ_LIST::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID:
           CHK_(ptr);
         } else goto handle_unusual;
         continue;
-      // bool success = 2;
+      // uint32 sectorid = 2;
       case 2:
         if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 16)) {
-          success_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
+          sectorid_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
           CHK_(ptr);
+        } else goto handle_unusual;
+        continue;
+      // repeated .Protocol.Object_Pos pos = 3;
+      case 3:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 26)) {
+          ptr -= 1;
+          do {
+            ptr += 1;
+            ptr = ctx->ParseMessage(_internal_add_pos(), ptr);
+            CHK_(ptr);
+            if (!ctx->DataAvailable(ptr)) break;
+          } while (::PROTOBUF_NAMESPACE_ID::internal::ExpectTag<26>(ptr));
         } else goto handle_unusual;
         continue;
       default: {
@@ -2859,10 +2984,18 @@ failure:
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteUInt64ToArray(1, this->_internal_sendtime(), target);
   }
 
-  // bool success = 2;
-  if (this->success() != 0) {
+  // uint32 sectorid = 2;
+  if (this->sectorid() != 0) {
     target = stream->EnsureSpace(target);
-    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteBoolToArray(2, this->_internal_success(), target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteUInt32ToArray(2, this->_internal_sectorid(), target);
+  }
+
+  // repeated .Protocol.Object_Pos pos = 3;
+  for (unsigned int i = 0,
+      n = static_cast<unsigned int>(this->_internal_pos_size()); i < n; i++) {
+    target = stream->EnsureSpace(target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
+      InternalWriteMessage(3, this->_internal_pos(i), target, stream);
   }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
@@ -2881,6 +3014,13 @@ size_t S_OBJ_LIST::ByteSizeLong() const {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
+  // repeated .Protocol.Object_Pos pos = 3;
+  total_size += 1UL * this->_internal_pos_size();
+  for (const auto& msg : this->pos_) {
+    total_size +=
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(msg);
+  }
+
   // uint64 sendTime = 1;
   if (this->sendtime() != 0) {
     total_size += 1 +
@@ -2888,9 +3028,11 @@ size_t S_OBJ_LIST::ByteSizeLong() const {
         this->_internal_sendtime());
   }
 
-  // bool success = 2;
-  if (this->success() != 0) {
-    total_size += 1 + 1;
+  // uint32 sectorid = 2;
+  if (this->sectorid() != 0) {
+    total_size += 1 +
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::UInt32Size(
+        this->_internal_sectorid());
   }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
@@ -2924,11 +3066,12 @@ void S_OBJ_LIST::MergeFrom(const S_OBJ_LIST& from) {
   ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
+  pos_.MergeFrom(from.pos_);
   if (from.sendtime() != 0) {
     _internal_set_sendtime(from._internal_sendtime());
   }
-  if (from.success() != 0) {
-    _internal_set_success(from._internal_success());
+  if (from.sectorid() != 0) {
+    _internal_set_sectorid(from._internal_sectorid());
   }
 }
 
@@ -2953,9 +3096,10 @@ bool S_OBJ_LIST::IsInitialized() const {
 void S_OBJ_LIST::InternalSwap(S_OBJ_LIST* other) {
   using std::swap;
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  pos_.InternalSwap(&other->pos_);
   ::PROTOBUF_NAMESPACE_ID::internal::memswap<
-      PROTOBUF_FIELD_OFFSET(S_OBJ_LIST, success_)
-      + sizeof(S_OBJ_LIST::success_)
+      PROTOBUF_FIELD_OFFSET(S_OBJ_LIST, sectorid_)
+      + sizeof(S_OBJ_LIST::sectorid_)
       - PROTOBUF_FIELD_OFFSET(S_OBJ_LIST, sendtime_)>(
           reinterpret_cast<char*>(&sendtime_),
           reinterpret_cast<char*>(&other->sendtime_));
@@ -2973,26 +3117,31 @@ class S_OBJ_REMOVE_ACK::_Internal {
  public:
 };
 
+void S_OBJ_REMOVE_ACK::clear_pos() {
+  pos_.Clear();
+}
 S_OBJ_REMOVE_ACK::S_OBJ_REMOVE_ACK(::PROTOBUF_NAMESPACE_ID::Arena* arena)
-  : ::PROTOBUF_NAMESPACE_ID::Message(arena) {
+  : ::PROTOBUF_NAMESPACE_ID::Message(arena),
+  pos_(arena) {
   SharedCtor();
   RegisterArenaDtor(arena);
   // @@protoc_insertion_point(arena_constructor:Protocol.S_OBJ_REMOVE_ACK)
 }
 S_OBJ_REMOVE_ACK::S_OBJ_REMOVE_ACK(const S_OBJ_REMOVE_ACK& from)
-  : ::PROTOBUF_NAMESPACE_ID::Message() {
+  : ::PROTOBUF_NAMESPACE_ID::Message(),
+      pos_(from.pos_) {
   _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
   ::memcpy(&sendtime_, &from.sendtime_,
-    static_cast<size_t>(reinterpret_cast<char*>(&success_) -
-    reinterpret_cast<char*>(&sendtime_)) + sizeof(success_));
+    static_cast<size_t>(reinterpret_cast<char*>(&sectorid_) -
+    reinterpret_cast<char*>(&sendtime_)) + sizeof(sectorid_));
   // @@protoc_insertion_point(copy_constructor:Protocol.S_OBJ_REMOVE_ACK)
 }
 
 void S_OBJ_REMOVE_ACK::SharedCtor() {
 ::memset(reinterpret_cast<char*>(this) + static_cast<size_t>(
     reinterpret_cast<char*>(&sendtime_) - reinterpret_cast<char*>(this)),
-    0, static_cast<size_t>(reinterpret_cast<char*>(&success_) -
-    reinterpret_cast<char*>(&sendtime_)) + sizeof(success_));
+    0, static_cast<size_t>(reinterpret_cast<char*>(&sectorid_) -
+    reinterpret_cast<char*>(&sendtime_)) + sizeof(sectorid_));
 }
 
 S_OBJ_REMOVE_ACK::~S_OBJ_REMOVE_ACK() {
@@ -3021,9 +3170,10 @@ void S_OBJ_REMOVE_ACK::Clear() {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
+  pos_.Clear();
   ::memset(&sendtime_, 0, static_cast<size_t>(
-      reinterpret_cast<char*>(&success_) -
-      reinterpret_cast<char*>(&sendtime_)) + sizeof(success_));
+      reinterpret_cast<char*>(&sectorid_) -
+      reinterpret_cast<char*>(&sendtime_)) + sizeof(sectorid_));
   _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
@@ -3040,11 +3190,23 @@ const char* S_OBJ_REMOVE_ACK::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPA
           CHK_(ptr);
         } else goto handle_unusual;
         continue;
-      // bool success = 2;
+      // uint32 sectorid = 2;
       case 2:
         if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 16)) {
-          success_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
+          sectorid_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
           CHK_(ptr);
+        } else goto handle_unusual;
+        continue;
+      // repeated .Protocol.Object_Pos pos = 3;
+      case 3:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 26)) {
+          ptr -= 1;
+          do {
+            ptr += 1;
+            ptr = ctx->ParseMessage(_internal_add_pos(), ptr);
+            CHK_(ptr);
+            if (!ctx->DataAvailable(ptr)) break;
+          } while (::PROTOBUF_NAMESPACE_ID::internal::ExpectTag<26>(ptr));
         } else goto handle_unusual;
         continue;
       default: {
@@ -3082,10 +3244,18 @@ failure:
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteUInt64ToArray(1, this->_internal_sendtime(), target);
   }
 
-  // bool success = 2;
-  if (this->success() != 0) {
+  // uint32 sectorid = 2;
+  if (this->sectorid() != 0) {
     target = stream->EnsureSpace(target);
-    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteBoolToArray(2, this->_internal_success(), target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteUInt32ToArray(2, this->_internal_sectorid(), target);
+  }
+
+  // repeated .Protocol.Object_Pos pos = 3;
+  for (unsigned int i = 0,
+      n = static_cast<unsigned int>(this->_internal_pos_size()); i < n; i++) {
+    target = stream->EnsureSpace(target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
+      InternalWriteMessage(3, this->_internal_pos(i), target, stream);
   }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
@@ -3104,6 +3274,13 @@ size_t S_OBJ_REMOVE_ACK::ByteSizeLong() const {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
+  // repeated .Protocol.Object_Pos pos = 3;
+  total_size += 1UL * this->_internal_pos_size();
+  for (const auto& msg : this->pos_) {
+    total_size +=
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(msg);
+  }
+
   // uint64 sendTime = 1;
   if (this->sendtime() != 0) {
     total_size += 1 +
@@ -3111,9 +3288,11 @@ size_t S_OBJ_REMOVE_ACK::ByteSizeLong() const {
         this->_internal_sendtime());
   }
 
-  // bool success = 2;
-  if (this->success() != 0) {
-    total_size += 1 + 1;
+  // uint32 sectorid = 2;
+  if (this->sectorid() != 0) {
+    total_size += 1 +
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::UInt32Size(
+        this->_internal_sectorid());
   }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
@@ -3147,11 +3326,12 @@ void S_OBJ_REMOVE_ACK::MergeFrom(const S_OBJ_REMOVE_ACK& from) {
   ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
+  pos_.MergeFrom(from.pos_);
   if (from.sendtime() != 0) {
     _internal_set_sendtime(from._internal_sendtime());
   }
-  if (from.success() != 0) {
-    _internal_set_success(from._internal_success());
+  if (from.sectorid() != 0) {
+    _internal_set_sectorid(from._internal_sectorid());
   }
 }
 
@@ -3176,9 +3356,10 @@ bool S_OBJ_REMOVE_ACK::IsInitialized() const {
 void S_OBJ_REMOVE_ACK::InternalSwap(S_OBJ_REMOVE_ACK* other) {
   using std::swap;
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  pos_.InternalSwap(&other->pos_);
   ::PROTOBUF_NAMESPACE_ID::internal::memswap<
-      PROTOBUF_FIELD_OFFSET(S_OBJ_REMOVE_ACK, success_)
-      + sizeof(S_OBJ_REMOVE_ACK::success_)
+      PROTOBUF_FIELD_OFFSET(S_OBJ_REMOVE_ACK, sectorid_)
+      + sizeof(S_OBJ_REMOVE_ACK::sectorid_)
       - PROTOBUF_FIELD_OFFSET(S_OBJ_REMOVE_ACK, sendtime_)>(
           reinterpret_cast<char*>(&sendtime_),
           reinterpret_cast<char*>(&other->sendtime_));

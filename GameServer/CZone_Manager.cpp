@@ -50,6 +50,11 @@ void CZone_Manager::Init(const int nZoneCount,const int nZoneUserMax )
 	//
 	//}
 
+
+	/*
+	!!!!!존 매니저단위에서 존을 돌리지말고, 존 단위에서 타이머를 돌려서
+	각 멀티스레드들이 모든 존을 동시에 update할수있게!!!
+	*/
 	DoTimer(Tick::AI_TICK, &CZone_Manager::Update);
 
 }
@@ -114,7 +119,9 @@ void CZone_Manager::Update()
 		if (zoneRef->GetActivate() == false)
 			continue;
 
-		zoneRef->Update();
+		zoneRef->DoAsync(&CZone::Update);
+		//zoneRef->DoTimer(10, &CZone::Update);
+		//zoneRef->Update();
 
 	}
 

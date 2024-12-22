@@ -10,9 +10,6 @@
     <Filter Include="Protocol">
       <UniqueIdentifier>{603496b5-138a-4725-951a-b0a8ee8dfe85}</UniqueIdentifier>
     </Filter>
-    <Filter Include="GameContents">
-      <UniqueIdentifier>{87ecb0c8-a463-4f2f-8da3-49a7bcdfb77a}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Session">
       <UniqueIdentifier>{da6ba675-eef3-432e-bd08-c74eb63b28d8}</UniqueIdentifier>
     </Filter>
@@ -21,6 +18,9 @@
     </Filter>
     <Filter Include="Zone">
       <UniqueIdentifier>{ecc0c0a5-a921-4aba-82cd-7e2c1d111fce}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GameObject">
+      <UniqueIdentifier>{87ecb0c8-a463-4f2f-8da3-49a7bcdfb77a}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -43,19 +43,19 @@
       <Filter>Protocol</Filter>
     </ClCompile>
     <ClCompile Include="Player.cpp">
-      <Filter>GameContents</Filter>
+      <Filter>GameObject</Filter>
     </ClCompile>
     <ClCompile Include="Room.cpp">
-      <Filter>GameContents</Filter>
+      <Filter>GameObject</Filter>
     </ClCompile>
     <ClCompile Include="CObject.cpp">
-      <Filter>GameContents</Filter>
+      <Filter>GameObject</Filter>
     </ClCompile>
     <ClCompile Include="CMonster.cpp">
-      <Filter>GameContents</Filter>
+      <Filter>GameObject</Filter>
     </ClCompile>
     <ClCompile Include="CPlayerManager.cpp">
-      <Filter>GameContents</Filter>
+      <Filter>GameObject</Filter>
     </ClCompile>
     <ClCompile Include="GameSessionManager.cpp">
       <Filter>Session</Filter>
@@ -93,19 +93,19 @@
       <Filter>Protocol</Filter>
     </ClInclude>
     <ClInclude Include="Room.h">
-      <Filter>GameContents</Filter>
+      <Filter>GameObject</Filter>
     </ClInclude>
     <ClInclude Include="Player.h">
-      <Filter>GameContents</Filter>
+      <Filter>GameObject</Filter>
     </ClInclude>
     <ClInclude Include="CObject.h">
-      <Filter>GameContents</Filter>
+      <Filter>GameObject</Filter>
     </ClInclude>
     <ClInclude Include="CMonster.h">
-      <Filter>GameContents</Filter>
+      <Filter>GameObject</Filter>
     </ClInclude>
     <ClInclude Include="CPlayerManager.h">
-      <Filter>GameContents</Filter>
+      <Filter>GameObject</Filter>
     </ClInclude>
     <ClInclude Include="GameSessionManager.h">
       <Filter>Session</Filter>

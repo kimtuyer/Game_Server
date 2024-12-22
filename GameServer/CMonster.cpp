@@ -6,13 +6,15 @@
 #include "ConsoleMapViewer.h"
 #include "RandomMove.h"
 class CZone;
-CMonster::CMonster(int nObjectID, int nZoneID,Protocol::D3DVECTOR vStartPos,bool bActivate) : m_nHP(100), m_nAttack(10), m_eState(Object::Idle)
+CMonster::CMonster(int nObjectID, int nZoneID,int nSectorID,  Protocol::D3DVECTOR vStartPos,bool bActivate) : m_nHP(100), m_nAttack(10), m_eState(Object::Idle)
 , m_ndistribute(Object::Idle, Object::Move),gen(rd())
 {
 	m_bActivate = bActivate;
 
 	m_nObjectID = nObjectID;
 	m_nZoneID = nZoneID;
+	m_nSectorID = nSectorID;
+
 	m_vPos = vStartPos;
 	//cout << "몬스터 생성 ID: " << m_nObjectID <<" : " << m_vPos.x() << ", " << m_vPos.y() << endl;
 	
@@ -116,7 +118,7 @@ void CMonster::AI_Move()
 	//	m_eState = Object::Idle;
 	//	return;
 	//}
-
+	int curSectorID = m_nSectorID;
 
 	auto vNextPos = GRandomMove->getNextPosition(m_nZoneID, m_vPos.x(), m_vPos.y());
 	m_vPos.set_x(vNextPos.first);
@@ -126,6 +128,28 @@ void CMonster::AI_Move()
 	m_nStateTime[m_eState]=(ActionEndTime);
 
 	GConsoleViewer->queuePlayerUpdate(m_nObjectID, m_nZoneID, m_vPos.x(), m_vPos.y());
+	CZoneRef Zone = GZoneManager->GetZone(m_nZoneID);
+
+	if (Zone->UpdateSectorID(m_nSectorID, m_vPos))
+	{
+		Sector::ObjectInfo info;
+		{
+			info.nSectorID = m_nSectorID;
+			info.nObjectID = m_nObjectID;
+			info.vPos.x = m_vPos.x();
+			info.vPos.y = m_vPos.y();
+			info.nObjectType = ObjectType();
+
+			Zone->Insert_ObjecttoSector(info);
+		}
+
+		//이전에 위치했던 섹터id로 변경후 제거
+		info.nSectorID = curSectorID;
+		Zone->Remove_ObjecttoSector(info);
+		//섹터 위치 변경
+
+	}
+
 
 	m_eState = Object::Idle;
 

@@ -130,6 +130,7 @@
     <ClInclude Include="RandomMove.h">
       <Filter>Utils</Filter>
     </ClInclude>
+    <ClInclude Include="Dev_define.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CorePch.cpp">

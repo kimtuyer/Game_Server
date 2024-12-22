@@ -7,6 +7,10 @@ CPlayer::CPlayer()
 {
 }
 
+CPlayer::CPlayer(int playerid, int zoneid, int sectorid)
+{
+}
+
 void CPlayer::Update()
 {
 }

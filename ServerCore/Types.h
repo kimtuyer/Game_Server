@@ -37,6 +37,7 @@ USING_SHARED_PTR(JobQueue);
 
 USING_SHARED_PTR(CZone);
 USING_SHARED_PTR(CObject);
+USING_SHARED_PTR(CSector);
 
 
 #define size16(val)		static_cast<int16>(sizeof(val))

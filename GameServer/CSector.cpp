@@ -3,11 +3,12 @@
 #include "CMonster.h"
 #include "Player.h" //참조안하면 static_cast변환 실패
 
-CSector::CSector()
+CSector::CSector(int nSectorID, int nZoneID, Protocol::D3DVECTOR vPos)
+:    m_nSectorID(nSectorID),m_vStartpos(vPos),m_bActivate(true) ,m_nZoneID(nZoneID)
 {
 }
 
-void CSector::UpdateSector()
+void CSector::Update()
 {
 
     vector<CMonster*> vecMonsterlist;
@@ -20,65 +21,55 @@ void CSector::UpdateSector()
 
             CMonster* pMonster = static_cast<CMonster*>(Object.get());
             vecMonsterlist.push_back(pMonster);
-       
-            int nowSectorID = GetSectorID(Object->GetPos());
-            if (m_nSectorID == nowSectorID)
-                continue;
-
-            m_nlistObject[Object::Monster].erase(objectid);
+           // 섹터에 있는 몬스터 정보는 언제 지워야하나?
+           // Update 다 끝난후, 삽입,삭제리스트 처리할때 같이 지움.
+            //m_nlistObject[Object::Monster].erase(objectid);
         
         }
 
     }
+
     for (auto& pMonster : vecMonsterlist)
     {
         pMonster->Update();
-    }
-
-    /*
-        몬스터,플레이어  업데이트 후, 삭제  or 새로 추가한 몬스터 리스트가 있을 경우
-
-
-    
-    */
-
-
-        /*
-         다른 섹터로 옮겨야한다면 어디에서 옮겨야하는가? 
-         여기서 존매니저를 호출해서,다른 섹터로 추가하도록 하나?
-
-         이미 존매니저에서 루프를 지난 섹터에 추가가 필요하다면?
-
-         몬스터 클래스에서 내 위치 
-
-        */
-        
-
-
-
-
-    }
+    }      
 
 }
 
-int CSector::GetSectorID(Protocol::D3DVECTOR vPos)
+bool CSector::BelongtoSector(Protocol::D3DVECTOR vPos)
 {
-    return 0;
+
+    float StartX = m_vStartpos.x() - Zone::Sector_WIDTH / 2;
+    float StartY = m_vStartpos.y() - Zone::Sector_HEIGHT / 2;
+
+    float EndX= m_vStartpos.x() + Zone::Sector_WIDTH / 2;
+    float EndY = m_vStartpos.y() + Zone::Sector_HEIGHT / 2;
+
+    if ((StartX <= vPos.x() && vPos.x() <= EndX) &&
+        StartY <= vPos.y() && vPos.y() <= EndY)
+        return true;
+      
+    return false;
 }
+
 
 bool CSector::FindObject(int objectID)
 {
     return false;
 }
 
-bool CSector::Insert(int sectorID, int objectID)
+bool CSector::Insert(int nObjectType, ObjectRef Object)
 {
-    return false;
+    WRITE_LOCK;
+    m_nlistObject[nObjectType].insert({Object->ObjectID(),Object});
+    return true;
 }
 
-bool CSector::DeletObject(int objectID)
+bool CSector::Delete(int nObjectType, ObjectRef Object)
 {
-    return false;
+    WRITE_LOCK;
+    m_nlistObject[nObjectType].insert({ Object->ObjectID(),Object });
+    return true;
 }
 
 void CSector::SendObjectlist()
@@ -87,4 +78,28 @@ void CSector::SendObjectlist()
 
 void CSector::SendPlayer()
 {
+}
+
+ObjectList& CSector::PlayerList()
+{
+    {
+        READ_LOCK;
+        {
+            return m_nlistObject[Object::Player];
+        }
+
+
+    }
+
+    // TODO: 여기에 return 문을 삽입합니다.
+}
+
+void CSector::Insert_adjSector(int sectorID, float x, float y)
+{
+
+    Protocol::D3DVECTOR vPos;
+    vPos.set_x(x);
+    vPos.set_y(y);
+
+    m_adjSectorList.insert({ sectorID,vPos });
 }

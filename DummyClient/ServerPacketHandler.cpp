@@ -37,6 +37,8 @@ bool Handle_S_LOGIN(PacketSessionRef& session, Protocol::S_LOGIN& pkt)
 	playerRef->playerId = player->id();
 	playerRef->ownerSession = gameSession;
 	playerRef->SetZoneid(pkt.zoneid());
+	playerRef->SetSectorID(pkt.sectorid());
+
 
 	int zoneid = playerRef->GetZoneID();
 	gameSession->_currentPlayer = playerRef;
@@ -49,7 +51,8 @@ bool Handle_S_LOGIN(PacketSessionRef& session, Protocol::S_LOGIN& pkt)
 	enterGamePkt.set_sendtime(GetTickCount64());
 	enterGamePkt.set_playerid(player->id());
 	enterGamePkt.set_zoneid(pkt.zoneid());
-	
+	enterGamePkt.set_sectorid(pkt.sectorid());
+
 	auto sendBuffer = ServerPacketHandler::MakeSendBuffer(enterGamePkt);
 	session->Send(sendBuffer);
 
@@ -106,6 +109,13 @@ bool Handle_S_MOVE_ACK(PacketSessionRef& session, Protocol::S_MOVE_ACK& pkt)
 	// TODO
 
 	RTT(GetTickCount64(), pkt.sendtime(), "S_MOVE_ACK");
+
+	/*
+	 섹터 위치 변경
+	*/
+	ClientSessionRef gameSession = static_pointer_cast<ClientSession>(session);
+
+	gameSession->_currentPlayer->SetSectorID(pkt.sectorid());
 
 
 	return true;
