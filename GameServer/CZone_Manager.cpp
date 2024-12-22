@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "CZone_Manager.h"
 #include "CZone.h"
+#include "ConsoleMapViewer.h"
 //IMPLEMENT_SIGNLETON(CZone_Manager);
 using namespace Zone;
 shared_ptr<CZone_Manager> GZoneManager = make_shared<CZone_Manager>();
@@ -29,8 +30,10 @@ void CZone_Manager::Init(const int nZoneCount,const int nZoneUserMax )
 			startpos.set_x(x);
 			startpos.set_y(y);
 
-			m_listZone.insert({ nZoneid,MakeShared<CZone>(nZoneUserMax,nZoneid,startpos) });
+			CZoneRef Zone = MakeShared<CZone>(nZoneUserMax, nZoneid, startpos);
+			m_listZone.insert({ nZoneid,Zone });
 
+			Zone->DoTimer(Tick::AI_TICK, &CZone::Update);
 			nZoneid++;
 		}
 
@@ -114,19 +117,25 @@ void CZone_Manager::Remove(int nZoneID, CZoneRef)
 
 void CZone_Manager::Update()
 {
+	g_nConnectedUser = 0;
 	for (auto& [zoneID, zoneRef] : m_listZone)
 	{	
 		if (zoneRef->GetActivate() == false)
 			continue;
 
-		zoneRef->DoAsync(&CZone::Update);
+		g_nConnectedUser += zoneRef->GetUserCount();
+		//zoneRef->DoAsync(&CZone::Update);
 		//zoneRef->DoTimer(10, &CZone::Update);
 		//zoneRef->Update();
 
 	}
+//#ifdef __CONSOLE_UI__
+	GConsoleViewer->gotoxy(30,0);
+	cout << "현재 접속중인 유저 수 :" << g_nConnectedUser << endl;
+//#endif // __CONSOLE_UI__
 
 
-	DoTimer(Tick::AI_TICK, &CZone_Manager::Update);
+	DoTimer(Tick::SECOND_TICK, &CZone_Manager::Update);
 
 }
 

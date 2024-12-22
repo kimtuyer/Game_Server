@@ -108,7 +108,7 @@ bool Handle_S_MOVE_ACK(PacketSessionRef& session, Protocol::S_MOVE_ACK& pkt)
 {
 	// TODO
 
-	RTT(GetTickCount64(), pkt.sendtime(), "S_MOVE_ACK");
+	//RTT(GetTickCount64(), pkt.sendtime(), "S_MOVE_ACK");
 
 	/*
 	 섹터 위치 변경

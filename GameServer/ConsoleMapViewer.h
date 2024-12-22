@@ -189,7 +189,7 @@ public:
 			auto screenPos = getScreenPosition(pos.zoneId, pos.x, pos.y);
 			currentDisplay[objectid] = screenPos;
 			gotoxy(screenPos.first, screenPos.second);
-			if(objectid< g_nZoneCount*g_nZoneUserMax)
+			if(objectid<= g_nZoneCount*g_nZoneUserMax)
 				std::cout << "p";
 			else
 				std::cout << "m";

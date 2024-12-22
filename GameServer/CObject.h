@@ -61,12 +61,12 @@ public:
 
 	virtual int		ObjectType()
 	{
-		return (int)eObjectType;
+		return (int)m_nObjectType;
 	}
 
 	virtual	void	SetObjectType(Object::ObjectType eType)
 	{
-		eObjectType = eType;
+		m_nObjectType = eType;
 	}
 
 	virtual int		ObjectID()
@@ -106,7 +106,7 @@ protected:
 	int m_nSectorID;
 	int		m_nObjectID;
 	bool	m_bActivate;
-	Object::ObjectType eObjectType; 
+	int  m_nObjectType; 
 	Protocol::D3DVECTOR m_vPos;
 	atomic<bool>	m_bPos = false;		//이전 위치 다를시 체크용
 	//int	m_nHP;

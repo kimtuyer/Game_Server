@@ -153,12 +153,12 @@ int main()
 	unsigned int core_count = std::thread::hardware_concurrency();
 	int nThreadCnt = core_count * 2;//+ 1;
 
-	
+#//ifdef __CONSOLE_UI__
 	GThreadManager->Launch([]()
 		{
 			DoRenderingJob();
 		});
-	
+//#endif	
 
 	for (int32 i = 0; i < nThreadCnt; i++)
 	{

@@ -14,7 +14,7 @@ CMonster::CMonster(int nObjectID, int nZoneID,int nSectorID,  Protocol::D3DVECTO
 	m_nObjectID = nObjectID;
 	m_nZoneID = nZoneID;
 	m_nSectorID = nSectorID;
-
+	m_nObjectType = Object::Monster;
 	m_vPos = vStartPos;
 	//cout << "몬스터 생성 ID: " << m_nObjectID <<" : " << m_vPos.x() << ", " << m_vPos.y() << endl;
 	
@@ -126,10 +126,12 @@ void CMonster::AI_Move()
 
 	int64 ActionEndTime= GetTickCount64() + Tick::SECOND_TICK;
 	m_nStateTime[m_eState]=(ActionEndTime);
-
+#ifdef __CONSOLE_UI__
 	GConsoleViewer->queuePlayerUpdate(m_nObjectID, m_nZoneID, m_vPos.x(), m_vPos.y());
-	CZoneRef Zone = GZoneManager->GetZone(m_nZoneID);
+#endif
 
+	CZoneRef Zone = GZoneManager->GetZone(m_nZoneID);
+	Zone->Update_Pos(Object::Monster, m_nObjectID, m_vPos);
 	if (Zone->UpdateSectorID(m_nSectorID, m_vPos))
 	{
 		Sector::ObjectInfo info;
@@ -149,7 +151,6 @@ void CMonster::AI_Move()
 		//섹터 위치 변경
 
 	}
-
 
 	m_eState = Object::Idle;
 

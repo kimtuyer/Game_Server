@@ -115,7 +115,7 @@ bool Handle_C_ENTER_ZONE(PacketSessionRef& session, Protocol::C_ENTER_ZONE& pkt)
 	{
 		/* 입장 존 최초 위치 받음.	*/
 		Protocol::D3DVECTOR* vPos = enterpkt.mutable_pos();
-		CSectorRef Sector = GZoneManager->GetZone(enterpkt.zoneid())->GetSector(enterpkt.sectorid());
+		CSectorRef Sector = GZoneManager->GetZone(nZoneid)->GetSector(pkt.sectorid());
 		if (Sector == nullptr)
 		{
 
@@ -133,6 +133,9 @@ bool Handle_C_ENTER_ZONE(PacketSessionRef& session, Protocol::C_ENTER_ZONE& pkt)
 			enterpkt.set_success(true);
 			enterpkt.set_zoneid(nZoneid);
 			enterpkt.set_sectorid(enterpkt.sectorid());
+
+			Sector->Insert(Object::Player, gameSession->_currentPlayer); //원래 ObjectRef 넣어야하는데..
+
 		}
 	}
 
@@ -181,11 +184,13 @@ bool Handle_C_MOVE(PacketSessionRef& session, Protocol::C_MOVE& pkt)
 	gameSession->_currentPlayer->UpdatePos(true);
 
 	//비동기로 호출해서 그릴지,바로 그리고 나올지..
-	
+#ifdef __CONSOLE_UI__
 	GConsoleViewer->queuePlayerUpdate(pkt.playerid(), Zone->ZoneID(), vPos.x(), vPos.y());
+#endif // __CONSOLE_UI__
+
 	//GConsoleViewer->Concurrent_queueUpdate(pkt.playerid(), Zone->ZoneID(), vPos.x(), vPos.y());
 	//GConsoleViewer->updatePlayerPosition(pkt.playerid(), Zone->ZoneID(), vPos.x(), vPos.y());
-	Zone->Update_Pos(pkt.playerid(), pkt.pos());
+	Zone->Update_Pos(Object::Player,pkt.playerid(), pkt.pos());
 
 
 	int nCurSectorID = gameSession->_currentPlayer->GetSectorID();
@@ -193,7 +198,7 @@ bool Handle_C_MOVE(PacketSessionRef& session, Protocol::C_MOVE& pkt)
 	if (Zone->UpdateSectorID(nCurSectorID, vPos))
 	{
 		//Sector 변경
-
+		
 		Sector::ObjectInfo info;
 		{
 			info.nSectorID = nCurSectorID;
@@ -202,14 +207,21 @@ bool Handle_C_MOVE(PacketSessionRef& session, Protocol::C_MOVE& pkt)
 			info.vPos.y = vPos.y();
 			info.nObjectType = Object::Player;
 
+#ifdef __NOT_SECTOR_OBJLIST_PLAYER__
+			Zone->Insert_PlayertoSector(nCurSectorID, gameSession->_currentPlayer);
+#else			
 			Zone->Insert_ObjecttoSector(info);
+#endif		
 		}
 
 		//이전에 위치했던 섹터id로 변경후 제거
 		info.nSectorID = nPrevSectorID;
+#ifdef __NOT_SECTOR_OBJLIST_PLAYER__
+		Zone->Remove_PlayertoSector(nCurSectorID, gameSession->_currentPlayer);
+#else	
 		Zone->Remove_ObjecttoSector(info);
 		//섹터 위치 변경
-
+#endif
 		//섹터 위치 변경시에만 알려줌.
 		Protocol::S_MOVE_ACK moveackpkt;
 		moveackpkt.set_sendtime(pkt.sendtime());

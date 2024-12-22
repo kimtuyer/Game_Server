@@ -33,9 +33,12 @@ public:
 	//몬스터 객체 받아서 플레이어 탐색
 	CObject* SearchEnemy(CObject* pMonster);//or MonsterID
 
+	int GetUserCount()
+	{
+		return m_nUserCnt;
+	}
 
-
-	void	Update_Pos(int nObjectID, const Protocol::D3DVECTOR& vPos);
+	void	Update_Pos(Object::ObjectType,int nObjectID, const Protocol::D3DVECTOR& vPos);
 
 
 
@@ -110,6 +113,9 @@ public:
 
 	void Insert_ObjecttoSector(Sector::ObjectInfo object);
 	void Remove_ObjecttoSector(Sector::ObjectInfo object);
+
+	void Insert_PlayertoSector(int sectorID, PlayerRef);
+	void Remove_PlayertoSector(int sectorID, PlayerRef);
 
 	void Send_SectorInsertObject();
 	void Send_SectorRemoveObject();
