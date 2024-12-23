@@ -208,18 +208,26 @@ bool Handle_C_MOVE(PacketSessionRef& session, Protocol::C_MOVE& pkt)
 			info.nObjectType = Object::Player;
 
 #ifdef __NOT_SECTOR_OBJLIST_PLAYER__
-			Zone->Insert_PlayertoSector(nCurSectorID, gameSession->_currentPlayer);
+			Zone->Insert_PlayertoSector(info);
 #else			
-			Zone->Insert_ObjecttoSector(info);
+			Protocol::S_PLAYER_LIST objpkt; //새로 들어온 섹터의 근처 유저들에게 알림.
+			CSectorRef Sector = Zone->GetSector(nCurSectorID);
+			Sector->Insert(info.nObjectType, gameSession->_currentPlayer);
+			Sector->BroadCast_Player( objpkt,info);
+			//Zone->Insert_ObjecttoSector(info);
 #endif		
 		}
 
 		//이전에 위치했던 섹터id로 변경후 제거
 		info.nSectorID = nPrevSectorID;
 #ifdef __NOT_SECTOR_OBJLIST_PLAYER__
-		Zone->Remove_PlayertoSector(nCurSectorID, gameSession->_currentPlayer);
+		Zone->Remove_PlayertoSector(info);
 #else	
-		Zone->Remove_ObjecttoSector(info);
+		Protocol::S_PLAYER_REMOVE_ACK objpkt;
+		CSectorRef Sector = Zone->GetSector(nPrevSectorID);
+		Sector->Delete(info.nObjectType, gameSession->_currentPlayer);
+		Sector->BroadCast_Player(objpkt,info);
+		//Zone->Remove_ObjecttoSector(info);
 		//섹터 위치 변경
 #endif
 		//섹터 위치 변경시에만 알려줌.

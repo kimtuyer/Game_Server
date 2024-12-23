@@ -18,8 +18,10 @@ enum : uint16
 	PKT_S_ATTACK_ACK = 1009,
 	PKT_S_OBJ_LIST = 1010,
 	PKT_S_OBJ_REMOVE_ACK = 1011,
-	PKT_C_CHAT = 1012,
-	PKT_S_CHAT = 1013,
+	PKT_S_PLAYER_LIST = 1012,
+	PKT_S_PLAYER_REMOVE_ACK = 1013,
+	PKT_C_CHAT = 1014,
+	PKT_S_CHAT = 1015,
 };
 
 // Custom Handlers
@@ -32,6 +34,8 @@ bool Handle_S_MOVE_PLAYER(PacketSessionRef& session, Protocol::S_MOVE_PLAYER& pk
 bool Handle_S_ATTACK_ACK(PacketSessionRef& session, Protocol::S_ATTACK_ACK& pkt);
 bool Handle_S_OBJ_LIST(PacketSessionRef& session, Protocol::S_OBJ_LIST& pkt);
 bool Handle_S_OBJ_REMOVE_ACK(PacketSessionRef& session, Protocol::S_OBJ_REMOVE_ACK& pkt);
+bool Handle_S_PLAYER_LIST(PacketSessionRef& session, Protocol::S_PLAYER_LIST& pkt);
+bool Handle_S_PLAYER_REMOVE_ACK(PacketSessionRef& session, Protocol::S_PLAYER_REMOVE_ACK& pkt);
 bool Handle_S_CHAT(PacketSessionRef& session, Protocol::S_CHAT& pkt);
 
 class ServerPacketHandler
@@ -49,6 +53,8 @@ public:
 		GPacketHandler[PKT_S_ATTACK_ACK] = [](PacketSessionRef& session, BYTE* buffer, int32 len) { return HandlePacket<Protocol::S_ATTACK_ACK>(Handle_S_ATTACK_ACK, session, buffer, len); };
 		GPacketHandler[PKT_S_OBJ_LIST] = [](PacketSessionRef& session, BYTE* buffer, int32 len) { return HandlePacket<Protocol::S_OBJ_LIST>(Handle_S_OBJ_LIST, session, buffer, len); };
 		GPacketHandler[PKT_S_OBJ_REMOVE_ACK] = [](PacketSessionRef& session, BYTE* buffer, int32 len) { return HandlePacket<Protocol::S_OBJ_REMOVE_ACK>(Handle_S_OBJ_REMOVE_ACK, session, buffer, len); };
+		GPacketHandler[PKT_S_PLAYER_LIST] = [](PacketSessionRef& session, BYTE* buffer, int32 len) { return HandlePacket<Protocol::S_PLAYER_LIST>(Handle_S_PLAYER_LIST, session, buffer, len); };
+		GPacketHandler[PKT_S_PLAYER_REMOVE_ACK] = [](PacketSessionRef& session, BYTE* buffer, int32 len) { return HandlePacket<Protocol::S_PLAYER_REMOVE_ACK>(Handle_S_PLAYER_REMOVE_ACK, session, buffer, len); };
 		GPacketHandler[PKT_S_CHAT] = [](PacketSessionRef& session, BYTE* buffer, int32 len) { return HandlePacket<Protocol::S_CHAT>(Handle_S_CHAT, session, buffer, len); };
 	}
 

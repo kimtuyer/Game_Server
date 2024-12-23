@@ -44,6 +44,15 @@ namespace Zone
 
 
 }
+namespace Sector
+{
+	enum UpdateType
+	{
+		Insert=1,
+		Delete=2
+	};
+}
+
 
 namespace Object
 {

@@ -48,7 +48,7 @@ struct TableStruct_Protocol_2eproto {
     PROTOBUF_SECTION_VARIABLE(protodesc_cold);
   static const ::PROTOBUF_NAMESPACE_ID::internal::AuxiliaryParseTableField aux[]
     PROTOBUF_SECTION_VARIABLE(protodesc_cold);
-  static const ::PROTOBUF_NAMESPACE_ID::internal::ParseTable schema[14]
+  static const ::PROTOBUF_NAMESPACE_ID::internal::ParseTable schema[16]
     PROTOBUF_SECTION_VARIABLE(protodesc_cold);
   static const ::PROTOBUF_NAMESPACE_ID::internal::FieldMetadata field_metadata[];
   static const ::PROTOBUF_NAMESPACE_ID::internal::SerializationTable serialization_table[];
@@ -98,6 +98,12 @@ extern S_OBJ_LISTDefaultTypeInternal _S_OBJ_LIST_default_instance_;
 class S_OBJ_REMOVE_ACK;
 struct S_OBJ_REMOVE_ACKDefaultTypeInternal;
 extern S_OBJ_REMOVE_ACKDefaultTypeInternal _S_OBJ_REMOVE_ACK_default_instance_;
+class S_PLAYER_LIST;
+struct S_PLAYER_LISTDefaultTypeInternal;
+extern S_PLAYER_LISTDefaultTypeInternal _S_PLAYER_LIST_default_instance_;
+class S_PLAYER_REMOVE_ACK;
+struct S_PLAYER_REMOVE_ACKDefaultTypeInternal;
+extern S_PLAYER_REMOVE_ACKDefaultTypeInternal _S_PLAYER_REMOVE_ACK_default_instance_;
 }  // namespace Protocol
 PROTOBUF_NAMESPACE_OPEN
 template<> ::Protocol::C_ATTACK* Arena::CreateMaybeMessage<::Protocol::C_ATTACK>(Arena*);
@@ -114,6 +120,8 @@ template<> ::Protocol::S_MOVE_MONSTER* Arena::CreateMaybeMessage<::Protocol::S_M
 template<> ::Protocol::S_MOVE_PLAYER* Arena::CreateMaybeMessage<::Protocol::S_MOVE_PLAYER>(Arena*);
 template<> ::Protocol::S_OBJ_LIST* Arena::CreateMaybeMessage<::Protocol::S_OBJ_LIST>(Arena*);
 template<> ::Protocol::S_OBJ_REMOVE_ACK* Arena::CreateMaybeMessage<::Protocol::S_OBJ_REMOVE_ACK>(Arena*);
+template<> ::Protocol::S_PLAYER_LIST* Arena::CreateMaybeMessage<::Protocol::S_PLAYER_LIST>(Arena*);
+template<> ::Protocol::S_PLAYER_REMOVE_ACK* Arena::CreateMaybeMessage<::Protocol::S_PLAYER_REMOVE_ACK>(Arena*);
 PROTOBUF_NAMESPACE_CLOSE
 namespace Protocol {
 
@@ -1995,6 +2003,332 @@ class S_OBJ_REMOVE_ACK final :
 };
 // -------------------------------------------------------------------
 
+class S_PLAYER_LIST final :
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:Protocol.S_PLAYER_LIST) */ {
+ public:
+  inline S_PLAYER_LIST() : S_PLAYER_LIST(nullptr) {}
+  ~S_PLAYER_LIST() override;
+  explicit constexpr S_PLAYER_LIST(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
+
+  S_PLAYER_LIST(const S_PLAYER_LIST& from);
+  S_PLAYER_LIST(S_PLAYER_LIST&& from) noexcept
+    : S_PLAYER_LIST() {
+    *this = ::std::move(from);
+  }
+
+  inline S_PLAYER_LIST& operator=(const S_PLAYER_LIST& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline S_PLAYER_LIST& operator=(S_PLAYER_LIST&& from) noexcept {
+    if (this == &from) return *this;
+    if (GetOwningArena() == from.GetOwningArena()) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const S_PLAYER_LIST& default_instance() {
+    return *internal_default_instance();
+  }
+  static inline const S_PLAYER_LIST* internal_default_instance() {
+    return reinterpret_cast<const S_PLAYER_LIST*>(
+               &_S_PLAYER_LIST_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    12;
+
+  friend void swap(S_PLAYER_LIST& a, S_PLAYER_LIST& b) {
+    a.Swap(&b);
+  }
+  inline void Swap(S_PLAYER_LIST* other) {
+    if (other == this) return;
+    if (GetOwningArena() == other->GetOwningArena()) {
+      InternalSwap(other);
+    } else {
+      ::PROTOBUF_NAMESPACE_ID::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(S_PLAYER_LIST* other) {
+    if (other == this) return;
+    GOOGLE_DCHECK(GetOwningArena() == other->GetOwningArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  inline S_PLAYER_LIST* New() const final {
+    return new S_PLAYER_LIST();
+  }
+
+  S_PLAYER_LIST* New(::PROTOBUF_NAMESPACE_ID::Arena* arena) const final {
+    return CreateMaybeMessage<S_PLAYER_LIST>(arena);
+  }
+  void CopyFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) final;
+  void MergeFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) final;
+  void CopyFrom(const S_PLAYER_LIST& from);
+  void MergeFrom(const S_PLAYER_LIST& from);
+  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
+  ::PROTOBUF_NAMESPACE_ID::uint8* _InternalSerialize(
+      ::PROTOBUF_NAMESPACE_ID::uint8* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
+  int GetCachedSize() const final { return _cached_size_.Get(); }
+
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(S_PLAYER_LIST* other);
+  friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
+  static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
+    return "Protocol.S_PLAYER_LIST";
+  }
+  protected:
+  explicit S_PLAYER_LIST(::PROTOBUF_NAMESPACE_ID::Arena* arena);
+  private:
+  static void ArenaDtor(void* object);
+  inline void RegisterArenaDtor(::PROTOBUF_NAMESPACE_ID::Arena* arena);
+  public:
+
+  ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  enum : int {
+    kPosFieldNumber = 3,
+    kSendTimeFieldNumber = 1,
+    kSectoridFieldNumber = 2,
+  };
+  // repeated .Protocol.Object_Pos pos = 3;
+  int pos_size() const;
+  private:
+  int _internal_pos_size() const;
+  public:
+  void clear_pos();
+  ::Protocol::Object_Pos* mutable_pos(int index);
+  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Protocol::Object_Pos >*
+      mutable_pos();
+  private:
+  const ::Protocol::Object_Pos& _internal_pos(int index) const;
+  ::Protocol::Object_Pos* _internal_add_pos();
+  public:
+  const ::Protocol::Object_Pos& pos(int index) const;
+  ::Protocol::Object_Pos* add_pos();
+  const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Protocol::Object_Pos >&
+      pos() const;
+
+  // uint64 sendTime = 1;
+  void clear_sendtime();
+  ::PROTOBUF_NAMESPACE_ID::uint64 sendtime() const;
+  void set_sendtime(::PROTOBUF_NAMESPACE_ID::uint64 value);
+  private:
+  ::PROTOBUF_NAMESPACE_ID::uint64 _internal_sendtime() const;
+  void _internal_set_sendtime(::PROTOBUF_NAMESPACE_ID::uint64 value);
+  public:
+
+  // uint32 sectorid = 2;
+  void clear_sectorid();
+  ::PROTOBUF_NAMESPACE_ID::uint32 sectorid() const;
+  void set_sectorid(::PROTOBUF_NAMESPACE_ID::uint32 value);
+  private:
+  ::PROTOBUF_NAMESPACE_ID::uint32 _internal_sectorid() const;
+  void _internal_set_sectorid(::PROTOBUF_NAMESPACE_ID::uint32 value);
+  public:
+
+  // @@protoc_insertion_point(class_scope:Protocol.S_PLAYER_LIST)
+ private:
+  class _Internal;
+
+  template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
+  typedef void InternalArenaConstructable_;
+  typedef void DestructorSkippable_;
+  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Protocol::Object_Pos > pos_;
+  ::PROTOBUF_NAMESPACE_ID::uint64 sendtime_;
+  ::PROTOBUF_NAMESPACE_ID::uint32 sectorid_;
+  mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
+  friend struct ::TableStruct_Protocol_2eproto;
+};
+// -------------------------------------------------------------------
+
+class S_PLAYER_REMOVE_ACK final :
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:Protocol.S_PLAYER_REMOVE_ACK) */ {
+ public:
+  inline S_PLAYER_REMOVE_ACK() : S_PLAYER_REMOVE_ACK(nullptr) {}
+  ~S_PLAYER_REMOVE_ACK() override;
+  explicit constexpr S_PLAYER_REMOVE_ACK(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
+
+  S_PLAYER_REMOVE_ACK(const S_PLAYER_REMOVE_ACK& from);
+  S_PLAYER_REMOVE_ACK(S_PLAYER_REMOVE_ACK&& from) noexcept
+    : S_PLAYER_REMOVE_ACK() {
+    *this = ::std::move(from);
+  }
+
+  inline S_PLAYER_REMOVE_ACK& operator=(const S_PLAYER_REMOVE_ACK& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline S_PLAYER_REMOVE_ACK& operator=(S_PLAYER_REMOVE_ACK&& from) noexcept {
+    if (this == &from) return *this;
+    if (GetOwningArena() == from.GetOwningArena()) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const S_PLAYER_REMOVE_ACK& default_instance() {
+    return *internal_default_instance();
+  }
+  static inline const S_PLAYER_REMOVE_ACK* internal_default_instance() {
+    return reinterpret_cast<const S_PLAYER_REMOVE_ACK*>(
+               &_S_PLAYER_REMOVE_ACK_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    13;
+
+  friend void swap(S_PLAYER_REMOVE_ACK& a, S_PLAYER_REMOVE_ACK& b) {
+    a.Swap(&b);
+  }
+  inline void Swap(S_PLAYER_REMOVE_ACK* other) {
+    if (other == this) return;
+    if (GetOwningArena() == other->GetOwningArena()) {
+      InternalSwap(other);
+    } else {
+      ::PROTOBUF_NAMESPACE_ID::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(S_PLAYER_REMOVE_ACK* other) {
+    if (other == this) return;
+    GOOGLE_DCHECK(GetOwningArena() == other->GetOwningArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  inline S_PLAYER_REMOVE_ACK* New() const final {
+    return new S_PLAYER_REMOVE_ACK();
+  }
+
+  S_PLAYER_REMOVE_ACK* New(::PROTOBUF_NAMESPACE_ID::Arena* arena) const final {
+    return CreateMaybeMessage<S_PLAYER_REMOVE_ACK>(arena);
+  }
+  void CopyFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) final;
+  void MergeFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) final;
+  void CopyFrom(const S_PLAYER_REMOVE_ACK& from);
+  void MergeFrom(const S_PLAYER_REMOVE_ACK& from);
+  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
+  ::PROTOBUF_NAMESPACE_ID::uint8* _InternalSerialize(
+      ::PROTOBUF_NAMESPACE_ID::uint8* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
+  int GetCachedSize() const final { return _cached_size_.Get(); }
+
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(S_PLAYER_REMOVE_ACK* other);
+  friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
+  static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
+    return "Protocol.S_PLAYER_REMOVE_ACK";
+  }
+  protected:
+  explicit S_PLAYER_REMOVE_ACK(::PROTOBUF_NAMESPACE_ID::Arena* arena);
+  private:
+  static void ArenaDtor(void* object);
+  inline void RegisterArenaDtor(::PROTOBUF_NAMESPACE_ID::Arena* arena);
+  public:
+
+  ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  enum : int {
+    kPosFieldNumber = 3,
+    kSendTimeFieldNumber = 1,
+    kSectoridFieldNumber = 2,
+  };
+  // repeated .Protocol.Object_Pos pos = 3;
+  int pos_size() const;
+  private:
+  int _internal_pos_size() const;
+  public:
+  void clear_pos();
+  ::Protocol::Object_Pos* mutable_pos(int index);
+  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Protocol::Object_Pos >*
+      mutable_pos();
+  private:
+  const ::Protocol::Object_Pos& _internal_pos(int index) const;
+  ::Protocol::Object_Pos* _internal_add_pos();
+  public:
+  const ::Protocol::Object_Pos& pos(int index) const;
+  ::Protocol::Object_Pos* add_pos();
+  const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Protocol::Object_Pos >&
+      pos() const;
+
+  // uint64 sendTime = 1;
+  void clear_sendtime();
+  ::PROTOBUF_NAMESPACE_ID::uint64 sendtime() const;
+  void set_sendtime(::PROTOBUF_NAMESPACE_ID::uint64 value);
+  private:
+  ::PROTOBUF_NAMESPACE_ID::uint64 _internal_sendtime() const;
+  void _internal_set_sendtime(::PROTOBUF_NAMESPACE_ID::uint64 value);
+  public:
+
+  // uint32 sectorid = 2;
+  void clear_sectorid();
+  ::PROTOBUF_NAMESPACE_ID::uint32 sectorid() const;
+  void set_sectorid(::PROTOBUF_NAMESPACE_ID::uint32 value);
+  private:
+  ::PROTOBUF_NAMESPACE_ID::uint32 _internal_sectorid() const;
+  void _internal_set_sectorid(::PROTOBUF_NAMESPACE_ID::uint32 value);
+  public:
+
+  // @@protoc_insertion_point(class_scope:Protocol.S_PLAYER_REMOVE_ACK)
+ private:
+  class _Internal;
+
+  template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
+  typedef void InternalArenaConstructable_;
+  typedef void DestructorSkippable_;
+  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Protocol::Object_Pos > pos_;
+  ::PROTOBUF_NAMESPACE_ID::uint64 sendtime_;
+  ::PROTOBUF_NAMESPACE_ID::uint32 sectorid_;
+  mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
+  friend struct ::TableStruct_Protocol_2eproto;
+};
+// -------------------------------------------------------------------
+
 class C_CHAT final :
     public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:Protocol.C_CHAT) */ {
  public:
@@ -2039,7 +2373,7 @@ class C_CHAT final :
                &_C_CHAT_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    12;
+    14;
 
   friend void swap(C_CHAT& a, C_CHAT& b) {
     a.Swap(&b);
@@ -2176,7 +2510,7 @@ class S_CHAT final :
                &_S_CHAT_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    13;
+    15;
 
   friend void swap(S_CHAT& a, S_CHAT& b) {
     a.Swap(&b);
@@ -3236,6 +3570,166 @@ S_OBJ_REMOVE_ACK::pos() const {
 
 // -------------------------------------------------------------------
 
+// S_PLAYER_LIST
+
+// uint64 sendTime = 1;
+inline void S_PLAYER_LIST::clear_sendtime() {
+  sendtime_ = uint64_t{0u};
+}
+inline ::PROTOBUF_NAMESPACE_ID::uint64 S_PLAYER_LIST::_internal_sendtime() const {
+  return sendtime_;
+}
+inline ::PROTOBUF_NAMESPACE_ID::uint64 S_PLAYER_LIST::sendtime() const {
+  // @@protoc_insertion_point(field_get:Protocol.S_PLAYER_LIST.sendTime)
+  return _internal_sendtime();
+}
+inline void S_PLAYER_LIST::_internal_set_sendtime(::PROTOBUF_NAMESPACE_ID::uint64 value) {
+  
+  sendtime_ = value;
+}
+inline void S_PLAYER_LIST::set_sendtime(::PROTOBUF_NAMESPACE_ID::uint64 value) {
+  _internal_set_sendtime(value);
+  // @@protoc_insertion_point(field_set:Protocol.S_PLAYER_LIST.sendTime)
+}
+
+// uint32 sectorid = 2;
+inline void S_PLAYER_LIST::clear_sectorid() {
+  sectorid_ = 0u;
+}
+inline ::PROTOBUF_NAMESPACE_ID::uint32 S_PLAYER_LIST::_internal_sectorid() const {
+  return sectorid_;
+}
+inline ::PROTOBUF_NAMESPACE_ID::uint32 S_PLAYER_LIST::sectorid() const {
+  // @@protoc_insertion_point(field_get:Protocol.S_PLAYER_LIST.sectorid)
+  return _internal_sectorid();
+}
+inline void S_PLAYER_LIST::_internal_set_sectorid(::PROTOBUF_NAMESPACE_ID::uint32 value) {
+  
+  sectorid_ = value;
+}
+inline void S_PLAYER_LIST::set_sectorid(::PROTOBUF_NAMESPACE_ID::uint32 value) {
+  _internal_set_sectorid(value);
+  // @@protoc_insertion_point(field_set:Protocol.S_PLAYER_LIST.sectorid)
+}
+
+// repeated .Protocol.Object_Pos pos = 3;
+inline int S_PLAYER_LIST::_internal_pos_size() const {
+  return pos_.size();
+}
+inline int S_PLAYER_LIST::pos_size() const {
+  return _internal_pos_size();
+}
+inline ::Protocol::Object_Pos* S_PLAYER_LIST::mutable_pos(int index) {
+  // @@protoc_insertion_point(field_mutable:Protocol.S_PLAYER_LIST.pos)
+  return pos_.Mutable(index);
+}
+inline ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Protocol::Object_Pos >*
+S_PLAYER_LIST::mutable_pos() {
+  // @@protoc_insertion_point(field_mutable_list:Protocol.S_PLAYER_LIST.pos)
+  return &pos_;
+}
+inline const ::Protocol::Object_Pos& S_PLAYER_LIST::_internal_pos(int index) const {
+  return pos_.Get(index);
+}
+inline const ::Protocol::Object_Pos& S_PLAYER_LIST::pos(int index) const {
+  // @@protoc_insertion_point(field_get:Protocol.S_PLAYER_LIST.pos)
+  return _internal_pos(index);
+}
+inline ::Protocol::Object_Pos* S_PLAYER_LIST::_internal_add_pos() {
+  return pos_.Add();
+}
+inline ::Protocol::Object_Pos* S_PLAYER_LIST::add_pos() {
+  // @@protoc_insertion_point(field_add:Protocol.S_PLAYER_LIST.pos)
+  return _internal_add_pos();
+}
+inline const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Protocol::Object_Pos >&
+S_PLAYER_LIST::pos() const {
+  // @@protoc_insertion_point(field_list:Protocol.S_PLAYER_LIST.pos)
+  return pos_;
+}
+
+// -------------------------------------------------------------------
+
+// S_PLAYER_REMOVE_ACK
+
+// uint64 sendTime = 1;
+inline void S_PLAYER_REMOVE_ACK::clear_sendtime() {
+  sendtime_ = uint64_t{0u};
+}
+inline ::PROTOBUF_NAMESPACE_ID::uint64 S_PLAYER_REMOVE_ACK::_internal_sendtime() const {
+  return sendtime_;
+}
+inline ::PROTOBUF_NAMESPACE_ID::uint64 S_PLAYER_REMOVE_ACK::sendtime() const {
+  // @@protoc_insertion_point(field_get:Protocol.S_PLAYER_REMOVE_ACK.sendTime)
+  return _internal_sendtime();
+}
+inline void S_PLAYER_REMOVE_ACK::_internal_set_sendtime(::PROTOBUF_NAMESPACE_ID::uint64 value) {
+  
+  sendtime_ = value;
+}
+inline void S_PLAYER_REMOVE_ACK::set_sendtime(::PROTOBUF_NAMESPACE_ID::uint64 value) {
+  _internal_set_sendtime(value);
+  // @@protoc_insertion_point(field_set:Protocol.S_PLAYER_REMOVE_ACK.sendTime)
+}
+
+// uint32 sectorid = 2;
+inline void S_PLAYER_REMOVE_ACK::clear_sectorid() {
+  sectorid_ = 0u;
+}
+inline ::PROTOBUF_NAMESPACE_ID::uint32 S_PLAYER_REMOVE_ACK::_internal_sectorid() const {
+  return sectorid_;
+}
+inline ::PROTOBUF_NAMESPACE_ID::uint32 S_PLAYER_REMOVE_ACK::sectorid() const {
+  // @@protoc_insertion_point(field_get:Protocol.S_PLAYER_REMOVE_ACK.sectorid)
+  return _internal_sectorid();
+}
+inline void S_PLAYER_REMOVE_ACK::_internal_set_sectorid(::PROTOBUF_NAMESPACE_ID::uint32 value) {
+  
+  sectorid_ = value;
+}
+inline void S_PLAYER_REMOVE_ACK::set_sectorid(::PROTOBUF_NAMESPACE_ID::uint32 value) {
+  _internal_set_sectorid(value);
+  // @@protoc_insertion_point(field_set:Protocol.S_PLAYER_REMOVE_ACK.sectorid)
+}
+
+// repeated .Protocol.Object_Pos pos = 3;
+inline int S_PLAYER_REMOVE_ACK::_internal_pos_size() const {
+  return pos_.size();
+}
+inline int S_PLAYER_REMOVE_ACK::pos_size() const {
+  return _internal_pos_size();
+}
+inline ::Protocol::Object_Pos* S_PLAYER_REMOVE_ACK::mutable_pos(int index) {
+  // @@protoc_insertion_point(field_mutable:Protocol.S_PLAYER_REMOVE_ACK.pos)
+  return pos_.Mutable(index);
+}
+inline ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Protocol::Object_Pos >*
+S_PLAYER_REMOVE_ACK::mutable_pos() {
+  // @@protoc_insertion_point(field_mutable_list:Protocol.S_PLAYER_REMOVE_ACK.pos)
+  return &pos_;
+}
+inline const ::Protocol::Object_Pos& S_PLAYER_REMOVE_ACK::_internal_pos(int index) const {
+  return pos_.Get(index);
+}
+inline const ::Protocol::Object_Pos& S_PLAYER_REMOVE_ACK::pos(int index) const {
+  // @@protoc_insertion_point(field_get:Protocol.S_PLAYER_REMOVE_ACK.pos)
+  return _internal_pos(index);
+}
+inline ::Protocol::Object_Pos* S_PLAYER_REMOVE_ACK::_internal_add_pos() {
+  return pos_.Add();
+}
+inline ::Protocol::Object_Pos* S_PLAYER_REMOVE_ACK::add_pos() {
+  // @@protoc_insertion_point(field_add:Protocol.S_PLAYER_REMOVE_ACK.pos)
+  return _internal_add_pos();
+}
+inline const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Protocol::Object_Pos >&
+S_PLAYER_REMOVE_ACK::pos() const {
+  // @@protoc_insertion_point(field_list:Protocol.S_PLAYER_REMOVE_ACK.pos)
+  return pos_;
+}
+
+// -------------------------------------------------------------------
+
 // C_CHAT
 
 // string msg = 1;
@@ -3355,6 +3849,10 @@ inline void S_CHAT::set_allocated_msg(std::string* msg) {
 #ifdef __GNUC__
   #pragma GCC diagnostic pop
 #endif  // __GNUC__
+// -------------------------------------------------------------------
+
+// -------------------------------------------------------------------
+
 // -------------------------------------------------------------------
 
 // -------------------------------------------------------------------

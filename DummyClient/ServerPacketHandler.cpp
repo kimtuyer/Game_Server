@@ -11,7 +11,11 @@ auto RTT = [](int64 nowtime, int64 arrivetime, string packetName)
 {
 	int64 responstime = nowtime - arrivetime;
 
-	cout << packetName << ":  RTT 응답 시간 :" << responstime <<"ms" << endl;
+	if (responstime <=100)
+	{
+
+		cout << packetName << ":  RTT 응답 시간 :" << responstime <<"ms " << endl;
+	}
 };
 
 bool Handle_INVALID(PacketSessionRef& session, BYTE* buffer, int32 len)
@@ -108,7 +112,7 @@ bool Handle_S_MOVE_ACK(PacketSessionRef& session, Protocol::S_MOVE_ACK& pkt)
 {
 	// TODO
 
-	//RTT(GetTickCount64(), pkt.sendtime(), "S_MOVE_ACK");
+	RTT(GetTickCount64(), pkt.sendtime(), "S_MOVE_ACK");
 
 	/*
 	 섹터 위치 변경
@@ -179,6 +183,22 @@ bool Handle_S_MOVE_PLAYER(PacketSessionRef& session, Protocol::S_MOVE_PLAYER& pk
 	//	
 	//	*/
 	//}
+
+	// TODO
+	return true;
+}
+
+bool Handle_S_PLAYER_REMOVE_ACK(PacketSessionRef& session, Protocol::S_PLAYER_REMOVE_ACK& pkt)
+{
+	RTT(GetTickCount64(), pkt.sendtime(), "S_PLAYER_REMOVE_ACK");
+
+	// TODO
+	return true;
+}
+
+bool Handle_S_PLAYER_LIST(PacketSessionRef& session, Protocol::S_PLAYER_LIST& pkt)
+{
+	RTT(GetTickCount64(), pkt.sendtime(), "S_PLAYER_LIST");
 
 	// TODO
 	return true;

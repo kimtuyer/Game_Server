@@ -114,12 +114,14 @@ public:
 	void Insert_ObjecttoSector(Sector::ObjectInfo object);
 	void Remove_ObjecttoSector(Sector::ObjectInfo object);
 
-	void Insert_PlayertoSector(int sectorID, PlayerRef);
-	void Remove_PlayertoSector(int sectorID, PlayerRef);
+	void Insert_PlayertoSector(Sector::ObjectInfo object);
+	void Remove_PlayertoSector(Sector::ObjectInfo object);
 
 	void Send_SectorInsertObject();
 	void Send_SectorRemoveObject();
 
+	void Send_SectorInsertPlayer(Sector::ObjectInfo object);
+	void Send_SectorRemovePlayer(Sector::ObjectInfo object);
 	//CSectorRef GetSectorID(int nSectorID)
 	//{
 	//
@@ -143,6 +145,9 @@ private:	//오브젝트 리스트도 맵 or set이 나은가?
 	map<SectorID,vector<Sector::ObjectInfo>> m_InsertList;
 	map<SectorID, vector<Sector::ObjectInfo>> m_RemoveList;
 
+
+	map<SectorID, vector<Sector::ObjectInfo>> m_PlayerInsertList;
+	map<SectorID, vector<Sector::ObjectInfo>> m_PlayerRemoveList;
 //	vector<Sector::ObjectInfo> m_RemoveList;
 
 

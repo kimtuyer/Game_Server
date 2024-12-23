@@ -579,14 +579,18 @@ void CZone::Remove_ObjecttoSector(Sector::ObjectInfo object)
 	m_RemoveList[object.nSectorID].push_back(object);
 }
 
-void CZone::Insert_PlayertoSector(int sectorID, PlayerRef Player)
+void CZone::Insert_PlayertoSector(Sector::ObjectInfo object)
 {
-	m_listSector[sectorID]->Insert(Object::Player, Player);
+	WRITE_LOCK;
+	m_PlayerInsertList[object.nSectorID].push_back(object);
+	//m_listSector[sectorID]->Insert(Object::Player, Player);
 }
 
-void CZone::Remove_PlayertoSector(int sectorID, PlayerRef Player)
+void CZone::Remove_PlayertoSector(Sector::ObjectInfo object)
 {
-	m_listSector[sectorID]->Delete(Object::Player, Player);
+	WRITE_LOCK;
+	m_PlayerRemoveList[object.nSectorID].push_back(object);
+	//m_listSector[sectorID]->Delete(Object::Player, Player);
 
 }
 
@@ -821,4 +825,29 @@ void CZone::Send_SectorRemoveObject()
 		}
 #endif
 	}
+}
+
+void CZone::Send_SectorInsertPlayer(Sector::ObjectInfo object)
+{
+	//해당 오브젝트이 섹터 id가 존재하는지 확인?
+
+	
+	//섹터리스트 복사해와서 lock 줄여야하나?
+	//map<SectorID, vector<Sector::ObjectInfo>> InsertList;
+	//{
+	//	//swap후 원본 컨테이너는 clear상태, 이후에 들어온 데이터는 다음tick에 처리!
+	//	WRITE_LOCK;
+	//	InsertList.swap(m_PlayerInsertList);
+	//}
+
+
+
+}
+
+void CZone::Send_SectorRemovePlayer(Sector::ObjectInfo object)
+{
+
+
+
+
 }
