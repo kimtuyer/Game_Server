@@ -120,8 +120,8 @@ public:
 	void Send_SectorInsertObject();
 	void Send_SectorRemoveObject();
 
-	void Send_SectorInsertPlayer(Sector::ObjectInfo object);
-	void Send_SectorRemovePlayer(Sector::ObjectInfo object);
+	void Send_SectorInsertPlayer();
+	void Send_SectorRemovePlayer();
 	//CSectorRef GetSectorID(int nSectorID)
 	//{
 	//

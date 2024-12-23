@@ -64,6 +64,8 @@ public:
 
 	void Insert_adjSector(int sectorID, float x, float y);
 
+	void Insert_ObjecttoSector(Sector::ObjectInfo object);
+	void Remove_ObjecttoSector(Sector::ObjectInfo object);
 
 	map<int, Protocol::D3DVECTOR> m_adjSectorList;
 private:
