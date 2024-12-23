@@ -29,6 +29,8 @@ public:
 
 	//리스트 순회, 객체 타이머 
 	void Update();
+	void Update_Player();
+
 	
 	//몬스터 객체 받아서 플레이어 탐색
 	CObject* SearchEnemy(CObject* pMonster);//or MonsterID

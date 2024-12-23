@@ -243,9 +243,9 @@ void CZone::Update()
 	}
 	//삽입 삭제 리스트 각 섹터에 위치한 플레이어들에게 전송
 
-	Send_SectorInsertPlayer();
+	//Send_SectorInsertPlayer();
 
-	Send_SectorRemovePlayer();
+	//Send_SectorRemovePlayer();
 
 	Send_SectorInsertObject();
 
@@ -290,6 +290,17 @@ void CZone::Update()
 
 	//ZoneManager에서 모든 zone update 호출중
 	DoTimer(Tick::AI_TICK, &CZone::Update);
+}
+
+void CZone::Update_Player()
+{
+
+	Send_SectorInsertPlayer();
+
+	Send_SectorRemovePlayer();
+
+	DoTimer(Tick::AI_TICK, &CZone::Update_Player);
+
 }
 
 CObject* CZone::SearchEnemy(CObject* pMonster)
@@ -866,12 +877,14 @@ void CZone::Send_SectorInsertPlayer()
 			bool bSend = false;
 			for (auto& ObjectInfo : sData)
 			{
+				if (nCnt >= 5)
+					break;
 				ObjectRef Object = m_nlistObject[ObjectInfo.nObjectType][ObjectInfo.nObjectID];
 				Sector->Insert(ObjectInfo.nObjectType, Object);
 
 				float dist = distance(ObjectInfo.vPos.x, ObjectInfo.vPos.y, Player->GetPos().x(), Player->GetPos().y());
 
-				if (dist > BroadCast_Distance)
+				if (dist > 2.5)
 				{
 					continue;
 
@@ -918,6 +931,7 @@ void CZone::Send_SectorRemovePlayer()
 		WRITE_LOCK;
 		RemoveList.swap(m_PlayerRemoveList);
 	}
+	//int nCnt = 0;
 	//WRITE_LOCK;
 	for (auto& [SectorID, sData] : RemoveList)
 	{
@@ -943,6 +957,9 @@ void CZone::Send_SectorRemovePlayer()
 			bool bSend = false;
 			for (auto& ObjectInfo : sData)
 			{
+				if (nCnt >= 5)
+					break;
+
 				ObjectRef Object = m_nlistObject[ObjectInfo.nObjectType][ObjectInfo.nObjectID];
 				Sector->Delete(ObjectInfo.nObjectType, Object);
 
@@ -951,7 +968,7 @@ void CZone::Send_SectorRemovePlayer()
 				if (ObjectInfo.nObjectID == playerid)
 					continue;
 
-				if (dist > BroadCast_Distance)
+				if (dist > 2.5)
 				{
 					continue;
 
@@ -967,10 +984,11 @@ void CZone::Send_SectorRemovePlayer()
 
 				objpkt.add_pos()->CopyFrom(objectPos);
 
+				nCnt++;
 			}
 			if (bSend == false)
 				continue;
-			nCnt++;
+
 
 			auto sendBuffer = ClientPacketHandler::MakeSendBuffer(objpkt);
 			CPlayer* pPlayer = static_cast<CPlayer*>(Player.get());
