@@ -36,7 +36,7 @@ namespace Zone
 	static const int  Sector_PER_ROW = 4;
 	static const int  Sector_PER_COL = 4;
 
-	static const float  BroadCast_Distance = 2.5;
+	static const float  BroadCast_Distance = 3;
 
 
 

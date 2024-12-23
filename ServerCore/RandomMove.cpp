@@ -33,7 +33,7 @@ std::pair<float, float> RandomMove::getNextPosition(int nZoneid, float currentX,
     */
     int ZONE_WIDTH = 1;
     int ZONE_HEIGHT = 1;
-
+   // Zone::ZONES_PER_COL
     if (nZoneid < 6)
     {
         ZONE_WIDTH = nZoneid * Zone::ZONE_WIDTH;
@@ -42,18 +42,20 @@ std::pair<float, float> RandomMove::getNextPosition(int nZoneid, float currentX,
     else if (nZoneid < 11)
     {
         ZONE_WIDTH = (nZoneid - 5) * Zone::ZONE_WIDTH;
-        ZONE_HEIGHT = 10 + Zone::ZONE_HEIGHT;
+        ZONE_HEIGHT = 2* Zone::ZONE_HEIGHT;
     }
     else
     {
         ZONE_WIDTH = (nZoneid - 10) * Zone::ZONE_WIDTH;
-        ZONE_HEIGHT = 20 + Zone::ZONE_HEIGHT;
+        ZONE_HEIGHT = 3 * Zone::ZONE_HEIGHT;
 
     }
+    float minx = ZONE_WIDTH - Zone::ZONE_WIDTH+1.0f;
+    float miny = ZONE_HEIGHT - Zone::ZONE_HEIGHT+1.0f;
 
     // 존 경계 체크 및 보정
-    newX = std::clamp(newX, 0.0f, ZONE_WIDTH - 1.0f);
-    newY = std::clamp(newY, 0.0f, ZONE_HEIGHT - 1.0f);
+    newX = std::clamp(newX, minx, ZONE_WIDTH - 1.0f);
+    newY = std::clamp(newY, miny, ZONE_HEIGHT - 1.0f);
 
     return { newX, newY };
 }

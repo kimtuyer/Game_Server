@@ -56,8 +56,9 @@ public:
 		//cout << "전체 초당 패킷 처리량:" << g_nPacketCount << endl;
 		for (int col = 0; col < ZONES_PER_COL; col++) {
 			for (int row = 0; row < ZONES_PER_ROW; row++) {
-				int startX = row * (ZONE_WIDTH + 1);
-				int startY = col * (ZONE_HEIGHT + 1);
+				int startX = row * (ZONE_WIDTH );
+				int startY = col * (ZONE_HEIGHT );
+
 
 				// 상단 테두리
 				gotoxy(startX, startY);
@@ -69,7 +70,7 @@ public:
 				for (int i = 1; i < ZONE_HEIGHT; i++) {
 					gotoxy(startX, startY + i);
 					std::cout << "|";
-					gotoxy(startX + ZONE_WIDTH + 1, startY + i);
+					gotoxy(startX + ZONE_WIDTH , startY + i);
 					std::cout << "|";
 				}
 

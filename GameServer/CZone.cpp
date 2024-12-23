@@ -37,7 +37,7 @@ CZone::CZone(int nMaxUserCnt, int nZoneID, Protocol::D3DVECTOR vPos)
 				col = 2;
 
 			float x = ( (m_nZoneID - 1) % Zone::ZONES_PER_ROW)  * ZONE_WIDTH + (WIDTH - 1) * Zone::Sector_WIDTH + Sector_WIDTH / 2;
-			float y =  col	   * ZONE_HEIGHT + (HEIGHT - 1)     * Zone::Sector_HEIGHT + Sector_HEIGHT / 2;
+			float y =  (col * ZONE_HEIGHT) + ((HEIGHT - 1)* Zone::Sector_HEIGHT) + Sector_HEIGHT / 2;
 
 			Protocol::D3DVECTOR startpos;
 			startpos.set_x(x);
