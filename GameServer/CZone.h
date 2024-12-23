@@ -29,6 +29,8 @@ public:
 
 	//리스트 순회, 객체 타이머 
 	void Update();
+	void Update_Player();
+
 	
 	//몬스터 객체 받아서 플레이어 탐색
 	CObject* SearchEnemy(CObject* pMonster);//or MonsterID
@@ -120,8 +122,8 @@ public:
 	void Send_SectorInsertObject();
 	void Send_SectorRemoveObject();
 
-	void Send_SectorInsertPlayer(Sector::ObjectInfo object);
-	void Send_SectorRemovePlayer(Sector::ObjectInfo object);
+	void Send_SectorInsertPlayer();
+	void Send_SectorRemovePlayer();
 	//CSectorRef GetSectorID(int nSectorID)
 	//{
 	//

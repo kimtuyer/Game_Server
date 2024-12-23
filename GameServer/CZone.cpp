@@ -243,6 +243,10 @@ void CZone::Update()
 	}
 	//삽입 삭제 리스트 각 섹터에 위치한 플레이어들에게 전송
 
+	//Send_SectorInsertPlayer();
+
+	//Send_SectorRemovePlayer();
+
 	Send_SectorInsertObject();
 
 	Send_SectorRemoveObject();
@@ -286,6 +290,17 @@ void CZone::Update()
 
 	//ZoneManager에서 모든 zone update 호출중
 	DoTimer(Tick::AI_TICK, &CZone::Update);
+}
+
+void CZone::Update_Player()
+{
+
+	Send_SectorInsertPlayer();
+
+	Send_SectorRemovePlayer();
+
+	DoTimer(Tick::AI_TICK, &CZone::Update_Player);
+
 }
 
 CObject* CZone::SearchEnemy(CObject* pMonster)
@@ -579,6 +594,7 @@ void CZone::Remove_ObjecttoSector(Sector::ObjectInfo object)
 	m_RemoveList[object.nSectorID].push_back(object);
 }
 
+
 void CZone::Insert_PlayertoSector(Sector::ObjectInfo object)
 {
 	WRITE_LOCK;
@@ -827,27 +843,167 @@ void CZone::Send_SectorRemoveObject()
 	}
 }
 
-void CZone::Send_SectorInsertPlayer(Sector::ObjectInfo object)
+void CZone::Send_SectorInsertPlayer()
 {
-	//해당 오브젝트이 섹터 id가 존재하는지 확인?
 
-	
 	//섹터리스트 복사해와서 lock 줄여야하나?
-	//map<SectorID, vector<Sector::ObjectInfo>> InsertList;
-	//{
-	//	//swap후 원본 컨테이너는 clear상태, 이후에 들어온 데이터는 다음tick에 처리!
-	//	WRITE_LOCK;
-	//	InsertList.swap(m_PlayerInsertList);
-	//}
+	map<SectorID, vector<Sector::ObjectInfo>> InsertList;
+	{
+		//swap후 원본 컨테이너는 clear상태, 이후에 들어온 데이터는 다음tick에 처리!
+		WRITE_LOCK;
+		InsertList.swap(m_PlayerInsertList);
+	}
+	//WRITE_LOCK;
+
+	for (auto& [SectorID, sData] : InsertList)
+	{
+		CSectorRef Sector = m_listSector[SectorID];
+		if (Sector->Empty_Player())
+			continue;
+		Protocol::S_PLAYER_LIST objpkt;
+		int64 nowtime = GetTickCount64();
+		auto distance = [](float source_x, float source_y, float target_x, float target_y)->float
+			{
+				return sqrt(pow(target_x - source_x, 2) + pow(target_y - source_y, 2));
+
+			};
+
+		objpkt.set_sendtime(GetTickCount64());
+		auto Playerlist = Sector->PlayerList();
+		for (auto& [playerid, Player] : Playerlist)
+		{
+			int nCnt = 0;
+
+			bool bSend = false;
+			for (auto& ObjectInfo : sData)
+			{
+				if (nCnt >= 5)
+					break;
+				ObjectRef Object = m_nlistObject[ObjectInfo.nObjectType][ObjectInfo.nObjectID];
+				Sector->Insert(ObjectInfo.nObjectType, Object);
+
+				float dist = distance(ObjectInfo.vPos.x, ObjectInfo.vPos.y, Player->GetPos().x(), Player->GetPos().y());
+
+				if (dist > 2.5)
+				{
+					continue;
+
+				}
+
+				bSend = true;
+				nCnt++;
+
+				Protocol::Object_Pos objectPos;
+				objectPos.set_id(ObjectInfo.nObjectID);
+				Protocol::D3DVECTOR* vPos = objectPos.mutable_vpos();
+				vPos->set_x(ObjectInfo.vPos.x);
+				vPos->set_y(ObjectInfo.vPos.y);
+
+				objpkt.add_pos()->CopyFrom(objectPos);
+
+			}
+			if (bSend == false)
+				continue;
+			auto sendBuffer = ClientPacketHandler::MakeSendBuffer(objpkt);
+			CPlayer* pPlayer = static_cast<CPlayer*>(Player.get());
+			if (pPlayer->ownerSession.expired() == false)
+			{
+				pPlayer->ownerSession.lock()->Send(sendBuffer);
+			}
+			else
+			{
+				pPlayer->SetActivate(false);
+				///세션 소멸, 해당 플레이어 객체도
+			}
 
 
+		}
 
+	}
 }
 
-void CZone::Send_SectorRemovePlayer(Sector::ObjectInfo object)
+void CZone::Send_SectorRemovePlayer()
 {
 
+	map<SectorID, vector<Sector::ObjectInfo>> RemoveList;
+	{
+		//swap후 원본 컨테이너는 clear상태, 이후에 들어온 데이터는 다음tick에 처리!
+		WRITE_LOCK;
+		RemoveList.swap(m_PlayerRemoveList);
+	}
+	//int nCnt = 0;
+	//WRITE_LOCK;
+	for (auto& [SectorID, sData] : RemoveList)
+	{
+		CSectorRef Sector = m_listSector[SectorID];
+
+		if (Sector->Empty_Player())
+			continue;
+
+		int64 nowtime = GetTickCount64();
+		auto distance = [](float source_x, float source_y, float target_x, float target_y)->float
+			{
+				return sqrt(pow(target_x - source_x, 2) + pow(target_y - source_y, 2));
+
+			};
+
+		Protocol::S_PLAYER_REMOVE_ACK objpkt;
+		objpkt.set_sendtime(GetTickCount64());
+		auto Playerlist = Sector->PlayerList();
+		for (auto& [playerid, Player] : Playerlist)
+		{
+			int nCnt = 0;
+
+			bool bSend = false;
+			for (auto& ObjectInfo : sData)
+			{
+				if (nCnt >= 5)
+					break;
+
+				ObjectRef Object = m_nlistObject[ObjectInfo.nObjectType][ObjectInfo.nObjectID];
+				Sector->Delete(ObjectInfo.nObjectType, Object);
+
+				float dist = distance(ObjectInfo.vPos.x, ObjectInfo.vPos.y, Player->GetPos().x(), Player->GetPos().y());
+
+				if (ObjectInfo.nObjectID == playerid)
+					continue;
+
+				if (dist > 2.5)
+				{
+					continue;
+
+				}
+
+				bSend = true;
+
+				Protocol::Object_Pos objectPos;
+				objectPos.set_id(ObjectInfo.nObjectID);
+				Protocol::D3DVECTOR* vPos = objectPos.mutable_vpos();
+				vPos->set_x(ObjectInfo.vPos.x);
+				vPos->set_y(ObjectInfo.vPos.y);
+
+				objpkt.add_pos()->CopyFrom(objectPos);
+
+				nCnt++;
+			}
+			if (bSend == false)
+				continue;
 
 
+			auto sendBuffer = ClientPacketHandler::MakeSendBuffer(objpkt);
+			CPlayer* pPlayer = static_cast<CPlayer*>(Player.get());
+			if (pPlayer->ownerSession.expired() == false)
+			{
+				pPlayer->ownerSession.lock()->Send(sendBuffer);
+			}
+			else
+			{
+				pPlayer->SetActivate(false);
+				///세션 소멸, 해당 플레이어 객체도
+			}
 
+
+		}
+	}
 }
+

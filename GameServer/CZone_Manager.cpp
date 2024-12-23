@@ -34,6 +34,8 @@ void CZone_Manager::Init(const int nZoneCount,const int nZoneUserMax )
 			m_listZone.insert({ nZoneid,Zone });
 
 			Zone->DoTimer(Tick::AI_TICK, &CZone::Update);
+			Zone->DoTimer(Tick::AI_TICK, &CZone::Update_Player);
+
 			nZoneid++;
 		}
 

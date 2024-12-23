@@ -9,6 +9,7 @@ namespace Tick
 		MINUTE_TICK = SECOND_TICK * 60,
 
 		AI_TICK=200,
+		BROADCAST_TICK=100,
 		RENDERING_TICK=100,
 
 	};
