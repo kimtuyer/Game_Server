@@ -25,8 +25,8 @@ namespace Zone
 
 	//class CZone_Manager;
 
-	static const int ZONE_WIDTH = 20;  // 각 존의 가로 크기
-	static const int ZONE_HEIGHT = 10; // 각 존의 세로 크기
+	static const int ZONE_WIDTH = 30;  // 각 존의 가로 크기
+	static const int ZONE_HEIGHT = 15; // 각 존의 세로 크기
 	static const int ZONES_PER_ROW = 5;
 	static const int ZONES_PER_COL = 3;
 
@@ -37,7 +37,8 @@ namespace Zone
 	static const int  Sector_PER_ROW = 4;
 	static const int  Sector_PER_COL = 4;
 
-	static const float  BroadCast_Distance = 3;
+	static const int  BroadCast_Cnt = 7;
+	static const float  BroadCast_Distance = 3.5;
 
 
 

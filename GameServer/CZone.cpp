@@ -872,26 +872,26 @@ void CZone::Send_SectorInsertPlayer()
 		auto Playerlist = Sector->PlayerList();
 		for (auto& [playerid, Player] : Playerlist)
 		{
-			int nCnt = 0;
+			int nCnt = BroadCast_Cnt;
 
 			bool bSend = false;
 			for (auto& ObjectInfo : sData)
 			{
-				if (nCnt >= 5)
+				if (nCnt <= 0)
 					break;
 				ObjectRef Object = m_nlistObject[ObjectInfo.nObjectType][ObjectInfo.nObjectID];
 				Sector->Insert(ObjectInfo.nObjectType, Object);
 
 				float dist = distance(ObjectInfo.vPos.x, ObjectInfo.vPos.y, Player->GetPos().x(), Player->GetPos().y());
 
-				if (dist > 2.5)
+				if (dist > BroadCast_Distance)
 				{
 					continue;
 
 				}
 
 				bSend = true;
-				nCnt++;
+				nCnt--;
 
 				Protocol::Object_Pos objectPos;
 				objectPos.set_id(ObjectInfo.nObjectID);
@@ -952,12 +952,12 @@ void CZone::Send_SectorRemovePlayer()
 		auto Playerlist = Sector->PlayerList();
 		for (auto& [playerid, Player] : Playerlist)
 		{
-			int nCnt = 0;
+			int nCnt = BroadCast_Cnt;
 
 			bool bSend = false;
 			for (auto& ObjectInfo : sData)
 			{
-				if (nCnt >= 5)
+				if (nCnt <=0)
 					break;
 
 				ObjectRef Object = m_nlistObject[ObjectInfo.nObjectType][ObjectInfo.nObjectID];
@@ -968,7 +968,7 @@ void CZone::Send_SectorRemovePlayer()
 				if (ObjectInfo.nObjectID == playerid)
 					continue;
 
-				if (dist > 2.5)
+				if (dist > BroadCast_Distance)
 				{
 					continue;
 
@@ -984,7 +984,7 @@ void CZone::Send_SectorRemovePlayer()
 
 				objpkt.add_pos()->CopyFrom(objectPos);
 
-				nCnt++;
+				nCnt--;
 			}
 			if (bSend == false)
 				continue;

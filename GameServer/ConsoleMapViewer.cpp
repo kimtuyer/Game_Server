@@ -19,6 +19,18 @@ void ConsoleMapViewer::displayPacketCnt()
 
 ConsoleMapViewer::ConsoleMapViewer()
 {
+	HWND console = GetConsoleWindow();
+	RECT r;
+	GetWindowRect(console, &r);
+	MoveWindow(console, r.left, r.top, 1300, 1000, TRUE); // 창 크기 조정
+
+	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+	CONSOLE_SCREEN_BUFFER_INFO csbi;
+	GetConsoleScreenBufferInfo(hConsole, &csbi);
+	COORD bufferSize = { 200, 100 }; // 버퍼 크기 확장
+	SetConsoleScreenBufferSize(hConsole, bufferSize);
+
+
 	// 커서 깜박임 제거
 	CONSOLE_CURSOR_INFO cursorInfo = { 1, FALSE };
 	SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &cursorInfo);
