@@ -542,13 +542,13 @@ class C_ENTER_ZONE final :
   void _internal_set_sendtime(::PROTOBUF_NAMESPACE_ID::uint64 value);
   public:
 
-  // uint64 playerID = 2;
+  // uint32 playerID = 2;
   void clear_playerid();
-  ::PROTOBUF_NAMESPACE_ID::uint64 playerid() const;
-  void set_playerid(::PROTOBUF_NAMESPACE_ID::uint64 value);
+  ::PROTOBUF_NAMESPACE_ID::uint32 playerid() const;
+  void set_playerid(::PROTOBUF_NAMESPACE_ID::uint32 value);
   private:
-  ::PROTOBUF_NAMESPACE_ID::uint64 _internal_playerid() const;
-  void _internal_set_playerid(::PROTOBUF_NAMESPACE_ID::uint64 value);
+  ::PROTOBUF_NAMESPACE_ID::uint32 _internal_playerid() const;
+  void _internal_set_playerid(::PROTOBUF_NAMESPACE_ID::uint32 value);
   public:
 
   // uint32 zoneid = 3;
@@ -577,7 +577,7 @@ class C_ENTER_ZONE final :
   typedef void InternalArenaConstructable_;
   typedef void DestructorSkippable_;
   ::PROTOBUF_NAMESPACE_ID::uint64 sendtime_;
-  ::PROTOBUF_NAMESPACE_ID::uint64 playerid_;
+  ::PROTOBUF_NAMESPACE_ID::uint32 playerid_;
   ::PROTOBUF_NAMESPACE_ID::uint32 zoneid_;
   ::PROTOBUF_NAMESPACE_ID::uint32 sectorid_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
@@ -909,13 +909,13 @@ class C_MOVE final :
   void _internal_set_sendtime(::PROTOBUF_NAMESPACE_ID::uint64 value);
   public:
 
-  // uint64 playerID = 2;
+  // uint32 playerID = 2;
   void clear_playerid();
-  ::PROTOBUF_NAMESPACE_ID::uint64 playerid() const;
-  void set_playerid(::PROTOBUF_NAMESPACE_ID::uint64 value);
+  ::PROTOBUF_NAMESPACE_ID::uint32 playerid() const;
+  void set_playerid(::PROTOBUF_NAMESPACE_ID::uint32 value);
   private:
-  ::PROTOBUF_NAMESPACE_ID::uint64 _internal_playerid() const;
-  void _internal_set_playerid(::PROTOBUF_NAMESPACE_ID::uint64 value);
+  ::PROTOBUF_NAMESPACE_ID::uint32 _internal_playerid() const;
+  void _internal_set_playerid(::PROTOBUF_NAMESPACE_ID::uint32 value);
   public:
 
   // @@protoc_insertion_point(class_scope:Protocol.C_MOVE)
@@ -927,7 +927,7 @@ class C_MOVE final :
   typedef void DestructorSkippable_;
   ::Protocol::D3DVECTOR* pos_;
   ::PROTOBUF_NAMESPACE_ID::uint64 sendtime_;
-  ::PROTOBUF_NAMESPACE_ID::uint64 playerid_;
+  ::PROTOBUF_NAMESPACE_ID::uint32 playerid_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_Protocol_2eproto;
 };
@@ -1500,7 +1500,9 @@ class C_ATTACK final :
 
   enum : int {
     kSendTimeFieldNumber = 1,
+    kTargetIDFieldNumber = 3,
     kPlayerIDFieldNumber = 2,
+    kSkillIDFieldNumber = 4,
   };
   // uint64 sendTime = 1;
   void clear_sendtime();
@@ -1511,13 +1513,31 @@ class C_ATTACK final :
   void _internal_set_sendtime(::PROTOBUF_NAMESPACE_ID::uint64 value);
   public:
 
-  // uint64 playerID = 2;
-  void clear_playerid();
-  ::PROTOBUF_NAMESPACE_ID::uint64 playerid() const;
-  void set_playerid(::PROTOBUF_NAMESPACE_ID::uint64 value);
+  // uint64 targetID = 3;
+  void clear_targetid();
+  ::PROTOBUF_NAMESPACE_ID::uint64 targetid() const;
+  void set_targetid(::PROTOBUF_NAMESPACE_ID::uint64 value);
   private:
-  ::PROTOBUF_NAMESPACE_ID::uint64 _internal_playerid() const;
-  void _internal_set_playerid(::PROTOBUF_NAMESPACE_ID::uint64 value);
+  ::PROTOBUF_NAMESPACE_ID::uint64 _internal_targetid() const;
+  void _internal_set_targetid(::PROTOBUF_NAMESPACE_ID::uint64 value);
+  public:
+
+  // uint32 playerID = 2;
+  void clear_playerid();
+  ::PROTOBUF_NAMESPACE_ID::uint32 playerid() const;
+  void set_playerid(::PROTOBUF_NAMESPACE_ID::uint32 value);
+  private:
+  ::PROTOBUF_NAMESPACE_ID::uint32 _internal_playerid() const;
+  void _internal_set_playerid(::PROTOBUF_NAMESPACE_ID::uint32 value);
+  public:
+
+  // uint32 skillID = 4;
+  void clear_skillid();
+  ::PROTOBUF_NAMESPACE_ID::uint32 skillid() const;
+  void set_skillid(::PROTOBUF_NAMESPACE_ID::uint32 value);
+  private:
+  ::PROTOBUF_NAMESPACE_ID::uint32 _internal_skillid() const;
+  void _internal_set_skillid(::PROTOBUF_NAMESPACE_ID::uint32 value);
   public:
 
   // @@protoc_insertion_point(class_scope:Protocol.C_ATTACK)
@@ -1528,7 +1548,9 @@ class C_ATTACK final :
   typedef void InternalArenaConstructable_;
   typedef void DestructorSkippable_;
   ::PROTOBUF_NAMESPACE_ID::uint64 sendtime_;
-  ::PROTOBUF_NAMESPACE_ID::uint64 playerid_;
+  ::PROTOBUF_NAMESPACE_ID::uint64 targetid_;
+  ::PROTOBUF_NAMESPACE_ID::uint32 playerid_;
+  ::PROTOBUF_NAMESPACE_ID::uint32 skillid_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_Protocol_2eproto;
 };
@@ -1644,6 +1666,7 @@ class S_ATTACK_ACK final :
   enum : int {
     kSendTimeFieldNumber = 1,
     kSuccessFieldNumber = 2,
+    kTargetAliveFieldNumber = 3,
   };
   // uint64 sendTime = 1;
   void clear_sendtime();
@@ -1663,6 +1686,15 @@ class S_ATTACK_ACK final :
   void _internal_set_success(bool value);
   public:
 
+  // bool targetAlive = 3;
+  void clear_targetalive();
+  bool targetalive() const;
+  void set_targetalive(bool value);
+  private:
+  bool _internal_targetalive() const;
+  void _internal_set_targetalive(bool value);
+  public:
+
   // @@protoc_insertion_point(class_scope:Protocol.S_ATTACK_ACK)
  private:
   class _Internal;
@@ -1672,6 +1704,7 @@ class S_ATTACK_ACK final :
   typedef void DestructorSkippable_;
   ::PROTOBUF_NAMESPACE_ID::uint64 sendtime_;
   bool success_;
+  bool targetalive_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_Protocol_2eproto;
 };
@@ -2790,22 +2823,22 @@ inline void C_ENTER_ZONE::set_sendtime(::PROTOBUF_NAMESPACE_ID::uint64 value) {
   // @@protoc_insertion_point(field_set:Protocol.C_ENTER_ZONE.sendTime)
 }
 
-// uint64 playerID = 2;
+// uint32 playerID = 2;
 inline void C_ENTER_ZONE::clear_playerid() {
-  playerid_ = uint64_t{0u};
+  playerid_ = 0u;
 }
-inline ::PROTOBUF_NAMESPACE_ID::uint64 C_ENTER_ZONE::_internal_playerid() const {
+inline ::PROTOBUF_NAMESPACE_ID::uint32 C_ENTER_ZONE::_internal_playerid() const {
   return playerid_;
 }
-inline ::PROTOBUF_NAMESPACE_ID::uint64 C_ENTER_ZONE::playerid() const {
+inline ::PROTOBUF_NAMESPACE_ID::uint32 C_ENTER_ZONE::playerid() const {
   // @@protoc_insertion_point(field_get:Protocol.C_ENTER_ZONE.playerID)
   return _internal_playerid();
 }
-inline void C_ENTER_ZONE::_internal_set_playerid(::PROTOBUF_NAMESPACE_ID::uint64 value) {
+inline void C_ENTER_ZONE::_internal_set_playerid(::PROTOBUF_NAMESPACE_ID::uint32 value) {
   
   playerid_ = value;
 }
-inline void C_ENTER_ZONE::set_playerid(::PROTOBUF_NAMESPACE_ID::uint64 value) {
+inline void C_ENTER_ZONE::set_playerid(::PROTOBUF_NAMESPACE_ID::uint32 value) {
   _internal_set_playerid(value);
   // @@protoc_insertion_point(field_set:Protocol.C_ENTER_ZONE.playerID)
 }
@@ -3037,22 +3070,22 @@ inline void C_MOVE::set_sendtime(::PROTOBUF_NAMESPACE_ID::uint64 value) {
   // @@protoc_insertion_point(field_set:Protocol.C_MOVE.sendTime)
 }
 
-// uint64 playerID = 2;
+// uint32 playerID = 2;
 inline void C_MOVE::clear_playerid() {
-  playerid_ = uint64_t{0u};
+  playerid_ = 0u;
 }
-inline ::PROTOBUF_NAMESPACE_ID::uint64 C_MOVE::_internal_playerid() const {
+inline ::PROTOBUF_NAMESPACE_ID::uint32 C_MOVE::_internal_playerid() const {
   return playerid_;
 }
-inline ::PROTOBUF_NAMESPACE_ID::uint64 C_MOVE::playerid() const {
+inline ::PROTOBUF_NAMESPACE_ID::uint32 C_MOVE::playerid() const {
   // @@protoc_insertion_point(field_get:Protocol.C_MOVE.playerID)
   return _internal_playerid();
 }
-inline void C_MOVE::_internal_set_playerid(::PROTOBUF_NAMESPACE_ID::uint64 value) {
+inline void C_MOVE::_internal_set_playerid(::PROTOBUF_NAMESPACE_ID::uint32 value) {
   
   playerid_ = value;
 }
-inline void C_MOVE::set_playerid(::PROTOBUF_NAMESPACE_ID::uint64 value) {
+inline void C_MOVE::set_playerid(::PROTOBUF_NAMESPACE_ID::uint32 value) {
   _internal_set_playerid(value);
   // @@protoc_insertion_point(field_set:Protocol.C_MOVE.playerID)
 }
@@ -3344,24 +3377,64 @@ inline void C_ATTACK::set_sendtime(::PROTOBUF_NAMESPACE_ID::uint64 value) {
   // @@protoc_insertion_point(field_set:Protocol.C_ATTACK.sendTime)
 }
 
-// uint64 playerID = 2;
+// uint32 playerID = 2;
 inline void C_ATTACK::clear_playerid() {
-  playerid_ = uint64_t{0u};
+  playerid_ = 0u;
 }
-inline ::PROTOBUF_NAMESPACE_ID::uint64 C_ATTACK::_internal_playerid() const {
+inline ::PROTOBUF_NAMESPACE_ID::uint32 C_ATTACK::_internal_playerid() const {
   return playerid_;
 }
-inline ::PROTOBUF_NAMESPACE_ID::uint64 C_ATTACK::playerid() const {
+inline ::PROTOBUF_NAMESPACE_ID::uint32 C_ATTACK::playerid() const {
   // @@protoc_insertion_point(field_get:Protocol.C_ATTACK.playerID)
   return _internal_playerid();
 }
-inline void C_ATTACK::_internal_set_playerid(::PROTOBUF_NAMESPACE_ID::uint64 value) {
+inline void C_ATTACK::_internal_set_playerid(::PROTOBUF_NAMESPACE_ID::uint32 value) {
   
   playerid_ = value;
 }
-inline void C_ATTACK::set_playerid(::PROTOBUF_NAMESPACE_ID::uint64 value) {
+inline void C_ATTACK::set_playerid(::PROTOBUF_NAMESPACE_ID::uint32 value) {
   _internal_set_playerid(value);
   // @@protoc_insertion_point(field_set:Protocol.C_ATTACK.playerID)
+}
+
+// uint64 targetID = 3;
+inline void C_ATTACK::clear_targetid() {
+  targetid_ = uint64_t{0u};
+}
+inline ::PROTOBUF_NAMESPACE_ID::uint64 C_ATTACK::_internal_targetid() const {
+  return targetid_;
+}
+inline ::PROTOBUF_NAMESPACE_ID::uint64 C_ATTACK::targetid() const {
+  // @@protoc_insertion_point(field_get:Protocol.C_ATTACK.targetID)
+  return _internal_targetid();
+}
+inline void C_ATTACK::_internal_set_targetid(::PROTOBUF_NAMESPACE_ID::uint64 value) {
+  
+  targetid_ = value;
+}
+inline void C_ATTACK::set_targetid(::PROTOBUF_NAMESPACE_ID::uint64 value) {
+  _internal_set_targetid(value);
+  // @@protoc_insertion_point(field_set:Protocol.C_ATTACK.targetID)
+}
+
+// uint32 skillID = 4;
+inline void C_ATTACK::clear_skillid() {
+  skillid_ = 0u;
+}
+inline ::PROTOBUF_NAMESPACE_ID::uint32 C_ATTACK::_internal_skillid() const {
+  return skillid_;
+}
+inline ::PROTOBUF_NAMESPACE_ID::uint32 C_ATTACK::skillid() const {
+  // @@protoc_insertion_point(field_get:Protocol.C_ATTACK.skillID)
+  return _internal_skillid();
+}
+inline void C_ATTACK::_internal_set_skillid(::PROTOBUF_NAMESPACE_ID::uint32 value) {
+  
+  skillid_ = value;
+}
+inline void C_ATTACK::set_skillid(::PROTOBUF_NAMESPACE_ID::uint32 value) {
+  _internal_set_skillid(value);
+  // @@protoc_insertion_point(field_set:Protocol.C_ATTACK.skillID)
 }
 
 // -------------------------------------------------------------------
@@ -3406,6 +3479,26 @@ inline void S_ATTACK_ACK::_internal_set_success(bool value) {
 inline void S_ATTACK_ACK::set_success(bool value) {
   _internal_set_success(value);
   // @@protoc_insertion_point(field_set:Protocol.S_ATTACK_ACK.success)
+}
+
+// bool targetAlive = 3;
+inline void S_ATTACK_ACK::clear_targetalive() {
+  targetalive_ = false;
+}
+inline bool S_ATTACK_ACK::_internal_targetalive() const {
+  return targetalive_;
+}
+inline bool S_ATTACK_ACK::targetalive() const {
+  // @@protoc_insertion_point(field_get:Protocol.S_ATTACK_ACK.targetAlive)
+  return _internal_targetalive();
+}
+inline void S_ATTACK_ACK::_internal_set_targetalive(bool value) {
+  
+  targetalive_ = value;
+}
+inline void S_ATTACK_ACK::set_targetalive(bool value) {
+  _internal_set_targetalive(value);
+  // @@protoc_insertion_point(field_set:Protocol.S_ATTACK_ACK.targetAlive)
 }
 
 // -------------------------------------------------------------------

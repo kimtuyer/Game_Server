@@ -131,6 +131,9 @@
       <Filter>Utils</Filter>
     </ClInclude>
     <ClInclude Include="Dev_define.h" />
+    <ClInclude Include="function.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CorePch.cpp">

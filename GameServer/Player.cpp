@@ -2,12 +2,13 @@
 #include "Player.h"
 #include "CZone.h"
 #include "CZone_Manager.h"
-
+#include "GameSession.h"
+#include "ClientPacketHandler.h"
 CPlayer::CPlayer()
 {
 }
 
-CPlayer::CPlayer(int playerid, int zoneid, int sectorid)
+CPlayer::CPlayer(int playerid, int zoneid, int sectorid):m_nKillcount(0)
 {
 }
 
@@ -19,13 +20,69 @@ void CPlayer::LeaveZone()
 {
 	/*
 		해당 유저의 접속이 끊기는 와중에 다른 유저 및 몹과 상호작용 중이었다면?
-	
+
 	*/
 
 	m_bActivate = false;
 
 	CZoneRef Zone = GZoneManager->GetZone(m_nZoneID);
 	Zone->Remove(Object::Player, playerId);
+}
+
+bool CPlayer::Attack(Protocol::C_ATTACK& pkt)
+{
+	int nKill = 0;
+	Protocol::S_ATTACK_ACK ackpkt;
+
+	CZoneRef Zone = GZoneManager->GetZone(m_nZoneID);
+	if (Zone == nullptr)
+		return false;
+
+	CSectorRef Sector = Zone->GetSector(m_nSectorID);
+	ObjectRef Monster = Sector->GetMonster(pkt.targetid());
+	if (Monster == nullptr)
+		return false;
+
+	
+	float dist = Util::distance(m_vPos.x(), m_vPos.y(), Monster->GetPos().x(), Monster->GetPos().y());
+
+	if (dist > Zone::BroadCast_Distance)
+		return false;
+
+	if (Monster->Attacked(m_nAttack, nKill) == false)
+		return false;
+
+	if (nKill > 0)
+	{
+
+		m_nKillcount++;
+		ackpkt.set_targetalive(false);
+	}
+	else
+		ackpkt.set_targetalive(true);
+
+	ackpkt.set_success(true);
+
+	auto sendBuffer = ClientPacketHandler::MakeSendBuffer(ackpkt);
+	ownerSession.lock()->Send(sendBuffer);
+
+	
+	
+	//공격 성공
+	/*
+	상대 몹 체력 깎기
+
+	>>한 몹이 여러 유저의 타깃이 되어,동시에 공격을 받았을 경우
+	>>공격패킷을 받고, 공격가능 판정을 받은 유저중에 죽기전 가장 마지막에
+	타격을 준 유저, hp 0으로 만든 유저에게 킬 카운트 체크 !
 
 
+	몹 체력 없으면, 죽음 판정
+	죽음시,해당 몹 상태 변경->죽음 상태.데드 리스트 추가.
+	Sector->update에서 같이 검사->리스트 돌면서 죽음쿨타임 끝나면 부활
+	타이머 추가 3초뒤 해당 섹터 다시 부활
+
+	*/
+	
+	return true;
 }

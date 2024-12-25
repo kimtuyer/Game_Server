@@ -103,8 +103,8 @@ protected:
 	int		m_nObjectID;
 	atomic<bool>	m_bPos = false;		//이전 위치 다를시 체크용
 	Protocol::D3DVECTOR m_vPos;
-	//int	m_nHP;
-	//int	m_nAttack;
+	int	m_nHP;
+	int	m_nAttack;
 
 private:
 	float	m_fSearchRange;

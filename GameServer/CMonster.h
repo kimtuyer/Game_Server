@@ -28,14 +28,12 @@ public:
 
 
 private:
-	Object::eObject_State	m_eState;
-	int		m_nHP;
-	int		m_nAttack;
+	
 
 	int64	nLastTickCount;
 	CObject* pTarget;
 
-	int m_nStateTime[Object::End];
+	//int m_nStateTime[Object::End];
 
 	std::uniform_int_distribution<> m_ndistribute;
 	std::random_device rd;

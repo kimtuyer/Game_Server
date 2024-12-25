@@ -6,8 +6,8 @@
 #include "ConsoleMapViewer.h"
 #include "RandomMove.h"
 class CZone;
-CMonster::CMonster(int nObjectID, int nZoneID,int nSectorID,  Protocol::D3DVECTOR vStartPos,bool bActivate) : m_nHP(100), m_nAttack(10), m_eState(Object::Idle)
-, m_ndistribute(Object::Idle, Object::Move),gen(rd())
+CMonster::CMonster(int nObjectID, int nZoneID,int nSectorID,  Protocol::D3DVECTOR vStartPos,bool bActivate) : 
+ m_ndistribute(Object::Idle, Object::Move),gen(rd())
 {
 	m_bActivate = bActivate;
 
@@ -16,6 +16,12 @@ CMonster::CMonster(int nObjectID, int nZoneID,int nSectorID,  Protocol::D3DVECTO
 	m_nSectorID = nSectorID;
 	m_nObjectType = Object::Monster;
 	m_vPos = vStartPos;
+
+	m_eState = Object::Idle;
+
+	m_nHP = Util::Random_HP();
+	m_nAttack = 10;
+
 	//cout << "몬스터 생성 ID: " << m_nObjectID <<" : " << m_vPos.x() << ", " << m_vPos.y() << endl;
 	
 

@@ -46,7 +46,7 @@ PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT S_LOGINDefaultTypeInternal _S_L
 constexpr C_ENTER_ZONE::C_ENTER_ZONE(
   ::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized)
   : sendtime_(uint64_t{0u})
-  , playerid_(uint64_t{0u})
+  , playerid_(0u)
   , zoneid_(0u)
   , sectorid_(0u){}
 struct C_ENTER_ZONEDefaultTypeInternal {
@@ -78,7 +78,7 @@ constexpr C_MOVE::C_MOVE(
   ::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized)
   : pos_(nullptr)
   , sendtime_(uint64_t{0u})
-  , playerid_(uint64_t{0u}){}
+  , playerid_(0u){}
 struct C_MOVEDefaultTypeInternal {
   constexpr C_MOVEDefaultTypeInternal()
     : _instance(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized{}) {}
@@ -131,7 +131,9 @@ PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT S_MOVE_PLAYERDefaultTypeInterna
 constexpr C_ATTACK::C_ATTACK(
   ::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized)
   : sendtime_(uint64_t{0u})
-  , playerid_(uint64_t{0u}){}
+  , targetid_(uint64_t{0u})
+  , playerid_(0u)
+  , skillid_(0u){}
 struct C_ATTACKDefaultTypeInternal {
   constexpr C_ATTACKDefaultTypeInternal()
     : _instance(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized{}) {}
@@ -144,7 +146,8 @@ PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT C_ATTACKDefaultTypeInternal _C_
 constexpr S_ATTACK_ACK::S_ATTACK_ACK(
   ::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized)
   : sendtime_(uint64_t{0u})
-  , success_(false){}
+  , success_(false)
+  , targetalive_(false){}
 struct S_ATTACK_ACKDefaultTypeInternal {
   constexpr S_ATTACK_ACKDefaultTypeInternal()
     : _instance(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized{}) {}
@@ -311,6 +314,8 @@ const ::PROTOBUF_NAMESPACE_ID::uint32 TableStruct_Protocol_2eproto::offsets[] PR
   ~0u,  // no _weak_field_map_
   PROTOBUF_FIELD_OFFSET(::Protocol::C_ATTACK, sendtime_),
   PROTOBUF_FIELD_OFFSET(::Protocol::C_ATTACK, playerid_),
+  PROTOBUF_FIELD_OFFSET(::Protocol::C_ATTACK, targetid_),
+  PROTOBUF_FIELD_OFFSET(::Protocol::C_ATTACK, skillid_),
   ~0u,  // no _has_bits_
   PROTOBUF_FIELD_OFFSET(::Protocol::S_ATTACK_ACK, _internal_metadata_),
   ~0u,  // no _extensions_
@@ -318,6 +323,7 @@ const ::PROTOBUF_NAMESPACE_ID::uint32 TableStruct_Protocol_2eproto::offsets[] PR
   ~0u,  // no _weak_field_map_
   PROTOBUF_FIELD_OFFSET(::Protocol::S_ATTACK_ACK, sendtime_),
   PROTOBUF_FIELD_OFFSET(::Protocol::S_ATTACK_ACK, success_),
+  PROTOBUF_FIELD_OFFSET(::Protocol::S_ATTACK_ACK, targetalive_),
   ~0u,  // no _has_bits_
   PROTOBUF_FIELD_OFFSET(::Protocol::S_OBJ_LIST, _internal_metadata_),
   ~0u,  // no _extensions_
@@ -374,13 +380,13 @@ static const ::PROTOBUF_NAMESPACE_ID::internal::MigrationSchema schemas[] PROTOB
   { 49, -1, sizeof(::Protocol::S_MOVE_MONSTER)},
   { 56, -1, sizeof(::Protocol::S_MOVE_PLAYER)},
   { 63, -1, sizeof(::Protocol::C_ATTACK)},
-  { 70, -1, sizeof(::Protocol::S_ATTACK_ACK)},
-  { 77, -1, sizeof(::Protocol::S_OBJ_LIST)},
-  { 85, -1, sizeof(::Protocol::S_OBJ_REMOVE_ACK)},
-  { 93, -1, sizeof(::Protocol::S_PLAYER_LIST)},
-  { 101, -1, sizeof(::Protocol::S_PLAYER_REMOVE_ACK)},
-  { 109, -1, sizeof(::Protocol::C_CHAT)},
-  { 115, -1, sizeof(::Protocol::S_CHAT)},
+  { 72, -1, sizeof(::Protocol::S_ATTACK_ACK)},
+  { 80, -1, sizeof(::Protocol::S_OBJ_LIST)},
+  { 88, -1, sizeof(::Protocol::S_OBJ_REMOVE_ACK)},
+  { 96, -1, sizeof(::Protocol::S_PLAYER_LIST)},
+  { 104, -1, sizeof(::Protocol::S_PLAYER_REMOVE_ACK)},
+  { 112, -1, sizeof(::Protocol::C_CHAT)},
+  { 118, -1, sizeof(::Protocol::S_CHAT)},
 };
 
 static ::PROTOBUF_NAMESPACE_ID::Message const * const file_default_instances[] = {
@@ -408,31 +414,32 @@ const char descriptor_table_protodef_Protocol_2eproto[] PROTOBUF_SECTION_VARIABL
   "ccess\030\001 \001(\010\022\016\n\006zoneid\030\002 \001(\r\022\020\n\010sectorid\030"
   "\003 \001(\r\022!\n\007players\030\004 \001(\0132\020.Protocol.Player"
   "\"T\n\014C_ENTER_ZONE\022\020\n\010sendTime\030\001 \001(\004\022\020\n\010pl"
-  "ayerID\030\002 \001(\004\022\016\n\006zoneid\030\003 \001(\r\022\020\n\010sectorid"
+  "ayerID\030\002 \001(\r\022\016\n\006zoneid\030\003 \001(\r\022\020\n\010sectorid"
   "\030\004 \001(\r\"t\n\013S_ENTER_ACK\022\020\n\010sendTime\030\001 \001(\004\022"
   "\017\n\007success\030\002 \001(\010\022\016\n\006zoneID\030\003 \001(\r\022\020\n\010sect"
   "orid\030\004 \001(\r\022 \n\003pos\030\005 \001(\0132\023.Protocol.D3DVE"
   "CTOR\"N\n\006C_MOVE\022\020\n\010sendTime\030\001 \001(\004\022\020\n\010play"
-  "erID\030\002 \001(\004\022 \n\003pos\030\003 \001(\0132\023.Protocol.D3DVE"
+  "erID\030\002 \001(\r\022 \n\003pos\030\003 \001(\0132\023.Protocol.D3DVE"
   "CTOR\"A\n\nS_MOVE_ACK\022\020\n\010sendTime\030\001 \001(\004\022\017\n\007"
   "success\030\002 \001(\010\022\020\n\010sectorid\030\003 \001(\r\"E\n\016S_MOV"
   "E_MONSTER\022\020\n\010sendTime\030\001 \001(\004\022!\n\003pos\030\002 \003(\013"
   "2\024.Protocol.Object_Pos\"D\n\rS_MOVE_PLAYER\022"
   "\020\n\010sendTime\030\001 \001(\004\022!\n\003pos\030\002 \003(\0132\024.Protoco"
-  "l.Object_Pos\".\n\010C_ATTACK\022\020\n\010sendTime\030\001 \001"
-  "(\004\022\020\n\010playerID\030\002 \001(\004\"1\n\014S_ATTACK_ACK\022\020\n\010"
-  "sendTime\030\001 \001(\004\022\017\n\007success\030\002 \001(\010\"S\n\nS_OBJ"
-  "_LIST\022\020\n\010sendTime\030\001 \001(\004\022\020\n\010sectorid\030\002 \001("
-  "\r\022!\n\003pos\030\003 \003(\0132\024.Protocol.Object_Pos\"Y\n\020"
-  "S_OBJ_REMOVE_ACK\022\020\n\010sendTime\030\001 \001(\004\022\020\n\010se"
-  "ctorid\030\002 \001(\r\022!\n\003pos\030\003 \003(\0132\024.Protocol.Obj"
-  "ect_Pos\"V\n\rS_PLAYER_LIST\022\020\n\010sendTime\030\001 \001"
-  "(\004\022\020\n\010sectorid\030\002 \001(\r\022!\n\003pos\030\003 \003(\0132\024.Prot"
-  "ocol.Object_Pos\"\\\n\023S_PLAYER_REMOVE_ACK\022\020"
-  "\n\010sendTime\030\001 \001(\004\022\020\n\010sectorid\030\002 \001(\r\022!\n\003po"
-  "s\030\003 \003(\0132\024.Protocol.Object_Pos\"\025\n\006C_CHAT\022"
-  "\013\n\003msg\030\001 \001(\t\"\'\n\006S_CHAT\022\020\n\010playerId\030\001 \001(\004"
-  "\022\013\n\003msg\030\002 \001(\tb\006proto3"
+  "l.Object_Pos\"Q\n\010C_ATTACK\022\020\n\010sendTime\030\001 \001"
+  "(\004\022\020\n\010playerID\030\002 \001(\r\022\020\n\010targetID\030\003 \001(\004\022\017"
+  "\n\007skillID\030\004 \001(\r\"F\n\014S_ATTACK_ACK\022\020\n\010sendT"
+  "ime\030\001 \001(\004\022\017\n\007success\030\002 \001(\010\022\023\n\013targetAliv"
+  "e\030\003 \001(\010\"S\n\nS_OBJ_LIST\022\020\n\010sendTime\030\001 \001(\004\022"
+  "\020\n\010sectorid\030\002 \001(\r\022!\n\003pos\030\003 \003(\0132\024.Protoco"
+  "l.Object_Pos\"Y\n\020S_OBJ_REMOVE_ACK\022\020\n\010send"
+  "Time\030\001 \001(\004\022\020\n\010sectorid\030\002 \001(\r\022!\n\003pos\030\003 \003("
+  "\0132\024.Protocol.Object_Pos\"V\n\rS_PLAYER_LIST"
+  "\022\020\n\010sendTime\030\001 \001(\004\022\020\n\010sectorid\030\002 \001(\r\022!\n\003"
+  "pos\030\003 \003(\0132\024.Protocol.Object_Pos\"\\\n\023S_PLA"
+  "YER_REMOVE_ACK\022\020\n\010sendTime\030\001 \001(\004\022\020\n\010sect"
+  "orid\030\002 \001(\r\022!\n\003pos\030\003 \003(\0132\024.Protocol.Objec"
+  "t_Pos\"\025\n\006C_CHAT\022\013\n\003msg\030\001 \001(\t\"\'\n\006S_CHAT\022\020"
+  "\n\010playerId\030\001 \001(\004\022\013\n\003msg\030\002 \001(\tb\006proto3"
   ;
 static const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable*const descriptor_table_Protocol_2eproto_deps[2] = {
   &::descriptor_table_Enum_2eproto,
@@ -440,7 +447,7 @@ static const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable*const descriptor
 };
 static ::PROTOBUF_NAMESPACE_ID::internal::once_flag descriptor_table_Protocol_2eproto_once;
 const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_Protocol_2eproto = {
-  false, false, 1181, descriptor_table_protodef_Protocol_2eproto, "Protocol.proto", 
+  false, false, 1237, descriptor_table_protodef_Protocol_2eproto, "Protocol.proto", 
   &descriptor_table_Protocol_2eproto_once, descriptor_table_Protocol_2eproto_deps, 2, 16,
   schemas, file_default_instances, TableStruct_Protocol_2eproto::offsets,
   file_level_metadata_Protocol_2eproto, file_level_enum_descriptors_Protocol_2eproto, file_level_service_descriptors_Protocol_2eproto,
@@ -976,10 +983,10 @@ const char* C_ENTER_ZONE::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_I
           CHK_(ptr);
         } else goto handle_unusual;
         continue;
-      // uint64 playerID = 2;
+      // uint32 playerID = 2;
       case 2:
         if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 16)) {
-          playerid_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
+          playerid_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
           CHK_(ptr);
         } else goto handle_unusual;
         continue;
@@ -1032,10 +1039,10 @@ failure:
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteUInt64ToArray(1, this->_internal_sendtime(), target);
   }
 
-  // uint64 playerID = 2;
+  // uint32 playerID = 2;
   if (this->playerid() != 0) {
     target = stream->EnsureSpace(target);
-    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteUInt64ToArray(2, this->_internal_playerid(), target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteUInt32ToArray(2, this->_internal_playerid(), target);
   }
 
   // uint32 zoneid = 3;
@@ -1073,10 +1080,10 @@ size_t C_ENTER_ZONE::ByteSizeLong() const {
         this->_internal_sendtime());
   }
 
-  // uint64 playerID = 2;
+  // uint32 playerID = 2;
   if (this->playerid() != 0) {
     total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::UInt64Size(
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::UInt32Size(
         this->_internal_playerid());
   }
 
@@ -1583,10 +1590,10 @@ const char* C_MOVE::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::int
           CHK_(ptr);
         } else goto handle_unusual;
         continue;
-      // uint64 playerID = 2;
+      // uint32 playerID = 2;
       case 2:
         if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 16)) {
-          playerid_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
+          playerid_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
           CHK_(ptr);
         } else goto handle_unusual;
         continue;
@@ -1632,10 +1639,10 @@ failure:
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteUInt64ToArray(1, this->_internal_sendtime(), target);
   }
 
-  // uint64 playerID = 2;
+  // uint32 playerID = 2;
   if (this->playerid() != 0) {
     target = stream->EnsureSpace(target);
-    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteUInt64ToArray(2, this->_internal_playerid(), target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteUInt32ToArray(2, this->_internal_playerid(), target);
   }
 
   // .Protocol.D3DVECTOR pos = 3;
@@ -1676,10 +1683,10 @@ size_t C_MOVE::ByteSizeLong() const {
         this->_internal_sendtime());
   }
 
-  // uint64 playerID = 2;
+  // uint32 playerID = 2;
   if (this->playerid() != 0) {
     total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::UInt64Size(
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::UInt32Size(
         this->_internal_playerid());
   }
 
@@ -2472,16 +2479,16 @@ C_ATTACK::C_ATTACK(const C_ATTACK& from)
   : ::PROTOBUF_NAMESPACE_ID::Message() {
   _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
   ::memcpy(&sendtime_, &from.sendtime_,
-    static_cast<size_t>(reinterpret_cast<char*>(&playerid_) -
-    reinterpret_cast<char*>(&sendtime_)) + sizeof(playerid_));
+    static_cast<size_t>(reinterpret_cast<char*>(&skillid_) -
+    reinterpret_cast<char*>(&sendtime_)) + sizeof(skillid_));
   // @@protoc_insertion_point(copy_constructor:Protocol.C_ATTACK)
 }
 
 void C_ATTACK::SharedCtor() {
 ::memset(reinterpret_cast<char*>(this) + static_cast<size_t>(
     reinterpret_cast<char*>(&sendtime_) - reinterpret_cast<char*>(this)),
-    0, static_cast<size_t>(reinterpret_cast<char*>(&playerid_) -
-    reinterpret_cast<char*>(&sendtime_)) + sizeof(playerid_));
+    0, static_cast<size_t>(reinterpret_cast<char*>(&skillid_) -
+    reinterpret_cast<char*>(&sendtime_)) + sizeof(skillid_));
 }
 
 C_ATTACK::~C_ATTACK() {
@@ -2511,8 +2518,8 @@ void C_ATTACK::Clear() {
   (void) cached_has_bits;
 
   ::memset(&sendtime_, 0, static_cast<size_t>(
-      reinterpret_cast<char*>(&playerid_) -
-      reinterpret_cast<char*>(&sendtime_)) + sizeof(playerid_));
+      reinterpret_cast<char*>(&skillid_) -
+      reinterpret_cast<char*>(&sendtime_)) + sizeof(skillid_));
   _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
@@ -2529,10 +2536,24 @@ const char* C_ATTACK::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::i
           CHK_(ptr);
         } else goto handle_unusual;
         continue;
-      // uint64 playerID = 2;
+      // uint32 playerID = 2;
       case 2:
         if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 16)) {
-          playerid_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
+          playerid_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
+          CHK_(ptr);
+        } else goto handle_unusual;
+        continue;
+      // uint64 targetID = 3;
+      case 3:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 24)) {
+          targetid_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
+          CHK_(ptr);
+        } else goto handle_unusual;
+        continue;
+      // uint32 skillID = 4;
+      case 4:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 32)) {
+          skillid_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
           CHK_(ptr);
         } else goto handle_unusual;
         continue;
@@ -2571,10 +2592,22 @@ failure:
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteUInt64ToArray(1, this->_internal_sendtime(), target);
   }
 
-  // uint64 playerID = 2;
+  // uint32 playerID = 2;
   if (this->playerid() != 0) {
     target = stream->EnsureSpace(target);
-    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteUInt64ToArray(2, this->_internal_playerid(), target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteUInt32ToArray(2, this->_internal_playerid(), target);
+  }
+
+  // uint64 targetID = 3;
+  if (this->targetid() != 0) {
+    target = stream->EnsureSpace(target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteUInt64ToArray(3, this->_internal_targetid(), target);
+  }
+
+  // uint32 skillID = 4;
+  if (this->skillid() != 0) {
+    target = stream->EnsureSpace(target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteUInt32ToArray(4, this->_internal_skillid(), target);
   }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
@@ -2600,11 +2633,25 @@ size_t C_ATTACK::ByteSizeLong() const {
         this->_internal_sendtime());
   }
 
-  // uint64 playerID = 2;
-  if (this->playerid() != 0) {
+  // uint64 targetID = 3;
+  if (this->targetid() != 0) {
     total_size += 1 +
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::UInt64Size(
+        this->_internal_targetid());
+  }
+
+  // uint32 playerID = 2;
+  if (this->playerid() != 0) {
+    total_size += 1 +
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::UInt32Size(
         this->_internal_playerid());
+  }
+
+  // uint32 skillID = 4;
+  if (this->skillid() != 0) {
+    total_size += 1 +
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::UInt32Size(
+        this->_internal_skillid());
   }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
@@ -2641,8 +2688,14 @@ void C_ATTACK::MergeFrom(const C_ATTACK& from) {
   if (from.sendtime() != 0) {
     _internal_set_sendtime(from._internal_sendtime());
   }
+  if (from.targetid() != 0) {
+    _internal_set_targetid(from._internal_targetid());
+  }
   if (from.playerid() != 0) {
     _internal_set_playerid(from._internal_playerid());
+  }
+  if (from.skillid() != 0) {
+    _internal_set_skillid(from._internal_skillid());
   }
 }
 
@@ -2668,8 +2721,8 @@ void C_ATTACK::InternalSwap(C_ATTACK* other) {
   using std::swap;
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
   ::PROTOBUF_NAMESPACE_ID::internal::memswap<
-      PROTOBUF_FIELD_OFFSET(C_ATTACK, playerid_)
-      + sizeof(C_ATTACK::playerid_)
+      PROTOBUF_FIELD_OFFSET(C_ATTACK, skillid_)
+      + sizeof(C_ATTACK::skillid_)
       - PROTOBUF_FIELD_OFFSET(C_ATTACK, sendtime_)>(
           reinterpret_cast<char*>(&sendtime_),
           reinterpret_cast<char*>(&other->sendtime_));
@@ -2697,16 +2750,16 @@ S_ATTACK_ACK::S_ATTACK_ACK(const S_ATTACK_ACK& from)
   : ::PROTOBUF_NAMESPACE_ID::Message() {
   _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
   ::memcpy(&sendtime_, &from.sendtime_,
-    static_cast<size_t>(reinterpret_cast<char*>(&success_) -
-    reinterpret_cast<char*>(&sendtime_)) + sizeof(success_));
+    static_cast<size_t>(reinterpret_cast<char*>(&targetalive_) -
+    reinterpret_cast<char*>(&sendtime_)) + sizeof(targetalive_));
   // @@protoc_insertion_point(copy_constructor:Protocol.S_ATTACK_ACK)
 }
 
 void S_ATTACK_ACK::SharedCtor() {
 ::memset(reinterpret_cast<char*>(this) + static_cast<size_t>(
     reinterpret_cast<char*>(&sendtime_) - reinterpret_cast<char*>(this)),
-    0, static_cast<size_t>(reinterpret_cast<char*>(&success_) -
-    reinterpret_cast<char*>(&sendtime_)) + sizeof(success_));
+    0, static_cast<size_t>(reinterpret_cast<char*>(&targetalive_) -
+    reinterpret_cast<char*>(&sendtime_)) + sizeof(targetalive_));
 }
 
 S_ATTACK_ACK::~S_ATTACK_ACK() {
@@ -2736,8 +2789,8 @@ void S_ATTACK_ACK::Clear() {
   (void) cached_has_bits;
 
   ::memset(&sendtime_, 0, static_cast<size_t>(
-      reinterpret_cast<char*>(&success_) -
-      reinterpret_cast<char*>(&sendtime_)) + sizeof(success_));
+      reinterpret_cast<char*>(&targetalive_) -
+      reinterpret_cast<char*>(&sendtime_)) + sizeof(targetalive_));
   _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
@@ -2758,6 +2811,13 @@ const char* S_ATTACK_ACK::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_I
       case 2:
         if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 16)) {
           success_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
+          CHK_(ptr);
+        } else goto handle_unusual;
+        continue;
+      // bool targetAlive = 3;
+      case 3:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 24)) {
+          targetalive_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
           CHK_(ptr);
         } else goto handle_unusual;
         continue;
@@ -2802,6 +2862,12 @@ failure:
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteBoolToArray(2, this->_internal_success(), target);
   }
 
+  // bool targetAlive = 3;
+  if (this->targetalive() != 0) {
+    target = stream->EnsureSpace(target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteBoolToArray(3, this->_internal_targetalive(), target);
+  }
+
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::InternalSerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
@@ -2827,6 +2893,11 @@ size_t S_ATTACK_ACK::ByteSizeLong() const {
 
   // bool success = 2;
   if (this->success() != 0) {
+    total_size += 1 + 1;
+  }
+
+  // bool targetAlive = 3;
+  if (this->targetalive() != 0) {
     total_size += 1 + 1;
   }
 
@@ -2867,6 +2938,9 @@ void S_ATTACK_ACK::MergeFrom(const S_ATTACK_ACK& from) {
   if (from.success() != 0) {
     _internal_set_success(from._internal_success());
   }
+  if (from.targetalive() != 0) {
+    _internal_set_targetalive(from._internal_targetalive());
+  }
 }
 
 void S_ATTACK_ACK::CopyFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) {
@@ -2891,8 +2965,8 @@ void S_ATTACK_ACK::InternalSwap(S_ATTACK_ACK* other) {
   using std::swap;
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
   ::PROTOBUF_NAMESPACE_ID::internal::memswap<
-      PROTOBUF_FIELD_OFFSET(S_ATTACK_ACK, success_)
-      + sizeof(S_ATTACK_ACK::success_)
+      PROTOBUF_FIELD_OFFSET(S_ATTACK_ACK, targetalive_)
+      + sizeof(S_ATTACK_ACK::targetalive_)
       - PROTOBUF_FIELD_OFFSET(S_ATTACK_ACK, sendtime_)>(
           reinterpret_cast<char*>(&sendtime_),
           reinterpret_cast<char*>(&other->sendtime_));

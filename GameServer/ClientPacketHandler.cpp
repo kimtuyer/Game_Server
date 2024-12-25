@@ -271,6 +271,36 @@ bool Handle_C_MOVE(PacketSessionRef& session, Protocol::C_MOVE& pkt)
 
 bool Handle_C_ATTACK(PacketSessionRef& session, Protocol::C_ATTACK& pkt)
 {
+
+	Protocol::S_ATTACK_ACK ackpkt;
+	GameSessionRef gameSession = static_pointer_cast<GameSession>(session);
+
+	if (gameSession->_currentPlayer->playerId != pkt.playerid())
+		ackpkt.set_success(false);
+
+	bool bRet = gameSession->_currentPlayer->Attack(pkt);
+
+
+	CZoneRef Zone = GZoneManager->GetZone(gameSession->_currentPlayer->GetZoneID());
+	
+	
+
+	pkt.playerid();
+	pkt.targetid();
+
+
+
+
+	/*
+		존에서 두 오브젝트가 같은 존에 속하는지
+		공격이 가능한 거리인지 다시 확인후,
+		가능하면 공격 성공 처리 ->타겟은 일단 한번에 제거.-> 3초뒤 리스폰 타이머
+		불가능하면 S_ATTACK_ACK 에서 false 전송.
+	
+	
+	*/
+
+
 	return false;
 }
 

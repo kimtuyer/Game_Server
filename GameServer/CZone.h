@@ -30,7 +30,7 @@ public:
 	//리스트 순회, 객체 타이머 
 	void Update();
 	void Update_Player();
-
+	
 	
 	//몬스터 객체 받아서 플레이어 탐색
 	CObject* SearchEnemy(CObject* pMonster);//or MonsterID
@@ -70,7 +70,8 @@ public:
 
 	ObjectList& PlayerList()
 	{
-		READ_LOCK;
+		m_lock.ReadLock("Player");
+		//READ_LOCK;
 		{
 			return m_nlistObject[Object::Player];
 		}
@@ -80,7 +81,7 @@ public:
 
 	ObjectList& MonsterList()
 	{
-		READ_LOCK;
+		m_lock.ReadLock("Monster");
 		//if (m_nlistObject.contains(Object::Monster))
 		{
 			return m_nlistObject[Object::Monster];
@@ -124,6 +125,7 @@ public:
 
 	void Send_SectorInsertPlayer();
 	void Send_SectorRemovePlayer();
+
 	//CSectorRef GetSectorID(int nSectorID)
 	//{
 	//
@@ -135,7 +137,9 @@ public:
 private:	//오브젝트 리스트도 맵 or set이 나은가?
 	
 	//오브젝트는 타입에 따라 리스트를 다르게 가져가는게 나은가
-	USE_LOCK;
+	//USE_LOCK;
+	Lock	m_lock;
+	//	m_Die_lock;
 	int			m_nZoneID;
 	Protocol::D3DVECTOR m_vStartpos;
 
@@ -150,6 +154,7 @@ private:	//오브젝트 리스트도 맵 or set이 나은가?
 
 	map<SectorID, vector<Sector::ObjectInfo>> m_PlayerInsertList;
 	map<SectorID, vector<Sector::ObjectInfo>> m_PlayerRemoveList;
+
 //	vector<Sector::ObjectInfo> m_RemoveList;
 
 

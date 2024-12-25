@@ -25,4 +25,5 @@ using namespace std;
 #include "Enum.h"
 #include "Struct.h"
 
+#include "function.h"
 #include "Dev_define.h"

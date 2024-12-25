@@ -16,7 +16,7 @@ void CSector::Update()
 
     vector<CMonster*> vecMonsterlist;
     {
-        READ_LOCK;
+        m_lock.ReadLock("Object");
         for (auto& [objectid, Object] : m_nlistObject[Object::Monster])
         {
             if (Object->GetActivate() == false)
@@ -36,6 +36,27 @@ void CSector::Update()
     {
         pMonster->Update();
     }      
+
+    int nowtime = GetTickCount64();
+    {
+        m_lock.WriteLock("Dead");
+        for (auto& [objectID, respawntime] : m_DeadMonsterList)
+        {
+            if (nowtime < respawntime)
+                continue;
+
+            m_DeadMonsterList.erase(objectID);
+            //해당 몬스터 리스폰
+            if (m_nlistObject[Object::Monster].contains(objectID))
+            {
+                m_nlistObject[Object::Monster][objectID]->SetActivate(true);
+                m_nlistObject[Object::Monster][objectID]->m_eState=Object::Idle;
+
+            }
+        }
+    }
+
+
 
 }
 
@@ -61,16 +82,27 @@ bool CSector::FindObject(int objectID)
     return false;
 }
 
+ObjectRef CSector::GetMonster(int objectID)
+{
+    if (m_nlistObject[Object::Monster].contains(objectID))
+    {
+        return (m_nlistObject[Object::Monster][objectID]);
+    }
+    else
+        nullptr;
+
+}
+
 bool CSector::Insert(int nObjectType, ObjectRef Object)
 {
-    WRITE_LOCK;
+    m_lock.WriteLock("Object");
     m_nlistObject[nObjectType].insert({Object->ObjectID(),Object});
     return true;
 }
 
 bool CSector::Delete(int nObjectType, ObjectRef Object)
 {
-    WRITE_LOCK;
+    m_lock.WriteLock("Object");
     m_nlistObject[nObjectType].insert({ Object->ObjectID(),Object });
     return true;
 }
@@ -95,18 +127,18 @@ void CSector::BroadCast_Player(Sector::UpdateType eType,Sector::ObjectInfo Objec
     objpkt.add_pos()->CopyFrom(objectPos);
 
 
-    auto distance = [](float source_x, float source_y, float target_x, float target_y)->float
-        {
-            return sqrt(pow(target_x - source_x, 2) + pow(target_y - source_y, 2));
-
-        };
+   // auto distance = [](float source_x, float source_y, float target_x, float target_y)->float
+   //     {
+   //         return sqrt(pow(target_x - source_x, 2) + pow(target_y - source_y, 2));
+   //
+   //     };
 
     for (auto [playerid , Player] : Playerlist)
     {
         if (ObjectInfo.nObjectID == playerid)
             continue;
 
-        float dist = distance(ObjectInfo.vPos.x, ObjectInfo.vPos.y, Player->GetPos().x(), Player->GetPos().y());
+        float dist = Util::distance(ObjectInfo.vPos.x, ObjectInfo.vPos.y, Player->GetPos().x(), Player->GetPos().y());
 
 
         if (dist > Zone::BroadCast_Distance)
@@ -135,7 +167,7 @@ void CSector::BroadCast_Player(Sector::UpdateType eType,Sector::ObjectInfo Objec
 ObjectList& CSector::PlayerList()
 {
     {
-        READ_LOCK;
+        m_lock.ReadLock("Player");
         {
             return m_nlistObject[Object::Player];
         }
@@ -154,4 +186,15 @@ void CSector::Insert_adjSector(int sectorID, float x, float y)
     vPos.set_y(y);
 
     m_adjSectorList.insert({ sectorID,vPos });
+}
+
+void CSector::Insert_DeadList(int ObjectID)
+{
+    m_lock.WriteLock("Dead");
+    //죽은 후 3초뒤 리스폰
+    int nowTime = GetTickCount64() + Tick::SECOND_TICK * 3;
+
+    if (m_DeadMonsterList.contains(ObjectID))
+        return;
+    m_DeadMonsterList.insert({ ObjectID,nowTime });
 }

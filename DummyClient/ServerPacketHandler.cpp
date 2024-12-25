@@ -121,6 +121,8 @@ bool Handle_S_MOVE_ACK(PacketSessionRef& session, Protocol::S_MOVE_ACK& pkt)
 
 	gameSession->_currentPlayer->SetSectorID(pkt.sectorid());
 
+	//섹터 이동후, 기존 섹터에 존재하던 targetlist는 초기화.
+	gameSession->_currentPlayer->Clear_TargetList();
 
 	return true;
 }
@@ -128,7 +130,17 @@ bool Handle_S_MOVE_ACK(PacketSessionRef& session, Protocol::S_MOVE_ACK& pkt)
 
 bool Handle_S_ATTACK_ACK(PacketSessionRef& session, Protocol::S_ATTACK_ACK& pkt)
 {
-	RTT(GetTickCount64(), pkt.sendtime(), "S_ATTACK_ACK");
+	RTT(GetTickCount64(), pkt.sendtime(), "S_ATTACK_ACK");	
+	/*
+		공격한 타겟을 제거했을시, 다시 idle상태 전환
+	*/
+	ClientSessionRef gameSession = static_pointer_cast<ClientSession>(session);
+	if (pkt.success())
+	{
+		gameSession->_currentPlayer->m_eState=Object::Idle;
+
+	}
+
 
 	// TODO
 	return true;
@@ -138,6 +150,25 @@ bool Handle_S_ATTACK_ACK(PacketSessionRef& session, Protocol::S_ATTACK_ACK& pkt)
 bool Handle_S_OBJ_LIST(PacketSessionRef& session, Protocol::S_OBJ_LIST& pkt)
 {
 	RTT(GetTickCount64(), pkt.sendtime(), "S_OBJ_LIST");
+	
+	ClientSessionRef gameSession = static_pointer_cast<ClientSession>(session);
+
+
+	int size=pkt.pos_size();
+	for (int i = 0; i < size; i++)
+	{
+		//Sector::ObjectInfo info;
+		Protocol::Object_Pos object = pkt.pos(i);
+		gameSession->_currentPlayer->Insert_Target(object);
+	}
+	gameSession->_currentPlayer->SetSearchOn(true); //주변 오브젝트 탐색가능
+	/*
+	
+	
+	
+	
+	*/
+
 
 	// TODO
 	return true;
@@ -153,7 +184,19 @@ bool Handle_S_OBJ_REMOVE_ACK(PacketSessionRef& session, Protocol::S_OBJ_REMOVE_A
 {
 	RTT(GetTickCount64(), pkt.sendtime(), "S_OBJ_REMOVE_ACK");
 
-	// TODO
+
+	ClientSessionRef gameSession = static_pointer_cast<ClientSession>(session);
+
+
+	int size = pkt.pos_size();
+	for (int i = 0; i < size; i++)
+	{
+		//Sector::ObjectInfo info;
+		Protocol::Object_Pos object = pkt.pos(i);
+		gameSession->_currentPlayer->Delete_Target(object);
+	}
+
+
 	return true;
 }
 

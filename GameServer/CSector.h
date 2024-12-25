@@ -14,6 +14,7 @@ public:
 	bool BelongtoSector(Protocol::D3DVECTOR vPos);
 
 	bool FindObject(int objectID);
+	ObjectRef GetMonster(int objectID);
 
 
 	bool Insert(int nObjectType, ObjectRef Object);
@@ -31,7 +32,7 @@ public:
 
 	bool Empty()
 	{
-		WRITE_LOCK;
+		m_lock.WriteLock("Object");
 		return m_nlistObject.empty();
 	}
 
@@ -47,7 +48,7 @@ public:
 	ObjectList& PlayerList();
 	bool	Empty_Player()
 	{
-		WRITE_LOCK;
+		m_lock.WriteLock("Player");
 		return m_nlistObject[Object::Player].empty();
 	}
 
@@ -67,15 +68,19 @@ public:
 	void Insert_ObjecttoSector(Sector::ObjectInfo object);
 	void Remove_ObjecttoSector(Sector::ObjectInfo object);
 
+	void Insert_DeadList(int ObjectID);
+
+
 	map<int, Protocol::D3DVECTOR> m_adjSectorList;
 private:
-	USE_LOCK;
+	Lock m_lock;
 	int m_nZoneID;
 	int	m_nSectorID;
 	bool m_bActivate;
 	Protocol::D3DVECTOR m_vStartpos;
 
 
+	map<ObjectID, int64>		m_DeadMonsterList;
 
 	//map<ObjectID, ObjectRef > m_nlistObject;
 
@@ -102,11 +107,11 @@ inline void CSector::BroadCast_Player(T& objpkt, Sector::ObjectInfo ObjectInfo)
 	objpkt.add_pos()->CopyFrom(objectPos);
 
 
-	auto distance = [](float source_x, float source_y, float target_x, float target_y)->float
-		{
-			return sqrt(pow(target_x - source_x, 2) + pow(target_y - source_y, 2));
-
-		};
+	//auto distance = [](float source_x, float source_y, float target_x, float target_y)->float
+	//	{
+	//		return sqrt(pow(target_x - source_x, 2) + pow(target_y - source_y, 2));
+	//
+	//	};
 
 	for (auto [playerid, Player] : Playerlist)
 	{

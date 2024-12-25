@@ -19,8 +19,8 @@ message S_LOGIN
 
 message C_ENTER_ZONE
 {
-	uint64 sendTime=1;
-	uint64 playerID = 2;
+	uint64 sendTime=1;	
+	uint32 playerID = 2;
 	uint32	 zoneid=3;
 	uint32	 sectorid=4;
 
@@ -41,7 +41,7 @@ message S_ENTER_ACK
 message C_MOVE //클라 동기화
 {
 	uint64 sendTime=1;
-	uint64 playerID = 2;
+	uint32 playerID = 2;
 	D3DVECTOR pos=3;
 
 
@@ -70,20 +70,20 @@ message S_MOVE_PLAYER
 	//D3DVECTOR pos=3;
 }
 
-
-
-
 message C_ATTACK
 {
 	uint64 sendTime=1;
-	uint64 playerID = 2;
+	uint32 playerID = 2;
+	uint64 targetID = 3;
+	uint32 skillID = 4;
+
 }
 
 message S_ATTACK_ACK
 {
 	uint64 sendTime=1;
-
 	bool success = 2;
+	bool targetAlive=3;
 }
 
 

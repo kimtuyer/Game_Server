@@ -169,6 +169,7 @@
     <ClInclude Include="DeadLockProfiler.h" />
     <ClInclude Include="Dev_define.h" />
     <ClInclude Include="Enum.h" />
+    <ClInclude Include="function.h" />
     <ClInclude Include="GlobalQueue.h" />
     <ClInclude Include="IocpCore.h" />
     <ClInclude Include="IocpEvent.h" />

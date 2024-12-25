@@ -31,13 +31,13 @@ CZone::CZone(int nMaxUserCnt, int nZoneID, Protocol::D3DVECTOR vPos)
 
 			if (m_nZoneID <= Zone::ZONES_PER_ROW)
 				col = 0;
-			else if (m_nZoneID <=Zone::ZONES_PER_ROW*2)
+			else if (m_nZoneID <= Zone::ZONES_PER_ROW * 2)
 				col = 1;
 			else if (m_nZoneID <= Zone::ZONES_PER_ROW * 3)
 				col = 2;
 
-			float x = ( (m_nZoneID - 1) % Zone::ZONES_PER_ROW)  * ZONE_WIDTH + (WIDTH - 1) * Zone::Sector_WIDTH + Sector_WIDTH / 2;
-			float y =  (col * ZONE_HEIGHT) + ((HEIGHT - 1)* Zone::Sector_HEIGHT) + Sector_HEIGHT / 2;
+			float x = ((m_nZoneID - 1) % Zone::ZONES_PER_ROW) * ZONE_WIDTH + (WIDTH - 1) * Zone::Sector_WIDTH + Sector_WIDTH / 2;
+			float y = (col * ZONE_HEIGHT) + ((HEIGHT - 1) * Zone::Sector_HEIGHT) + Sector_HEIGHT / 2;
 
 			Protocol::D3DVECTOR startpos;
 			startpos.set_x(x);
@@ -57,18 +57,14 @@ CZone::CZone(int nMaxUserCnt, int nZoneID, Protocol::D3DVECTOR vPos)
 
 		auto Dir = [&]()
 			{
-
 				for (auto& [x, y] : directions)
 				{
 					float new_x = x + currnet_x;
 					float new_y = y + currnet_y;
 					Set_AdjSector(new_x, new_y, Sector);
-
 				}
-
 			};
 		Dir();
-
 	}
 	//	//위
 	//	x = currnet_x;
@@ -111,7 +107,6 @@ CZone::CZone(int nMaxUserCnt, int nZoneID, Protocol::D3DVECTOR vPos)
 	//	x = currnet_x + Zone::Sector_WIDTH;
 	//	y = currnet_y + Zone::Sector_HEIGHT;
 	//	Set_AdjSector(x, y, Sector);
-	
 
 	////////////////////////////////////////////////////////
 	if (MonsterMaxCount == 0)
@@ -137,8 +132,6 @@ CZone::CZone(int nMaxUserCnt, int nZoneID, Protocol::D3DVECTOR vPos)
 		Sector->Insert(Object::Monster, Monster); //원래 ObjectRef 넣어야하는데..
 	}
 	//몬스터 색터 id 랜덤으로 넣어줄려면  1~16번 섹터중 랜덤으로 가져와 그 섹터의 좌표를 가져와 삽입!
-	
-
 }
 
 CZone::~CZone()
@@ -148,7 +141,7 @@ CZone::~CZone()
 
 bool CZone::_Enter(ObjectType eObjectType, ObjectRef object)
 {
-	WRITE_LOCK;
+	m_lock.WriteLock("Object");
 
 	if (eObjectType <  Object::Player || eObjectType > Object::Monster)
 		return false;
@@ -187,7 +180,7 @@ void CZone::Remove(ObjectType eObjectType, int objectID)
 		return;
 
 	{
-		WRITE_LOCK;
+		m_lock.WriteLock("Object");
 		auto it = m_nlistObject.find(eObjectType);
 		if (it != m_nlistObject.end())
 		{
@@ -209,7 +202,7 @@ void CZone::Remove(ObjectType eObjectType, int objectID)
 	if (eObjectType == Object::ObjectType::Player)
 	{
 		{
-			WRITE_LOCK;
+			m_lock.WriteLock("Player");
 			m_nUserCnt.fetch_sub(1);
 			if (m_nlistObject[Object::Player].empty())
 				m_bActivate = false;
@@ -241,12 +234,8 @@ void CZone::Update()
 
 		Sector->Update();
 	}
+
 	//삽입 삭제 리스트 각 섹터에 위치한 플레이어들에게 전송
-
-	//Send_SectorInsertPlayer();
-
-	//Send_SectorRemovePlayer();
-
 	Send_SectorInsertObject();
 
 	Send_SectorRemoveObject();
@@ -294,13 +283,11 @@ void CZone::Update()
 
 void CZone::Update_Player()
 {
-
 	Send_SectorInsertPlayer();
 
 	Send_SectorRemovePlayer();
 
 	DoTimer(Tick::AI_TICK, &CZone::Update_Player);
-
 }
 
 CObject* CZone::SearchEnemy(CObject* pMonster)
@@ -326,10 +313,10 @@ CObject* CZone::SearchEnemy(CObject* pMonster)
 	return nullptr;
 }
 
-void CZone::Update_Pos(Object::ObjectType eObjectType,int nObjectID, const Protocol::D3DVECTOR& vPos)
+void CZone::Update_Pos(Object::ObjectType eObjectType, int nObjectID, const Protocol::D3DVECTOR& vPos)
 {
 	if (eObjectType <  Object::Player || eObjectType > Object::Monster)
-		return ;
+		return;
 
 	if (m_nlistObject[eObjectType].contains(nObjectID))
 	{
@@ -339,13 +326,12 @@ void CZone::Update_Pos(Object::ObjectType eObjectType,int nObjectID, const Proto
 
 		*/
 		m_nlistObject[eObjectType][nObjectID]->SetPos(vPos);
-
 	}
 }
 
 bool CZone::Enter()
 {
-	READ_LOCK;
+	m_lock.ReadLock("Player");
 	return m_nlistObject[Object::Player].size() < m_nMaxUserCnt;
 }
 
@@ -398,7 +384,6 @@ int CZone::GetInitSectorID()
 		std::uniform_int_distribution<int> SectorList(1, Sector_Count);   // 0 ~ MAX_STEP
 		return  SectorList(gen);
 		//auto Sector = m_listSector[sectorID];
-
 	}
 }
 
@@ -584,40 +569,37 @@ void CZone::Set_AdjSector(float x, float y, CSectorRef Sector)
 
 void CZone::Insert_ObjecttoSector(Sector::ObjectInfo object)
 {
-	WRITE_LOCK;
+	m_lock.WriteLock("Monster");
 	m_InsertList[object.nSectorID].push_back(object);
 }
 
 void CZone::Remove_ObjecttoSector(Sector::ObjectInfo object)
 {
-	WRITE_LOCK;
+	m_lock.WriteLock("Monster");
 	m_RemoveList[object.nSectorID].push_back(object);
 }
 
-
 void CZone::Insert_PlayertoSector(Sector::ObjectInfo object)
 {
-	WRITE_LOCK;
+	m_lock.WriteLock("Player");
 	m_PlayerInsertList[object.nSectorID].push_back(object);
 	//m_listSector[sectorID]->Insert(Object::Player, Player);
 }
 
 void CZone::Remove_PlayertoSector(Sector::ObjectInfo object)
 {
-	WRITE_LOCK;
+	m_lock.WriteLock("Player");
 	m_PlayerRemoveList[object.nSectorID].push_back(object);
 	//m_listSector[sectorID]->Delete(Object::Player, Player);
-
 }
 
 void CZone::Send_SectorInsertObject()
 {
-
 	//섹터리스트 복사해와서 lock 줄여야하나?
 	map<SectorID, vector<Sector::ObjectInfo>> InsertList;
 	{
 		//swap후 원본 컨테이너는 clear상태, 이후에 들어온 데이터는 다음tick에 처리!
-		WRITE_LOCK;
+		m_lock.WriteLock("Monster");
 		InsertList.swap(m_InsertList);
 	}
 	//WRITE_LOCK;
@@ -630,11 +612,11 @@ void CZone::Send_SectorInsertObject()
 		Protocol::S_OBJ_LIST objpkt;
 #ifdef __BROADCAST_DISTANCE__
 		int64 nowtime = GetTickCount64();
-		auto distance = [](float source_x, float source_y, float target_x, float target_y)->float
-			{
-				return sqrt(pow(target_x - source_x, 2) + pow(target_y - source_y, 2));
-
-			};
+		//auto distance = [](float source_x, float source_y, float target_x, float target_y)->float
+		//	{
+		//		return sqrt(pow(target_x - source_x, 2) + pow(target_y - source_y, 2));
+		//
+		//	};
 
 		objpkt.set_sendtime(GetTickCount64());
 		auto Playerlist = Sector->PlayerList();
@@ -648,12 +630,11 @@ void CZone::Send_SectorInsertObject()
 				ObjectRef Object = m_nlistObject[ObjectInfo.nObjectType][ObjectInfo.nObjectID];
 				Sector->Insert(ObjectInfo.nObjectType, Object);
 
-				float dist = distance(ObjectInfo.vPos.x, ObjectInfo.vPos.y, Player->GetPos().x(), Player->GetPos().y());
+				float dist = Util::distance(ObjectInfo.vPos.x, ObjectInfo.vPos.y, Player->GetPos().x(), Player->GetPos().y());
 
-				if (dist >BroadCast_Distance)
+				if (dist > BroadCast_Distance)
 				{
 					continue;
-
 				}
 
 				bSend = true;
@@ -666,7 +647,6 @@ void CZone::Send_SectorInsertObject()
 				vPos->set_y(ObjectInfo.vPos.y);
 
 				objpkt.add_pos()->CopyFrom(objectPos);
-
 			}
 			if (bSend == false)
 				continue;
@@ -681,10 +661,7 @@ void CZone::Send_SectorInsertObject()
 				pPlayer->SetActivate(false);
 				///세션 소멸, 해당 플레이어 객체도
 			}
-
-
 		}
-
 
 #else
 
@@ -733,7 +710,7 @@ void CZone::Send_SectorRemoveObject()
 	map<SectorID, vector<Sector::ObjectInfo>> RemoveList;
 	{
 		//swap후 원본 컨테이너는 clear상태, 이후에 들어온 데이터는 다음tick에 처리!
-		WRITE_LOCK;
+		m_lock.WriteLock("Monster");
 		RemoveList.swap(m_RemoveList);
 	}
 	//WRITE_LOCK;
@@ -746,11 +723,11 @@ void CZone::Send_SectorRemoveObject()
 
 #ifdef __BROADCAST_DISTANCE__
 		int64 nowtime = GetTickCount64();
-		auto distance = [](float source_x, float source_y, float target_x, float target_y)->float
-			{
-				return sqrt(pow(target_x - source_x, 2) + pow(target_y - source_y, 2));
-
-			};
+		//auto distance = [](float source_x, float source_y, float target_x, float target_y)->float
+		//	{
+		//		return sqrt(pow(target_x - source_x, 2) + pow(target_y - source_y, 2));
+		//
+		//	};
 
 		Protocol::S_OBJ_REMOVE_ACK objpkt;
 		objpkt.set_sendtime(GetTickCount64());
@@ -765,12 +742,11 @@ void CZone::Send_SectorRemoveObject()
 				ObjectRef Object = m_nlistObject[ObjectInfo.nObjectType][ObjectInfo.nObjectID];
 				Sector->Delete(ObjectInfo.nObjectType, Object);
 
-				float dist = distance(ObjectInfo.vPos.x, ObjectInfo.vPos.y, Player->GetPos().x(), Player->GetPos().y());
+				float dist = Util::distance(ObjectInfo.vPos.x, ObjectInfo.vPos.y, Player->GetPos().x(), Player->GetPos().y());
 
 				if (dist > BroadCast_Distance)
 				{
 					continue;
-
 				}
 
 				bSend = true;
@@ -782,7 +758,6 @@ void CZone::Send_SectorRemoveObject()
 				vPos->set_y(ObjectInfo.vPos.y);
 
 				objpkt.add_pos()->CopyFrom(objectPos);
-
 			}
 			if (bSend == false)
 				continue;
@@ -799,10 +774,7 @@ void CZone::Send_SectorRemoveObject()
 				pPlayer->SetActivate(false);
 				///세션 소멸, 해당 플레이어 객체도
 			}
-
-
 		}
-
 
 #else
 		Protocol::S_OBJ_REMOVE_ACK objpkt;
@@ -845,12 +817,11 @@ void CZone::Send_SectorRemoveObject()
 
 void CZone::Send_SectorInsertPlayer()
 {
-
 	//섹터리스트 복사해와서 lock 줄여야하나?
 	map<SectorID, vector<Sector::ObjectInfo>> InsertList;
 	{
 		//swap후 원본 컨테이너는 clear상태, 이후에 들어온 데이터는 다음tick에 처리!
-		WRITE_LOCK;
+		m_lock.WriteLock("Player");
 		InsertList.swap(m_PlayerInsertList);
 	}
 	//WRITE_LOCK;
@@ -862,11 +833,11 @@ void CZone::Send_SectorInsertPlayer()
 			continue;
 		Protocol::S_PLAYER_LIST objpkt;
 		int64 nowtime = GetTickCount64();
-		auto distance = [](float source_x, float source_y, float target_x, float target_y)->float
-			{
-				return sqrt(pow(target_x - source_x, 2) + pow(target_y - source_y, 2));
-
-			};
+		//auto distance = [](float source_x, float source_y, float target_x, float target_y)->float
+		//	{
+		//		return sqrt(pow(target_x - source_x, 2) + pow(target_y - source_y, 2));
+		//
+		//	};
 
 		objpkt.set_sendtime(GetTickCount64());
 		auto Playerlist = Sector->PlayerList();
@@ -882,12 +853,11 @@ void CZone::Send_SectorInsertPlayer()
 				ObjectRef Object = m_nlistObject[ObjectInfo.nObjectType][ObjectInfo.nObjectID];
 				Sector->Insert(ObjectInfo.nObjectType, Object);
 
-				float dist = distance(ObjectInfo.vPos.x, ObjectInfo.vPos.y, Player->GetPos().x(), Player->GetPos().y());
+				float dist = Util::distance(ObjectInfo.vPos.x, ObjectInfo.vPos.y, Player->GetPos().x(), Player->GetPos().y());
 
 				if (dist > BroadCast_Distance)
 				{
 					continue;
-
 				}
 
 				bSend = true;
@@ -900,7 +870,6 @@ void CZone::Send_SectorInsertPlayer()
 				vPos->set_y(ObjectInfo.vPos.y);
 
 				objpkt.add_pos()->CopyFrom(objectPos);
-
 			}
 			if (bSend == false)
 				continue;
@@ -915,20 +884,16 @@ void CZone::Send_SectorInsertPlayer()
 				pPlayer->SetActivate(false);
 				///세션 소멸, 해당 플레이어 객체도
 			}
-
-
 		}
-
 	}
 }
 
 void CZone::Send_SectorRemovePlayer()
 {
-
 	map<SectorID, vector<Sector::ObjectInfo>> RemoveList;
 	{
 		//swap후 원본 컨테이너는 clear상태, 이후에 들어온 데이터는 다음tick에 처리!
-		WRITE_LOCK;
+		m_lock.WriteLock("Player");
 		RemoveList.swap(m_PlayerRemoveList);
 	}
 	//int nCnt = 0;
@@ -941,11 +906,11 @@ void CZone::Send_SectorRemovePlayer()
 			continue;
 
 		int64 nowtime = GetTickCount64();
-		auto distance = [](float source_x, float source_y, float target_x, float target_y)->float
-			{
-				return sqrt(pow(target_x - source_x, 2) + pow(target_y - source_y, 2));
-
-			};
+		//auto distance = [](float source_x, float source_y, float target_x, float target_y)->float
+		//	{
+		//		return sqrt(pow(target_x - source_x, 2) + pow(target_y - source_y, 2));
+		//
+		//	};
 
 		Protocol::S_PLAYER_REMOVE_ACK objpkt;
 		objpkt.set_sendtime(GetTickCount64());
@@ -957,13 +922,13 @@ void CZone::Send_SectorRemovePlayer()
 			bool bSend = false;
 			for (auto& ObjectInfo : sData)
 			{
-				if (nCnt <=0)
+				if (nCnt <= 0)
 					break;
 
 				ObjectRef Object = m_nlistObject[ObjectInfo.nObjectType][ObjectInfo.nObjectID];
 				Sector->Delete(ObjectInfo.nObjectType, Object);
 
-				float dist = distance(ObjectInfo.vPos.x, ObjectInfo.vPos.y, Player->GetPos().x(), Player->GetPos().y());
+				float dist = Util::distance(ObjectInfo.vPos.x, ObjectInfo.vPos.y, Player->GetPos().x(), Player->GetPos().y());
 
 				if (ObjectInfo.nObjectID == playerid)
 					continue;
@@ -971,7 +936,6 @@ void CZone::Send_SectorRemovePlayer()
 				if (dist > BroadCast_Distance)
 				{
 					continue;
-
 				}
 
 				bSend = true;
@@ -989,7 +953,6 @@ void CZone::Send_SectorRemovePlayer()
 			if (bSend == false)
 				continue;
 
-
 			auto sendBuffer = ClientPacketHandler::MakeSendBuffer(objpkt);
 			CPlayer* pPlayer = static_cast<CPlayer*>(Player.get());
 			if (pPlayer->ownerSession.expired() == false)
@@ -1001,9 +964,6 @@ void CZone::Send_SectorRemovePlayer()
 				pPlayer->SetActivate(false);
 				///세션 소멸, 해당 플레이어 객체도
 			}
-
-
 		}
 	}
 }
-
