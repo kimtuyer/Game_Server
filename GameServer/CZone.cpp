@@ -141,7 +141,8 @@ CZone::~CZone()
 
 bool CZone::_Enter(ObjectType eObjectType, ObjectRef object)
 {
-	m_lock.WriteLock("Object");
+	int lock = lock::Object;
+	WRITE_LOCK_IDX(lock);
 
 	if (eObjectType <  Object::Player || eObjectType > Object::Monster)
 		return false;
@@ -180,7 +181,9 @@ void CZone::Remove(ObjectType eObjectType, int objectID)
 		return;
 
 	{
-		m_lock.WriteLock("Object");
+		int lock = lock::Object;
+		WRITE_LOCK_IDX(lock);
+
 		auto it = m_nlistObject.find(eObjectType);
 		if (it != m_nlistObject.end())
 		{
@@ -202,7 +205,9 @@ void CZone::Remove(ObjectType eObjectType, int objectID)
 	if (eObjectType == Object::ObjectType::Player)
 	{
 		{
-			m_lock.WriteLock("Player");
+			int lock = lock::Player;
+			WRITE_LOCK_IDX(lock);
+
 			m_nUserCnt.fetch_sub(1);
 			if (m_nlistObject[Object::Player].empty())
 				m_bActivate = false;
@@ -229,8 +234,8 @@ void CZone::Update()
 	{
 		//if (Object->GetActivate() == false)
 		//	continue;
-		if (Sector->Empty())
-			continue;
+		//if (Sector->Empty())
+		//	continue;
 
 		Sector->Update();
 	}
@@ -300,9 +305,10 @@ CObject* CZone::SearchEnemy(CObject* pMonster)
 	{
 		float targetRange = ObjectRef->GetSearchRange();
 
-		if (pMonster->GetSearchRange() < targetRange)
-			continue;
+		float dist = Util::distance(pMonster->GetPos().x(), pMonster->GetPos().y(), ObjectRef->GetPos().x(), ObjectRef->GetPos().y());
 
+		if (dist > BroadCast_Distance)
+			continue;
 		return ObjectRef.get();
 
 		// Player* pPlayer = (Player*)(ObjectRef.get());
@@ -331,7 +337,8 @@ void CZone::Update_Pos(Object::ObjectType eObjectType, int nObjectID, const Prot
 
 bool CZone::Enter()
 {
-	m_lock.ReadLock("Player");
+	int lock = lock::Player;
+	READ_LOCK_IDX(lock);
 	return m_nlistObject[Object::Player].size() < m_nMaxUserCnt;
 }
 
@@ -569,26 +576,30 @@ void CZone::Set_AdjSector(float x, float y, CSectorRef Sector)
 
 void CZone::Insert_ObjecttoSector(Sector::ObjectInfo object)
 {
-	m_lock.WriteLock("Monster");
+	int lock = lock::Monster;
+	WRITE_LOCK_IDX(lock);
 	m_InsertList[object.nSectorID].push_back(object);
 }
 
 void CZone::Remove_ObjecttoSector(Sector::ObjectInfo object)
 {
-	m_lock.WriteLock("Monster");
+	int lock = lock::Monster;
+	WRITE_LOCK_IDX(lock);
 	m_RemoveList[object.nSectorID].push_back(object);
 }
 
 void CZone::Insert_PlayertoSector(Sector::ObjectInfo object)
 {
-	m_lock.WriteLock("Player");
+	int lock = lock::Player;
+	WRITE_LOCK_IDX(lock);
 	m_PlayerInsertList[object.nSectorID].push_back(object);
 	//m_listSector[sectorID]->Insert(Object::Player, Player);
 }
 
 void CZone::Remove_PlayertoSector(Sector::ObjectInfo object)
 {
-	m_lock.WriteLock("Player");
+	int lock = lock::Player;
+	WRITE_LOCK_IDX(lock);
 	m_PlayerRemoveList[object.nSectorID].push_back(object);
 	//m_listSector[sectorID]->Delete(Object::Player, Player);
 }
@@ -599,7 +610,8 @@ void CZone::Send_SectorInsertObject()
 	map<SectorID, vector<Sector::ObjectInfo>> InsertList;
 	{
 		//swap후 원본 컨테이너는 clear상태, 이후에 들어온 데이터는 다음tick에 처리!
-		m_lock.WriteLock("Monster");
+		int lock = lock::Monster;
+		WRITE_LOCK_IDX(lock);
 		InsertList.swap(m_InsertList);
 	}
 	//WRITE_LOCK;
@@ -710,7 +722,8 @@ void CZone::Send_SectorRemoveObject()
 	map<SectorID, vector<Sector::ObjectInfo>> RemoveList;
 	{
 		//swap후 원본 컨테이너는 clear상태, 이후에 들어온 데이터는 다음tick에 처리!
-		m_lock.WriteLock("Monster");
+		int lock = lock::Monster;
+		WRITE_LOCK_IDX(lock);
 		RemoveList.swap(m_RemoveList);
 	}
 	//WRITE_LOCK;
@@ -821,7 +834,8 @@ void CZone::Send_SectorInsertPlayer()
 	map<SectorID, vector<Sector::ObjectInfo>> InsertList;
 	{
 		//swap후 원본 컨테이너는 clear상태, 이후에 들어온 데이터는 다음tick에 처리!
-		m_lock.WriteLock("Player");
+		int lock = lock::Player;
+		WRITE_LOCK_IDX(lock);
 		InsertList.swap(m_PlayerInsertList);
 	}
 	//WRITE_LOCK;
@@ -893,7 +907,8 @@ void CZone::Send_SectorRemovePlayer()
 	map<SectorID, vector<Sector::ObjectInfo>> RemoveList;
 	{
 		//swap후 원본 컨테이너는 clear상태, 이후에 들어온 데이터는 다음tick에 처리!
-		m_lock.WriteLock("Player");
+		int lock = lock::Player;
+		WRITE_LOCK_IDX(lock);
 		RemoveList.swap(m_PlayerRemoveList);
 	}
 	//int nCnt = 0;

@@ -75,3 +75,16 @@ namespace Object
 }
 
 
+namespace LOCK
+{
+	enum lock
+	{
+		Object = 0,
+		Player = 1,
+		Monster = 2,
+		Die = 3,
+		End = 4
+
+	};
+}
+

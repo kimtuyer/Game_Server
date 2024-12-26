@@ -42,7 +42,7 @@ void CClientPlayer::AI_Idle()
 		Protocol::C_MOVE pkt;
 		{
 			pkt.set_sendtime(GetTickCount64());
-			pkt.set_playerid(playerId);
+			pkt.set_playerid(m_nObjectID);
 			auto vPos = pkt.mutable_pos();
 			vPos->set_x(m_vPos.x());
 			vPos->set_y(m_vPos.y());
@@ -128,7 +128,7 @@ void CClientPlayer::AI_Move()
 	Protocol::C_MOVE pkt;
 	{
 		pkt.set_sendtime(GetTickCount64());
-		pkt.set_playerid(playerId);
+		pkt.set_playerid(m_nObjectID);
 		auto vPos = pkt.mutable_pos();
 
 		vPos->set_x(m_vPos.x());
@@ -167,6 +167,9 @@ void CClientPlayer::AI_Attack()
 	}
 	auto sendBuffer = ServerPacketHandler::MakeSendBuffer(pkt);
 	ownerSession->Send(sendBuffer);
+
+	DoTimer(Tick::SECOND_TICK, &CClientPlayer::AI_Attack);
+
 	/*
 
 	*/

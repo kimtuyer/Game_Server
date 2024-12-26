@@ -77,11 +77,20 @@ void DoRenderingJob()
 {
 	while (true)
 	{
+		if (LSecondTickCount < GetTickCount64())
+		{
+			LSecondTickCount = GetTickCount64() + Tick::SECOND_TICK;
+	
+			//GConsoleViewer->refreshCurrentDisplay();
+
+		}
+
 		if (LRenderingTickCount < GetTickCount64())
 		{
 			LRenderingTickCount = GetTickCount64() + Tick::RENDERING_TICK;
 
 			GConsoleViewer->renderFrame();
+
 
 			//락 프리 기법 렌더링
 			//GConsoleViewer->processUpdates();

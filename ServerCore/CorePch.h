@@ -27,3 +27,4 @@ using namespace std;
 
 #include "function.h"
 #include "Dev_define.h"
+using namespace LOCK;

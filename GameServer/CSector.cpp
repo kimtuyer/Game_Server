@@ -5,7 +5,7 @@
 #include "GameSession.h"
 
 #include "ClientPacketHandler.h"
-
+using namespace LOCK;
 CSector::CSector(int nSectorID, int nZoneID, Protocol::D3DVECTOR vPos)
 :    m_nSectorID(nSectorID),m_vStartpos(vPos),m_bActivate(true) ,m_nZoneID(nZoneID)
 {
@@ -13,15 +13,13 @@ CSector::CSector(int nSectorID, int nZoneID, Protocol::D3DVECTOR vPos)
 
 void CSector::Update()
 {
-
     vector<CMonster*> vecMonsterlist;
     {
-        m_lock.ReadLock("Object");
+        int lock = lock::Monster;
+        READ_LOCK_IDX(lock);
         for (auto& [objectid, Object] : m_nlistObject[Object::Monster])
         {
-            if (Object->GetActivate() == false)
-                continue;
-
+          
             CMonster* pMonster = static_cast<CMonster*>(Object.get());
             vecMonsterlist.push_back(pMonster);
            // 섹터에 있는 몬스터 정보는 언제 지워야하나?
@@ -39,20 +37,27 @@ void CSector::Update()
 
     int nowtime = GetTickCount64();
     {
-        m_lock.WriteLock("Dead");
-        for (auto& [objectID, respawntime] : m_DeadMonsterList)
+        int lock = lock::Die;
+        READ_LOCK_IDX(lock); 
+        for(auto it= m_DeadMonsterList.begin(); it!= m_DeadMonsterList.end();)
+       // for (auto& [objectID, respawntime] : m_DeadMonsterList)
         {
-            if (nowtime < respawntime)
-                continue;
+            auto objectID = (*it).first;
+            auto respawntime = (*it).second;
 
-            m_DeadMonsterList.erase(objectID);
+            if (nowtime < respawntime)
+            {
+                it++;
+                continue;
+            }
             //해당 몬스터 리스폰
             if (m_nlistObject[Object::Monster].contains(objectID))
             {
                 m_nlistObject[Object::Monster][objectID]->SetActivate(true);
                 m_nlistObject[Object::Monster][objectID]->m_eState=Object::Idle;
-
+            
             }
+            m_DeadMonsterList.erase(it++);
         }
     }
 
@@ -95,14 +100,17 @@ ObjectRef CSector::GetMonster(int objectID)
 
 bool CSector::Insert(int nObjectType, ObjectRef Object)
 {
-    m_lock.WriteLock("Object");
+    int lock = lock::Object;
+    WRITE_LOCK_IDX(lock);
     m_nlistObject[nObjectType].insert({Object->ObjectID(),Object});
     return true;
 }
 
 bool CSector::Delete(int nObjectType, ObjectRef Object)
 {
-    m_lock.WriteLock("Object");
+
+    int lock = lock::Object;
+    WRITE_LOCK_IDX(lock);
     m_nlistObject[nObjectType].insert({ Object->ObjectID(),Object });
     return true;
 }
@@ -167,7 +175,8 @@ void CSector::BroadCast_Player(Sector::UpdateType eType,Sector::ObjectInfo Objec
 ObjectList& CSector::PlayerList()
 {
     {
-        m_lock.ReadLock("Player");
+        int lock = lock::Player;
+        READ_LOCK_IDX(lock);
         {
             return m_nlistObject[Object::Player];
         }
@@ -190,7 +199,8 @@ void CSector::Insert_adjSector(int sectorID, float x, float y)
 
 void CSector::Insert_DeadList(int ObjectID)
 {
-    m_lock.WriteLock("Dead");
+    int lock = lock::Die;
+    WRITE_LOCK_IDX(lock);
     //죽은 후 3초뒤 리스폰
     int nowTime = GetTickCount64() + Tick::SECOND_TICK * 3;
 

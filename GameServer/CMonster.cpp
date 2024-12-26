@@ -19,7 +19,7 @@ CMonster::CMonster(int nObjectID, int nZoneID,int nSectorID,  Protocol::D3DVECTO
 
 	m_eState = Object::Idle;
 
-	m_nHP = Util::Random_HP();
+	m_nHP = 1;//Util::Random_HP();
 	m_nAttack = 10;
 
 	//cout << "몬스터 생성 ID: " << m_nObjectID <<" : " << m_vPos.x() << ", " << m_vPos.y() << endl;
@@ -32,11 +32,18 @@ CMonster::CMonster(int nObjectID, int nZoneID,int nSectorID,  Protocol::D3DVECTO
 void CMonster::Update()
 {	
 	if (GetActivate() == false)
+	{
+		//해당 오브젝트 아이디 찾아서 이전 위치 지워주도록!
+		GConsoleViewer->queuePlayerUpdate(m_nObjectID, m_nZoneID, m_vPos.x(), m_vPos.y(),false);
 		return;
+	}
 
+	int64 nowTime = GetTickCount64();
 	//공격 당했을땐, move, idle 시간 초기화 필요.
-	if (m_nStateTime[m_eState] > GetTickCount64())
+	if ( m_nStateTime[Object::Idle] > nowTime || m_nStateTime[Object::Move] > nowTime)
 		return;
+	if (m_nStateTime[Object::Attack] > 0)
+		m_eState = Object::Attack;
 
 	switch (m_eState)
 	{
@@ -164,7 +171,10 @@ void CMonster::AI_Move()
 
 void CMonster::AI_Attack()
 {
-	CPlayer* pPlayer = static_cast<CPlayer*>(pTarget);
+	//CPlayer* pPlayer = static_cast<CPlayer*>(pTarget);
+
+
+
 
 	/*
 	 공격 처리후, 처리 결과 

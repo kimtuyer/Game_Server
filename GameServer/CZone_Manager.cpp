@@ -132,8 +132,8 @@ void CZone_Manager::Update()
 
 	}
 //#ifdef __CONSOLE_UI__
-	GConsoleViewer->gotoxy(30,0);
-	cout << "현재 접속중인 유저 수 :" << g_nConnectedUser << endl;
+	//GConsoleViewer->gotoxy(30,0);
+	//cout << "현재 접속중인 유저 수 :" << g_nConnectedUser << endl;
 //#endif // __CONSOLE_UI__
 
 

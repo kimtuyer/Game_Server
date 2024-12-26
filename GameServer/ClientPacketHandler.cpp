@@ -275,18 +275,9 @@ bool Handle_C_ATTACK(PacketSessionRef& session, Protocol::C_ATTACK& pkt)
 	Protocol::S_ATTACK_ACK ackpkt;
 	GameSessionRef gameSession = static_pointer_cast<GameSession>(session);
 
-	if (gameSession->_currentPlayer->playerId != pkt.playerid())
-		ackpkt.set_success(false);
 
-	bool bRet = gameSession->_currentPlayer->Attack(pkt);
+	 gameSession->_currentPlayer->Attack(pkt);
 
-
-	CZoneRef Zone = GZoneManager->GetZone(gameSession->_currentPlayer->GetZoneID());
-	
-	
-
-	pkt.playerid();
-	pkt.targetid();
 
 
 

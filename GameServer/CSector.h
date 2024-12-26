@@ -2,6 +2,7 @@
 using ObjectType = int;
 using ObjectID = int;
 typedef  map<ObjectID, ObjectRef> ObjectList;
+using namespace LOCK;
 
 class ClientPacketHandler;
 class CSector : public JobQueue
@@ -32,7 +33,9 @@ public:
 
 	bool Empty()
 	{
-		m_lock.WriteLock("Object");
+		int lock = lock::Object;
+		WRITE_LOCK_IDX(lock);
+
 		return m_nlistObject.empty();
 	}
 
@@ -48,7 +51,9 @@ public:
 	ObjectList& PlayerList();
 	bool	Empty_Player()
 	{
-		m_lock.WriteLock("Player");
+		int lock = lock::Player;
+		WRITE_LOCK_IDX(lock);
+
 		return m_nlistObject[Object::Player].empty();
 	}
 
@@ -73,7 +78,9 @@ public:
 
 	map<int, Protocol::D3DVECTOR> m_adjSectorList;
 private:
-	Lock m_lock;
+	USE_MANY_LOCKS(lock::End);
+	
+
 	int m_nZoneID;
 	int	m_nSectorID;
 	bool m_bActivate;

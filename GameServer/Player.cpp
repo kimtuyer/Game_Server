@@ -31,38 +31,44 @@ void CPlayer::LeaveZone()
 
 bool CPlayer::Attack(Protocol::C_ATTACK& pkt)
 {
-	int nKill = 0;
 	Protocol::S_ATTACK_ACK ackpkt;
+	ackpkt.set_sendtime(GetTickCount64());
+	int nKill = 0;
+	
+	if(pkt.playerid() != m_nObjectID)
+		ackpkt.set_success(false);
+
 
 	CZoneRef Zone = GZoneManager->GetZone(m_nZoneID);
 	if (Zone == nullptr)
-		return false;
+		ackpkt.set_success(false);
 
 	CSectorRef Sector = Zone->GetSector(m_nSectorID);
 	ObjectRef Monster = Sector->GetMonster(pkt.targetid());
 	if (Monster == nullptr)
-		return false;
-
-	
-	float dist = Util::distance(m_vPos.x(), m_vPos.y(), Monster->GetPos().x(), Monster->GetPos().y());
-
-	if (dist > Zone::BroadCast_Distance)
-		return false;
-
-	if (Monster->Attacked(m_nAttack, nKill) == false)
-		return false;
-
-	if (nKill > 0)
-	{
-
-		m_nKillcount++;
-		ackpkt.set_targetalive(false);
-	}
+		ackpkt.set_success(false);
 	else
-		ackpkt.set_targetalive(true);
+	{
+		/**/
+		float dist = Util::distance(m_vPos.x(), m_vPos.y(), Monster->GetPos().x(), Monster->GetPos().y());
 
-	ackpkt.set_success(true);
+		if (dist > Zone::BroadCast_Distance)
+			ackpkt.set_success(false);
 
+		if (Monster->Attacked(m_nAttack, nKill) == false)
+			ackpkt.set_success(false);
+
+		if (nKill > 0)
+		{
+
+			m_nKillcount++;
+			ackpkt.set_targetalive(false);
+		}
+		else
+			ackpkt.set_targetalive(true);
+
+		ackpkt.set_success(true);
+	}
 	auto sendBuffer = ClientPacketHandler::MakeSendBuffer(ackpkt);
 	ownerSession.lock()->Send(sendBuffer);
 

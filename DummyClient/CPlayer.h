@@ -12,7 +12,7 @@ public:
 	virtual void AI_Move();
 	virtual void AI_Attack();
 
-	uint64					playerId = 0;
+	//uint64					m_nplayerId = 0;
 	string					name;
 	Protocol::PlayerType	type = Protocol::PLAYER_TYPE_NONE;
 	ClientSessionRef			ownerSession; // Cycle

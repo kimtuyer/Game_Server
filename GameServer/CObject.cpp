@@ -30,7 +30,8 @@ void CObject::AI_Attack()
 
 bool CObject::Attacked(int nAttack, OUT int& nKillcount)
 {
-	_battleock.WriteLock("Battle");
+	WRITE_LOCK;
+	//_battleock.WriteLock("Battle");
 
 	if (m_bActivate == false)
 		return false;
@@ -50,5 +51,23 @@ bool CObject::Attacked(int nAttack, OUT int& nKillcount)
 		Sector->Insert_DeadList(m_nObjectID);
 
 	}
+	else
+	{
+		/*
+			몹도 공격받은 상태 인지,  공격상태로 전환
+		
+		*/
+		m_nStateTime[Object::Idle] = 0;
+		m_nStateTime[Object::Move] = 0;
+		m_nStateTime[Object::Attack] = GetTickCount64();
+		m_eState = Object::Attack;
+
+
+
+	}
+
+
+
+
 	return true;
 }

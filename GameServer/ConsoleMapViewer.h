@@ -16,10 +16,12 @@ private:
 		int playerId;
 		int zoneId;
 		int x, y;
+		bool bAlive;
 	};
 	struct ObjectPos {
 		int zoneId;
 		int x, y;
+		bool bAlive;
 
 	};
 
@@ -159,11 +161,11 @@ public:
 /* 더블 버퍼링+	주기적 업데이트							*/	
 
 	// 패킷 수신 시 호출 (lock 최소화)
-	void queuePlayerUpdate(int objectid, int zoneId, int x, int y) {
+	void queuePlayerUpdate(int objectid, int zoneId, int x, int y,bool bAlive=true) {
 		std::lock_guard<std::mutex> lock(mtx);
 		//gotoxy(1,0);
 		//cout << "x ,y : " << x << "," << y << endl;
-		pendingUpdates[objectid]={ zoneId, x, y };
+		pendingUpdates[objectid]={ zoneId, x, y,bAlive };
 	}
 
 	// 주기적으로 호출 (예: 16ms 마다)
@@ -193,7 +195,13 @@ public:
 			if(objectid<= g_nZoneCount*g_nZoneUserMax)
 				std::cout << "p";
 			else
-				std::cout << "m";
+			{
+				if(pos.bAlive)
+					std::cout << "m";
+				else
+					std::cout << "x";
+
+			}
 
 		}
 	}
@@ -224,6 +232,21 @@ public:
 			std::cout << player.first;
 		}
 	}
+
+	void refreshCurrentDisplay() {
+		std::lock_guard<std::mutex> lock(mtx);
+		clearScreen();
+		needRedrawBorders = true;
+		drawZoneBorders();
+
+		currentDisplay.clear();
+		//// 모든 플레이어 재표시
+		//for (const auto& player : currentDisplay) {
+		//	gotoxy(player.second.first, player.second.second);
+		//	std::cout << player.first;
+		//}
+	}
+
 };
 extern shared_ptr<ConsoleMapViewer> GConsoleViewer;
 

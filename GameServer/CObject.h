@@ -119,7 +119,8 @@ public:
 
 protected:
 	//USE_LOCK;
-	Lock _battleock;
+	USE_LOCK;
+	//Lock _battleock;
 	int	m_nZoneID;
 	int m_nSectorID;
 	int		m_nObjectID;
@@ -132,7 +133,7 @@ protected:
 
 	bool m_bAlive = true;
 	atomic<int>	m_nHP;
-	int	m_nAttack=0;
+	int	m_nAttack=1;
 private:
 	float	m_fSearchRange;
 	float	m_fAttackRange;

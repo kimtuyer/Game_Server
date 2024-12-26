@@ -8,6 +8,7 @@ using ObjectType = int;
 using ObjectID = int;
 using SectorID = int;
 typedef  map<ObjectID, ObjectRef> ObjectList;
+
 class CZone : public JobQueue
 {
 
@@ -70,7 +71,8 @@ public:
 
 	ObjectList& PlayerList()
 	{
-		m_lock.ReadLock("Player");
+		int lock = lock::Player;
+		READ_LOCK_IDX(lock);
 		//READ_LOCK;
 		{
 			return m_nlistObject[Object::Player];
@@ -81,7 +83,8 @@ public:
 
 	ObjectList& MonsterList()
 	{
-		m_lock.ReadLock("Monster");
+		int lock = lock::Monster;
+		READ_LOCK_IDX(lock);
 		//if (m_nlistObject.contains(Object::Monster))
 		{
 			return m_nlistObject[Object::Monster];
@@ -137,9 +140,8 @@ public:
 private:	//오브젝트 리스트도 맵 or set이 나은가?
 	
 	//오브젝트는 타입에 따라 리스트를 다르게 가져가는게 나은가
-	//USE_LOCK;
-	Lock	m_lock;
-	//	m_Die_lock;
+	USE_MANY_LOCKS(lock::End);
+
 	int			m_nZoneID;
 	Protocol::D3DVECTOR m_vStartpos;
 

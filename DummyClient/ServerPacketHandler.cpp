@@ -38,7 +38,7 @@ bool Handle_S_LOGIN(PacketSessionRef& session, Protocol::S_LOGIN& pkt)
 
 	ClientSessionRef gameSession = static_pointer_cast<ClientSession>(session);
 	PlayerRef playerRef = MakeShared<CClientPlayer>();
-	playerRef->playerId = player->id();
+	playerRef->SetObjectID(player->id());
 	playerRef->ownerSession = gameSession;
 	playerRef->SetZoneid(pkt.zoneid());
 	playerRef->SetSectorID(pkt.sectorid());
@@ -134,10 +134,19 @@ bool Handle_S_ATTACK_ACK(PacketSessionRef& session, Protocol::S_ATTACK_ACK& pkt)
 	/*
 		공격한 타겟을 제거했을시, 다시 idle상태 전환
 	*/
+
 	ClientSessionRef gameSession = static_pointer_cast<ClientSession>(session);
-	if (pkt.success())
+	if (pkt.success() && pkt.targetalive()==false)
 	{
-		gameSession->_currentPlayer->m_eState=Object::Idle;
+		gameSession->_currentPlayer->m_eState=Object::Attack;
+		//cout << "해당 몹 킬 성공!" << endl;
+
+	}
+	else
+	{
+
+		gameSession->_currentPlayer->m_eState = Object::Idle;
+		gameSession->_currentPlayer->SetSearchOn(false);
 
 	}
 
