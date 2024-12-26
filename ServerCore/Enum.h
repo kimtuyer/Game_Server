@@ -25,10 +25,13 @@ namespace Zone
 
 	//class CZone_Manager;
 
-	static const int ZONE_WIDTH = 30;  // 각 존의 가로 크기
-	static const int ZONE_HEIGHT = 15; // 각 존의 세로 크기
+	static const int ZONE_WIDTH = 32;  // 각 존의 가로 크기
+	static const int ZONE_HEIGHT = 16; // 각 존의 세로 크기
 	static const int ZONES_PER_ROW = 5;
 	static const int ZONES_PER_COL = 3;
+	static const int SECTORS_PER_SIDE = 4;
+
+
 
 	static const int  Sector_Count = 16;
 	static const float  Sector_WIDTH = ZONE_WIDTH/4;  // 각 섹터의 가로 크기

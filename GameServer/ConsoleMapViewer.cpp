@@ -22,7 +22,7 @@ ConsoleMapViewer::ConsoleMapViewer()
 	HWND console = GetConsoleWindow();
 	RECT r;
 	GetWindowRect(console, &r);
-	MoveWindow(console, r.left, r.top, 1300, 1000, TRUE); // 창 크기 조정
+	MoveWindow(console, r.left, r.top, 1400, 1000, TRUE); // 창 크기 조정
 
 	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 	CONSOLE_SCREEN_BUFFER_INFO csbi;
