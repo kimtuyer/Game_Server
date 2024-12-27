@@ -19,8 +19,8 @@ void CZone_Manager::Init(const int nZoneCount,const int nZoneUserMax )
 	
 	*/
 	int nZoneid = 1;
-	for (int HEIGHT = 1; HEIGHT <= 3; HEIGHT++)	//콘솔 세로 1줄 개수
-		for (int WIDTH = 1; WIDTH <= 5; WIDTH++) //콘솔 가로 1줄 개수
+	for (int HEIGHT = 1; HEIGHT <= ZONES_PER_COL; HEIGHT++)	//콘솔 세로 1줄 개수
+		for (int WIDTH = 1; WIDTH <= ZONES_PER_ROW; WIDTH++) //콘솔 가로 1줄 개수
 		{
 			float x = (WIDTH - 1) * Zone::ZONE_WIDTH + ZONE_WIDTH / 2;
 			float y = (HEIGHT - 1) * Zone::ZONE_HEIGHT + ZONE_HEIGHT / 2;

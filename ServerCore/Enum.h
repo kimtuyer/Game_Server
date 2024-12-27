@@ -14,6 +14,7 @@ namespace Tick
 
 	};
 }
+static const	int	g_nServerMaxUser = 5000;
 static const	int	g_nClientMaxCount = 1000;
 static 	int	g_nConnectedUser = 0;
 
@@ -25,7 +26,7 @@ namespace Zone
 
 	//class CZone_Manager;
 
-	static const int ZONE_WIDTH = 32;  // 각 존의 가로 크기
+	static const int ZONE_WIDTH = 30;  // 각 존의 가로 크기
 	static const int ZONE_HEIGHT = 16; // 각 존의 세로 크기
 	static const int ZONES_PER_ROW = 5;
 	static const int ZONES_PER_COL = 3;

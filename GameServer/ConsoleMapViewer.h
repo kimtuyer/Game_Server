@@ -35,6 +35,10 @@ private:
 	std::map<int/*Objectid*/, ObjectPos> pendingUpdates;  // 업데이트 버퍼
 	std::map<int, std::pair<int, int>> currentDisplay;  // 현재 화면
 
+	std::unordered_map<int, std::vector<int>> playersInZone;  // zoneId -> vector of playerIds
+	std::unordered_map<int, std::vector<int>> monsterInZone;  // zoneId -> vector of playerIds
+
+
 
 	
 
@@ -200,6 +204,14 @@ public:
 
 /* 더블 버퍼링+	주기적 업데이트							*/	
 
+
+	int getZoneIdFromScreenPos(int screenX, int screenY) {
+		int zoneRow = screenX / (ZONE_WIDTH + 1);
+		int zoneCol = screenY / (ZONE_HEIGHT + 1);
+		return zoneCol * ZONES_PER_ROW + zoneRow + 1;
+	}
+
+	void drawZoneInfo();
 	// 패킷 수신 시 호출 (lock 최소화)
 	void queuePlayerUpdate(int objectid, int zoneId, int x, int y,bool bAlive=true) {
 		std::lock_guard<std::mutex> lock(mtx);
@@ -211,7 +223,7 @@ public:
 	// 주기적으로 호출 (예: 16ms 마다)
 	void renderFrame() {
 
-		displayPacketCnt();
+		//displayPacketCnt();
 
 		std::map<int, ObjectPos> updates;
 		{
@@ -228,10 +240,18 @@ public:
 				std::cout << " ";
 			}
 
+			if (!pos.bAlive) {
+				// 죽은 객체는 currentDisplay에서 제거
+				currentDisplay.erase(objectid);
+				continue;
+			}
+
+
 			// 새 위치 그리기
 			auto screenPos = getScreenPosition(pos.zoneId, pos.x, pos.y);
 			currentDisplay[objectid] = screenPos;
 			gotoxy(screenPos.first, screenPos.second);
+
 			if(objectid<= g_nZoneCount*g_nZoneUserMax)
 				std::cout << "p";
 			else
@@ -243,6 +263,9 @@ public:
 
 			}
 
+		}
+		if (!updates.empty()) {
+			drawZoneInfo();
 		}
 	}
 

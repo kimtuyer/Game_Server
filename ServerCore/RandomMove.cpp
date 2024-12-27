@@ -44,12 +44,19 @@ std::pair<float, float> RandomMove::getNextPosition(int nZoneid, float currentX,
         ZONE_WIDTH = (nZoneid - 5) * Zone::ZONE_WIDTH;
         ZONE_HEIGHT = 2* Zone::ZONE_HEIGHT;
     }
-    else
+    else if (nZoneid<16)
     {
         ZONE_WIDTH = (nZoneid - 10) * Zone::ZONE_WIDTH;
         ZONE_HEIGHT = 3 * Zone::ZONE_HEIGHT;
 
     }
+     else
+     {
+         ZONE_WIDTH = (nZoneid - 15) * Zone::ZONE_WIDTH;
+         ZONE_HEIGHT = 4 * Zone::ZONE_HEIGHT;
+
+    }
+
     float minx = ZONE_WIDTH - Zone::ZONE_WIDTH+1.0f;
     float miny = ZONE_HEIGHT - Zone::ZONE_HEIGHT+1.0f;
 

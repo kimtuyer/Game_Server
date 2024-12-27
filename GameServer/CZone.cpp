@@ -35,6 +35,8 @@ CZone::CZone(int nMaxUserCnt, int nZoneID, Protocol::D3DVECTOR vPos)
 				col = 1;
 			else if (m_nZoneID <= Zone::ZONES_PER_ROW * 3)
 				col = 2;
+			else  
+				col = 3;
 
 			float x = ((m_nZoneID - 1) % Zone::ZONES_PER_ROW) * ZONE_WIDTH + (WIDTH - 1) * Zone::Sector_WIDTH + Sector_WIDTH / 2;
 			float y = (col * ZONE_HEIGHT) + ((HEIGHT - 1) * Zone::Sector_HEIGHT) + Sector_HEIGHT / 2;
