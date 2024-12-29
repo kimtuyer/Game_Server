@@ -13,6 +13,11 @@
 #include "CMonster.h"
 #include "CZone_Manager.h"
 #include "ConsoleMapViewer.h"
+#include "nlohmann/json.hpp"
+#include "cJSON.h"
+#include <fstream>
+#include "CouchbaseClient.h"
+//#include "tao/json.hpp"
 //atomic<int>	g_nPacketCount = 0;
 
 //class CZone_Manager;
@@ -35,10 +40,12 @@ void DoMainJob(ServerServiceRef& service)
 	}
 }
 
-void DoWorkerJob(ServerServiceRef& service,bool bMain=false)
+void DoWorkerJob(ServerServiceRef& service)
 {
 	bool bFlag = false;
 	while (true)
+
+
 	{
 		if (LSecondTickCount < GetTickCount64())
 		{
@@ -69,6 +76,8 @@ void DoWorkerJob(ServerServiceRef& service,bool bMain=false)
 
 		// 글로벌 큐
 		ThreadManager::DoGlobalQueueWork();
+
+
 	}
 }
 
@@ -140,11 +149,65 @@ void DoBroadJob(ServerServiceRef& service, bool bMain = false)
 		//ThreadManager::DoGlobalQueueWork();
 	}
 }
-
+using json = nlohmann::json;
+json read_json_from_file(const std::string& filename) {
+	std::ifstream f(filename);
+	json data = json::parse(f);
+	return data;
+}
 int main()
 {
-	//GRoom->DoTimer(1000, [] { cout << "Hello 1000" << endl; });
+	
+		//GRoom->DoTimer(1000, [] { cout << "Hello 1000" << endl; });
 	//GRoom->DoTimer(2000, [] { cout << "Hello 2000" << endl; });
+
+	//try {
+	//	//g_pCouchbaseClient = new CouchbaseClient("couchbase://localhost",
+	//	//	"Cached",//"default",
+	//	//	"admin",
+	//	//	"552123");
+	//	//
+	//	
+	//
+	//}
+	//catch (const std::exception& e) {
+	//	delete g_pCouchbaseClient;
+	//	std::cerr << "Error: " << e.what() << std::endl;
+	//	return 1;
+	//}
+
+	json document1 = { {"name", "John Doe"}, {"age", 30} };
+	
+	//document1.insert()
+
+	//json document1 = { {"name", "John Doe"}, {"age", 30} };
+	string doculment_id = "User";
+	doculment_id += "5";
+	//string json_string = document.dump();
+
+	document cb;
+	cb.key = doculment_id;
+	cb.value = document1.dump();
+	cb.cas = 0; //최초 저장 문서시
+
+	//g_pCouchbaseClient->upsert(cb);
+
+
+	//// 데이터 조회
+	//GetCallback cb;
+	//cb.threadid = 1;
+	//auto value = g_pCouchbaseClient->get("user:1", LCB_WAIT_DEFAULT,cb);
+	//
+	//GetCallback cb2;
+	//cb2.threadid = 2;
+	// value = g_pCouchbaseClient->get("user:2", LCB_WAIT_DEFAULT, cb2);
+
+	//if (doc_content.value.length() > 0)
+	//	std::cout << "Retrieved value: " << doc_content.value << std::endl;
+	
+
+	//printf("Libcouchbase version: %s\n", lcb_get_version(NULL));
+
 
 	ClientPacketHandler::Init();
 	GZoneManager->Init(g_nZoneCount, g_nZoneUserMax);
@@ -162,15 +225,17 @@ int main()
 	unsigned int core_count = std::thread::hardware_concurrency();
 	int nThreadCnt = core_count * 2;//+ 1;
 
+	g_CouchbaseManager->Init(nThreadCnt);
 #//ifdef __CONSOLE_UI__
 	GThreadManager->Launch([]()
 		{
 			DoRenderingJob();
 		});
 //#endif	
-
 	for (int32 i = 0; i < nThreadCnt; i++)
 	{
+		
+
 		GThreadManager->Launch([&service]()
 			{
 				DoWorkerJob(service);

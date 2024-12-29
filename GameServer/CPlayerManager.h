@@ -13,6 +13,16 @@ public:
 	void Remove(int nPlayerid);
 
 
+
+	PlayerRef Player(int nPlayerID)
+	{
+		if (Find(nPlayerID))
+		{
+
+			return m_mapPlayerlist[nPlayerID];
+		}
+		return nullptr;
+	}
 	PlayerList& GetPlayerList()
 	{
 		READ_LOCK;

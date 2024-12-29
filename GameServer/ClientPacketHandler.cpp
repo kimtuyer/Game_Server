@@ -8,6 +8,7 @@
 #include "GameSession.h"
 #include "CPlayerManager.h"
 #include "ConsoleMapViewer.h"
+#include "CouchbaseClient.h"
 PacketHandlerFunc GPacketHandler[UINT16_MAX];
 
 // 직접 컨텐츠 작업자
@@ -36,14 +37,29 @@ bool Handle_C_LOGIN(PacketSessionRef& session, Protocol::C_LOGIN& pkt)
 	static Atomic<uint64> idGenerator = 1;
 
 	{
+		CouchbaseClient* pDBConnect = g_CouchbaseManager->GetConnection(LThreadId);
+		document doc;
+		doc.threadID = LThreadId;
+		doc.key = idGenerator++;
+		doc.type = DB::PLAYER_KEY_REQ;
+		doc.value= "SELECT EXISTS(SELECT 1 FROM `default` USE KEYS [\"" + doc.key + "\"]);";
+		//std::string query = "SELECT EXISTS(SELECT 1 FROM `default` USE KEYS [\"" + key_to_check + "\"]);";
+		pDBConnect->QueryExecute(doc.value,doc);
+		//pDBConnect->get(doc.key, doc);
+	}
+
+	{
 		auto player = loginPkt.mutable_players();
 		//player->set_name(u8"DB에서긁어온이름1");
-		player->set_playertype(Protocol::PLAYER_TYPE_KNIGHT);
+
+		int playertype=Util::Random_ClassType();
+
+		player->set_playertype((PlayerType)playertype);
 
 		PlayerRef playerRef = MakeShared<CPlayer>();
-		playerRef->playerId = idGenerator++;
-		playerRef->name = player->name();
-		playerRef->type = player->playertype();
+		//playerRef->playerId = idGenerator++;
+		//playerRef->name = player->name();
+		//playerRef->type = player->playertype();
 		playerRef->SetObjectType(Object::Player);
 		playerRef->ownerSession = gameSession;
 		playerRef->SetZoneID(GZoneManager->IssueZoneID());
@@ -66,20 +82,7 @@ bool Handle_C_LOGIN(PacketSessionRef& session, Protocol::C_LOGIN& pkt)
 		//loginPkt.set_
 	}
 
-	//{
-	//	auto player = loginPkt.add_players();
-	//	//player->set_name(u8"DB에서긁어온이름2");
-	//	player->set_playertype(Protocol::PLAYER_TYPE_MAGE);
-	//
-	//	PlayerRef playerRef = MakeShared<CPlayer>();
-	//	playerRef->playerId = idGenerator++;
-	//	playerRef->name = player->name();
-	//	playerRef->type = player->playertype();
-	//	playerRef->ownerSession = gameSession;
-	//
-	//	gameSession->_players.push_back(playerRef);
-	//}
-
+	
 	auto sendBuffer = ClientPacketHandler::MakeSendBuffer(loginPkt);
 	session->Send(sendBuffer);
 

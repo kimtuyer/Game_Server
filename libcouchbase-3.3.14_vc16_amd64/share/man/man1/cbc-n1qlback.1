@@ -1,0 +1,87 @@
+.\" generated with Ronn-NG/v0.10.1
+.\" http://github.com/apjanke/ronn-ng/tree/0.10.1
+.TH "CBC\-N1QLBACK" "1" "July 2024" ""
+.SH "NAME"
+\fBcbc\-n1qlback\fR \- Stress Test for Couchbase Query (N1QL)
+.SH "SYNOPSIS"
+\fBcbc\-n1qlback\fR \-f QUERYFILE [\fIOPTIONS\fR]
+.SH "DESCRIPTION"
+\fBcbc\-n1qlback\fR creates a specified number of threads each executing a set of user defined queries\.
+.P
+\fBcbc\-n1qlback\fR requires that it be passed the path to a file containing the queries to execute; one per line\. The query should be in the format of the actual HTTP POST body (in JSON format) to be sent to the server\. For simple queries, only the \fBstatement\fR field needs to be set:
+.IP "" 4
+.nf
+{"statement":"SELECT country FROM `travel\-sample`"}
+{"statement":"SELECT country, COUNT(country) FROM `travel\-sample` GROUP BY country"}
+.fi
+.IP "" 0
+.P
+For more complex queries (for example, placeholders, custom options), you may refer to the N1QL REST API reference\.
+.P
+For example, the following line shows how to use named parameter
+.IP "" 4
+.nf
+{"statement":"SELECT RAW meta()\.id FROM `travel\-sample` WHERE type=$type LIMIT 1", "$type":"airline"}
+.fi
+.IP "" 0
+.P
+There is also special query option, \fB"n1qlback"\fR, which is stripped before sending the payload\. Currently it allows to tell if the particular query must be prepared before execution:
+.IP "" 4
+.nf
+{"statement":"SELECT * FROM `travel\-sample` WHERE type=$type LIMIT 10", "$type":"airline", "n1qlback": {"prepare": true}}
+.fi
+.IP "" 0
+.P
+\fBn1qlback\fR requires that any resources (data items, indexes) are already defined\.
+.SH "OPTIONS"
+The following options control workload generation:
+.TP
+\fB\-f\fR \fB\-\-queryfile\fR=\fIPATH\fR
+Path to a file containing the query bodies to execute in JSON format, one query per line\. See above for the format\.
+.TP
+\fB\-t\fR, \fB\-\-num\-threads\fR=\fINTHREADS\fR
+Set the number of threads (and thus the number of client instances) to run concurrently\. Each thread is assigned its own client object\.
+.P
+The following options control how \fBcbc\-n1qlback\fR connects to the cluster
+.P
+@@common\-options\.markdown@@
+.TP
+\fB\-e\fR, \fB\-\-error\-log\fR=\fIPATH\fR
+Path to a file, where the command will write failed queries along with error details\. Use this option to figure out why \fBERRORS\fR metric is not zero\.
+.P
+ \fI\fR
+.SH "ADDITIONAL OPTIONS"
+The following options may be included in the connection string (via the \fB\-U\fR option) as URI\-style query params (e\.g\. \fBcouchbase://host/bucket?option1=value1&option2=value2\fR) or as individual key=value pairs passed to the \fB\-D\fR switch (e\.g\. \fB\-Doption1=value1 \-Doption2=value\fR)\. The \fB\-D\fR will internally build the connection string, and is provided as a convenience for options to be easily passed on the command\-line
+.P
+@@common\-additional\-options\.markdown@@
+.SH "EXAMPLES"
+The following will create a file with 3 queries and 5 threads alternating between them\. It also creates indexes on the \fBtravel\-sample\fR bucket
+.IP "" 4
+.nf
+cbc n1ql 'CREATE INDEX ix_name ON `travel\-sample`(name)'
+cbc n1ql 'CREATE INDEX ix_country ON `travel\-sample`(country)'
+.fi
+.IP "" 0
+.P
+Crete text file \fBqueries\.txt\fR with the following content (note that fourth query has parameter)
+.IP "" 4
+.nf
+{"statement":"SELECT country FROM `travel\-sample` WHERE `travel\-sample`\.country = \e"United States\e""}
+{"statement":"SELECT name FROM `travel\-sample` LIMIT 10"}
+{"statement":"SELECT country, COUNT(country) FROM `travel\-sample` GROUP BY country"}
+{"statement":"SELECT RAW meta()\.id FROM `travel\-sample` WHERE type=$type LIMIT 1", "$type":"airline", "n1qlback": {"prepare": true}}
+.fi
+.IP "" 0
+.P
+Run the test load
+.IP "" 4
+.nf
+cbc\-n1qlback \-\-num\-threads 5 \-\-queryfile queries\.txt
+.fi
+.IP "" 0
+.SH "BUGS"
+This command's options are subject to change\.
+.SH "SEE ALSO"
+cbc(1), cbc\-pillowfight(1), cbcrc(4)
+.SH "HISTORY"
+The \fBcbc\-n1qlback\fR tool was first introduced in libcouchbase 2\.4\.10

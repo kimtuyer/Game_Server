@@ -17,4 +17,16 @@ namespace Util
 		return HPlist(gen);
 	}
 
+	int	static Random_ClassType()
+	{
+		//Protocol::PlayerType::PLAYER_TYPE_END
+
+		random_device rd;
+		mt19937 gen(rd());
+		uniform_int_distribution<int> classlist(1, 4);
+
+		return classlist(gen);
+	}
+
+
 }

@@ -13,3 +13,7 @@ thread_local uint64				LMinuteTickCount = 0;
 thread_local uint64				LPacketCount = 0;
 thread_local uint64				LRenderingTickCount = 0;
 
+thread_local string				doc_content;
+thread_local CouchbaseClient*	LCouchDBConnect=nullptr;
+
+

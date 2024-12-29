@@ -75,6 +75,10 @@
     <ClCompile Include="ClientPacketHandler.cpp">
       <Filter>Protocol</Filter>
     </ClCompile>
+    <ClCompile Include="CouchbaseClient.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
+    <ClCompile Include="CouchbaseHandler.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -125,6 +129,10 @@
     <ClInclude Include="ClientPacketHandler.h">
       <Filter>Protocol</Filter>
     </ClInclude>
+    <ClInclude Include="CouchbaseClient.h">
+      <Filter>UI</Filter>
+    </ClInclude>
+    <ClInclude Include="CouchbaseHandler.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Common\Protobuf\bin\Enum.proto">

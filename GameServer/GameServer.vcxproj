@@ -143,10 +143,13 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalIncludeDirectories>$(SolutionDir)json-master\include;$(SolutionDir)GameServer\build\_deps\json-src\include;$(SolutionDir)libcouchbase-3.3.14_vc16_amd64\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(SolutionDir)libcouchbase-3.3.14_vc16_amd64\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libcouchbase.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
       <Command>CALL $(SolutionDir)Common\Protobuf\bin\GenPackets.bat</Command>
@@ -163,12 +166,15 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalIncludeDirectories>$(SolutionDir)json-master\include;$(SolutionDir)GameServer\build\_deps\json-src\include;$(SolutionDir)libcouchbase-3.3.14_vc16_amd64\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(SolutionDir)libcouchbase-3.3.14_vc16_amd64\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libcouchbase.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
       <Command>CALL $(SolutionDir)Common\Protobuf\bin\GenPackets.bat</Command>
@@ -178,6 +184,8 @@
     <ClCompile Include="CMonster.cpp" />
     <ClCompile Include="CObject.cpp" />
     <ClCompile Include="ConsoleMapViewer.cpp" />
+    <ClCompile Include="CouchbaseClient.cpp" />
+    <ClCompile Include="CouchbaseHandler.cpp" />
     <ClCompile Include="CPlayerManager.cpp" />
     <ClCompile Include="CSector.cpp" />
     <ClCompile Include="CZone.cpp" />
@@ -217,6 +225,8 @@
     <ClInclude Include="CMonster.h" />
     <ClInclude Include="CObject.h" />
     <ClInclude Include="ConsoleMapViewer.h" />
+    <ClInclude Include="CouchbaseClient.h" />
+    <ClInclude Include="CouchbaseHandler.h" />
     <ClInclude Include="CPlayerManager.h" />
     <ClInclude Include="CSector.h" />
     <ClInclude Include="CZone.h" />
