@@ -3,6 +3,8 @@
 using namespace Concurrency;
 using namespace Zone;
 extern atomic<int>	g_nPacketCount;
+extern atomic<int>	g_nDBPacketCount;
+
 class ConsoleMapViewer
 {
 private:
@@ -26,6 +28,8 @@ private:
 	};
 
 	std::mutex mtx;
+
+
 	std::map<int, std::pair<int, int>> playerPositions;  // playerId -> (x, y)	
 
 	//lock-free 큐, cpu사용량 많이 먹음
@@ -46,6 +50,7 @@ private:
 		system("cls");
 	}
 public:
+	std::vector<int> DBRTT;
 	void gotoxy(int x, int y) {
 		COORD pos = { static_cast<SHORT>(x), static_cast<SHORT>(y) };
 		SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), pos);

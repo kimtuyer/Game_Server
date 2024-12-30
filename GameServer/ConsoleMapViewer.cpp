@@ -2,6 +2,8 @@
 #include "ConsoleMapViewer.h"
 shared_ptr<ConsoleMapViewer> GConsoleViewer = make_shared<ConsoleMapViewer>();
 atomic<int>	g_nPacketCount = 0;
+atomic<int>	g_nDBPacketCount = 0;
+
 void ConsoleMapViewer::displayPacketCnt()
 {
 	int startX = (ZONE_WIDTH + 1) * ZONES_PER_ROW + 5;  // 맵 오른쪽에서 5칸 떨어진 위치
@@ -100,6 +102,24 @@ void ConsoleMapViewer::drawZoneInfo()
 
 		g_nPacketCount.store(0);
 	}
+	std::vector<int>Rttlist;
+	{
+		std::lock_guard<std::mutex> lock(mtx);
+		Rttlist.swap(DBRTT);  // 빠른 스왑으로 lock 시간 최소화
+	}
+	int nCnt = 0;
+	for (auto time : DBRTT)
+	{
+		if (nCnt == 10)
+			break;
+
+		gotoxy(startX + 22, startY+1);
+
+		nCnt++;
+		cout << "DB RTT:" << time << endl;
+
+	}
+	
 
 
 	// 존 정보 출력
@@ -110,4 +130,6 @@ void ConsoleMapViewer::drawZoneInfo()
 		std::cout << "P(" << counts.first << ") ";
 		std::cout << "M(" << counts.second << ")   ";  // 공백으로 이전 텍스트 덮어쓰기
 	}
+	
+
 }

@@ -22,6 +22,9 @@
     <Filter Include="GameObject">
       <UniqueIdentifier>{87ecb0c8-a463-4f2f-8da3-49a7bcdfb77a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="DB">
+      <UniqueIdentifier>{baea7dd2-6bf4-49a1-8495-cf58b5686759}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameServer.cpp">
@@ -75,10 +78,13 @@
     <ClCompile Include="ClientPacketHandler.cpp">
       <Filter>Protocol</Filter>
     </ClCompile>
+    <ClCompile Include="CItem.cpp" />
     <ClCompile Include="CouchbaseClient.cpp">
-      <Filter>UI</Filter>
+      <Filter>DB</Filter>
     </ClCompile>
-    <ClCompile Include="CouchbaseHandler.cpp" />
+    <ClCompile Include="CouchbaseHandler.cpp">
+      <Filter>DB</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -129,10 +135,13 @@
     <ClInclude Include="ClientPacketHandler.h">
       <Filter>Protocol</Filter>
     </ClInclude>
+    <ClInclude Include="CItem.h" />
     <ClInclude Include="CouchbaseClient.h">
-      <Filter>UI</Filter>
+      <Filter>DB</Filter>
     </ClInclude>
-    <ClInclude Include="CouchbaseHandler.h" />
+    <ClInclude Include="CouchbaseHandler.h">
+      <Filter>DB</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Common\Protobuf\bin\Enum.proto">

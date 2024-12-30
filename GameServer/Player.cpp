@@ -4,11 +4,13 @@
 #include "CZone_Manager.h"
 #include "GameSession.h"
 #include "ClientPacketHandler.h"
+#include "CMonster.h"
+#include "CouchbaseClient.h"
 CPlayer::CPlayer()
 {
 }
 
-CPlayer::CPlayer(int playerid, int zoneid, int sectorid):m_nKillcount(0)
+CPlayer::CPlayer(int playerid, int zoneid, int sectorid):m_nKillcount(0),nLevel(0)
 {
 }
 
@@ -60,9 +62,49 @@ bool CPlayer::Attack(Protocol::C_ATTACK& pkt)
 
 		if (nKill > 0)
 		{
+			//static_cast<CMonster*>(Monster.get())->GetGold();
+			int nGainGold=(Monster.get())->GetGold();
+			int nGainExp =(Monster.get())->GetGold();
+
+			m_nGold += nGainGold;
+			m_nExp += nGainExp;
 
 			m_nKillcount++;
+			CouchbaseClient* pDBConnect = g_CouchbaseManager->GetConnection(LThreadId);
+			document doc;
+			doc.threadID = LThreadId;
+			doc.cas = nCas;
+			doc.key = playerId;
+
+			if (LevelUp(m_nLevel, m_nExp))
+			{
+				m_nLevel++;
+				doc.type = DB::PLAYER_LEVEL_UPDATE;
+				json j = { {"Level",m_nLevel},{"Exp",m_nExp},{"Gold",m_nGold},{"Kill",m_nKillcount} };
+				doc.value = j.dump();
+					//"SELECT EXISTS(SELECT 1 FROM `default` USE KEYS [\"" + doc.key + "\"]);";
+				//std::string query = "SELECT EXISTS(SELECT 1 FROM `default` USE KEYS [\"" + key_to_check + "\"]);";
+				pDBConnect->upsert(doc);
+
+
+			}
+			else
+			{
+				doc.type = DB::PLAYER_EXP_MONEY_UPDATE;
+				json j = { {"Exp",m_nExp},{"Gold",m_nGold},{"Kill",m_nKillcount} };
+				doc.value = j.dump();
+				//"SELECT EXISTS(SELECT 1 FROM `default` USE KEYS [\"" + doc.key + "\"]);";
+			//std::string query = "SELECT EXISTS(SELECT 1 FROM `default` USE KEYS [\"" + key_to_check + "\"]);";
+				pDBConnect->upsert(doc);
+			}
+
+			/*
+			
+			
+			*/
+
 			ackpkt.set_targetalive(false);
+
 		}
 		else
 			ackpkt.set_targetalive(true);
@@ -91,4 +133,21 @@ bool CPlayer::Attack(Protocol::C_ATTACK& pkt)
 	*/
 	
 	return true;
+}
+
+bool CPlayer::LevelUp(int nlevel, int& nExp)
+{
+	int nWeight = 1000;
+	int nNextExp = nWeight * nLevel;
+
+	if (nNextExp <= nExp)
+	{
+		//레벨업, 경험치 초기화
+		nExp = 0;	
+		return true;
+	}
+
+
+
+	return false;
 }

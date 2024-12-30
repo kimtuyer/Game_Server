@@ -22,9 +22,9 @@ class CouchbaseHandler
 public:
 	void	HandleDBJob(const document doc,const  json j);
 
-	void	Handle_PLAYER_KEY_REQ(const document& doc,const json& j);
-	void	Handle_PLAYER_DATA_CREATE(const document& doc);
-	void	Handle_PLAYER_DATA_LOAD(const document& doc, const json& j);
+	void	Handle_PLAYER_KEY_REQ_ACK(const document& doc,const json& j);
+	void	Handle_PLAYER_DATA_CREATE_ACK(const document& doc);
+	void	Handle_PLAYER_DATA_LOAD_ACK(const document& doc, const json& j);
 
 };
 extern shared_ptr<CouchbaseHandler> GCouchbaseHandler;

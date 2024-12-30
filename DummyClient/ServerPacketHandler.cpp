@@ -42,7 +42,7 @@ bool Handle_S_LOGIN(PacketSessionRef& session, Protocol::S_LOGIN& pkt)
 	playerRef->ownerSession = gameSession;
 	playerRef->SetZoneid(pkt.zoneid());
 	playerRef->SetSectorID(pkt.sectorid());
-
+	playerRef->nLevel=player->level();
 
 	int zoneid = playerRef->GetZoneID();
 	gameSession->_currentPlayer = playerRef;

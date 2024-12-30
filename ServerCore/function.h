@@ -27,6 +27,35 @@ namespace Util
 
 		return classlist(gen);
 	}
+	int	static Random_Level()
+	{
+		//Protocol::PlayerType::PLAYER_TYPE_END
+
+		random_device rd;
+		mt19937 gen(rd());
+		uniform_int_distribution<int> Level(1, 5);
+
+		return Level(gen);
+	}
+
+	int	static Random_ExpGold(int level)
+	{
+		//Protocol::PlayerType::PLAYER_TYPE_END
+		int exp = 0;
+		if (level <= 1)
+			exp = 100;
+		else if (level <= 2)
+			exp = 200;
+		else if (level <= 3)
+			exp = 300;
+		else if (level <= 4)
+			exp = 400;
+		else
+			exp = 500;
+	
+		return exp;
+	}
+
 
 
 }

@@ -112,6 +112,25 @@ public:
 		return m_bPos;
 	}
 
+
+	void	SetExp(int exp)
+	{
+		m_nExp = exp;
+	}
+	void	SetGold(int gold)
+	{
+		m_nGold = gold;
+	}
+
+	int GetExp()
+	{
+		return m_nExp;
+	}
+	int64 GetGold()
+	{
+		return m_nGold;
+	}
+
 	bool Attacked(int nAttack, OUT int& nKillcount);
 	
 	int m_nStateTime[Object::End];
@@ -134,6 +153,10 @@ protected:
 	bool m_bAlive = true;
 	atomic<int>	m_nHP;
 	int	m_nAttack=1;
+
+	int		m_nLevel;
+	int		m_nExp;
+	int64	m_nGold;
 private:
 	float	m_fSearchRange;
 	float	m_fAttackRange;

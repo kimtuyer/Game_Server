@@ -26,10 +26,11 @@ public:
 		pTarget = pObject;
 	}
 
+	
 
 private:
 	
-
+	
 	int64	nLastTickCount;
 	CObject* pTarget;
 

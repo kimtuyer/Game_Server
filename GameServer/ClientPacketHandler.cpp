@@ -49,42 +49,39 @@ bool Handle_C_LOGIN(PacketSessionRef& session, Protocol::C_LOGIN& pkt)
 	}
 
 	{
-		auto player = loginPkt.mutable_players();
-		//player->set_name(u8"DB에서긁어온이름1");
-
-		int playertype=Util::Random_ClassType();
-
-		player->set_playertype((PlayerType)playertype);
+		//auto player = loginPkt.mutable_players();
+		//int playertype=Util::Random_ClassType();
+		//player->set_playertype((PlayerType)playertype);
 
 		PlayerRef playerRef = MakeShared<CPlayer>();
+		playerRef->ownerSession = gameSession;
 		//playerRef->playerId = idGenerator++;
 		//playerRef->name = player->name();
 		//playerRef->type = player->playertype();
-		playerRef->SetObjectType(Object::Player);
-		playerRef->ownerSession = gameSession;
-		playerRef->SetZoneID(GZoneManager->IssueZoneID());
+		//playerRef->SetObjectType(Object::Player);
+		//playerRef->SetZoneID(GZoneManager->IssueZoneID());
 
-		{
-			CZoneRef Zone = GZoneManager->GetZone(playerRef->GetZoneID());
-			int nSectorID = Zone->GetInitSectorID();
-			playerRef->SetSectorID(nSectorID);
-		}
+		//{
+		//	CZoneRef Zone = GZoneManager->GetZone(playerRef->GetZoneID());
+		//	int nSectorID = Zone->GetInitSectorID();
+		//	playerRef->SetSectorID(nSectorID);
+		//}
 
 		gameSession->_currentPlayer = playerRef;
-		player->set_id(playerRef->playerId);
+		//player->set_id(playerRef->playerId);
 		//gameSession->_players.push_back(playerRef);
 		
 		GPlayerManager->Insert(playerRef->playerId, playerRef);
 
 		//int nzoneid = GZoneManager->IssueZoneID();
-		loginPkt.set_zoneid(playerRef->GetZoneID());
-		loginPkt.set_sectorid(playerRef->GetSectorID());
+		//loginPkt.set_zoneid(playerRef->GetZoneID());
+		//loginPkt.set_sectorid(playerRef->GetSectorID());
 		//loginPkt.set_
 	}
 
 	
-	auto sendBuffer = ClientPacketHandler::MakeSendBuffer(loginPkt);
-	session->Send(sendBuffer);
+	//auto sendBuffer = ClientPacketHandler::MakeSendBuffer(loginPkt);
+	//session->Send(sendBuffer);
 
 	return true;
 }

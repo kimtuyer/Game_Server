@@ -19,7 +19,10 @@ CMonster::CMonster(int nObjectID, int nZoneID,int nSectorID,  Protocol::D3DVECTO
 
 	m_eState = Object::Idle;
 
-	m_nHP = 1;//Util::Random_HP();
+	m_nHP = Util::Random_HP();
+	m_nLevel = Util::Random_Level();
+	m_nExp = Util::Random_ExpGold(m_nLevel);
+	m_nGold= Util::Random_ExpGold(m_nLevel);
 	m_nAttack = 10;
 
 	//cout << "몬스터 생성 ID: " << m_nObjectID <<" : " << m_vPos.x() << ", " << m_vPos.y() << endl;

@@ -185,6 +185,7 @@ class Player final :
     kNameFieldNumber = 2,
     kIdFieldNumber = 1,
     kPlayerTypeFieldNumber = 3,
+    kLevelFieldNumber = 4,
   };
   // string name = 2;
   void clear_name();
@@ -218,6 +219,15 @@ class Player final :
   void _internal_set_playertype(::Protocol::PlayerType value);
   public:
 
+  // uint32 level = 4;
+  void clear_level();
+  ::PROTOBUF_NAMESPACE_ID::uint32 level() const;
+  void set_level(::PROTOBUF_NAMESPACE_ID::uint32 value);
+  private:
+  ::PROTOBUF_NAMESPACE_ID::uint32 _internal_level() const;
+  void _internal_set_level(::PROTOBUF_NAMESPACE_ID::uint32 value);
+  public:
+
   // @@protoc_insertion_point(class_scope:Protocol.Player)
  private:
   class _Internal;
@@ -228,6 +238,7 @@ class Player final :
   ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr name_;
   ::PROTOBUF_NAMESPACE_ID::uint64 id_;
   int playertype_;
+  ::PROTOBUF_NAMESPACE_ID::uint32 level_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_Struct_2eproto;
 };
@@ -631,6 +642,26 @@ inline void Player::_internal_set_playertype(::Protocol::PlayerType value) {
 inline void Player::set_playertype(::Protocol::PlayerType value) {
   _internal_set_playertype(value);
   // @@protoc_insertion_point(field_set:Protocol.Player.playerType)
+}
+
+// uint32 level = 4;
+inline void Player::clear_level() {
+  level_ = 0u;
+}
+inline ::PROTOBUF_NAMESPACE_ID::uint32 Player::_internal_level() const {
+  return level_;
+}
+inline ::PROTOBUF_NAMESPACE_ID::uint32 Player::level() const {
+  // @@protoc_insertion_point(field_get:Protocol.Player.level)
+  return _internal_level();
+}
+inline void Player::_internal_set_level(::PROTOBUF_NAMESPACE_ID::uint32 value) {
+  
+  level_ = value;
+}
+inline void Player::set_level(::PROTOBUF_NAMESPACE_ID::uint32 value) {
+  _internal_set_level(value);
+  // @@protoc_insertion_point(field_set:Protocol.Player.level)
 }
 
 // -------------------------------------------------------------------

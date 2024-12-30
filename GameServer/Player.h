@@ -16,9 +16,12 @@ public:
 
 	bool	Attack(Protocol::C_ATTACK& pkt);
 
+	bool	LevelUp(int nlevel, int& nExp);
 
+	int						nCas = 0;
 	uint64					playerId = 0;
 	string					name;
+	int						nLevel;
 	Protocol::PlayerType	type = Protocol::PLAYER_TYPE_NONE;
 	weak_ptr<class GameSession>	ownerSession; // Cycle
 	int						m_nKillcount = 0;

@@ -3,7 +3,7 @@
 #include "ClientSession.h"
 #include "ServerPacketHandler.h"
 #include "RandomMove.h"
-CClientPlayer::CClientPlayer() :m_eState(Object::Idle)
+CClientPlayer::CClientPlayer() :m_eState(Object::Idle),nLevel(0)
 {
 	//m_RandomMovement = MakeShared<RandomMove>();
 }

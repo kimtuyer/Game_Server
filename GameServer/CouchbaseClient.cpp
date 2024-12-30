@@ -2,6 +2,7 @@
 
 #include "CouchbaseClient.h"
 #include "CouchbaseHandler.h"
+#include "ConsoleMapViewer.h"
 #ifdef _DEBUG
 #pragma commment (lib,"libcouchbase_d.lib")
 #else
@@ -99,6 +100,7 @@ static void query_callback(lcb_INSTANCE* instance, int cbtype, const lcb_RESPBAS
 static void store_callback(lcb_INSTANCE* instance, int cbtype, const lcb_RESPSTORE* resp)
 {
 	//std::lock_guard<std::mutex> lock(store_lock); // 뮤텍스로 공유 데이터 접근 보호
+	int nowtime = GetTickCount64();
 
 	const char* key;
 	size_t nkey;
@@ -132,13 +134,14 @@ static void store_callback(lcb_INSTANCE* instance, int cbtype, const lcb_RESPSTO
 		}
 		return;
 	}
+
+	//int RTT = context->sendTime - nowtime;
+	//cout << "DB RTT:" << RTT;
+	//GConsoleViewer->DBRTT.push_back(RTT);
 	/*
 		업뎃 성공
-
-	
-	
 	*/
-
+	
 
 
 	//	printf("status: %s, key: %.*s, CAS: 0x%" PRIx64 "\n",
@@ -193,6 +196,11 @@ static void get_callback(lcb_INSTANCE*, int cbtype, const lcb_RESPGET* resp)
 	 타입에 따라 처리할 함수를 호출
 
 	*/
+
+	//int RTT = context->sendTime - GetTickCount64();
+	//cout << "DB RTT:" << RTT;
+	//GConsoleViewer->DBRTT.push_back(RTT);
+
 	doc.cas = caskey; //db로부터 cas값 받아온후에 각 유저별로 저장해야할듯.유저 문서라서
 	doc.key = context->key;
 	doc.type = context->type;
@@ -256,6 +264,7 @@ void CouchbaseClient::connect()
 
 void CouchbaseClient::upsert(document doc)
 {
+	doc.sendTime = GetTickCount64();
 	{
 		lcb_CMDSTORE* cmd;
 		lcb_cmdstore_create(&cmd, LCB_STORE_UPSERT);
@@ -287,6 +296,7 @@ void CouchbaseClient::upsert(document doc)
 void CouchbaseClient::get(const std::string key, document doc)
 {
 	//GetCallback cb;
+	doc.sendTime = GetTickCount64();
 
 	lcb_CMDGET* cmd;
 	lcb_cmdget_create(&cmd);

@@ -2,7 +2,7 @@
 #include "CObject.h"
 #include "CZone.h"
 #include "CZone_Manager.h"
-CObject::CObject():m_nZoneID(0),m_bActivate(false)
+CObject::CObject():m_nZoneID(0),m_bActivate(false),m_nGold(0),m_nExp(0),m_nLevel(0)
 {
 
 
@@ -49,6 +49,11 @@ bool CObject::Attacked(int nAttack, OUT int& nKillcount)
 		CZoneRef Zone = GZoneManager->GetZone(m_nZoneID);
 		CSectorRef Sector = Zone->GetSector(m_nSectorID);
 		Sector->Insert_DeadList(m_nObjectID);
+
+		/*
+			Å³ °ª DB·Î ¾÷µ«
+		*/
+
 
 	}
 	else

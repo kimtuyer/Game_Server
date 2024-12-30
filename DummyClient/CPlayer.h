@@ -16,6 +16,7 @@ public:
 	string					name;
 	Protocol::PlayerType	type = Protocol::PLAYER_TYPE_NONE;
 	ClientSessionRef			ownerSession; // Cycle
+	int						nLevel;
 
 
 	//int		m_nZoneid;
