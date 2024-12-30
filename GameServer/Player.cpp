@@ -71,17 +71,17 @@ bool CPlayer::Attack(Protocol::C_ATTACK& pkt)
 
 			m_nKillcount++;
 			CouchbaseClient* pDBConnect = g_CouchbaseManager->GetConnection(LThreadId);
-			document doc;
-			doc.threadID = LThreadId;
-			doc.cas = nCas;
-			doc.key = playerId;
+			document* doc=new document;
+			doc->threadID = LThreadId;
+			doc->cas = nCas;
+			doc->key = playerId;
 
 			if (LevelUp(m_nLevel, m_nExp))
 			{
 				m_nLevel++;
-				doc.type = DB::PLAYER_LEVEL_UPDATE;
+				doc->type = DB::PLAYER_LEVEL_UPDATE;
 				json j = { {"Level",m_nLevel},{"Exp",m_nExp},{"Gold",m_nGold},{"Kill",m_nKillcount} };
-				doc.value = j.dump();
+				doc->value = j.dump();
 					//"SELECT EXISTS(SELECT 1 FROM `default` USE KEYS [\"" + doc.key + "\"]);";
 				//std::string query = "SELECT EXISTS(SELECT 1 FROM `default` USE KEYS [\"" + key_to_check + "\"]);";
 				pDBConnect->upsert(doc);
@@ -90,9 +90,9 @@ bool CPlayer::Attack(Protocol::C_ATTACK& pkt)
 			}
 			else
 			{
-				doc.type = DB::PLAYER_EXP_MONEY_UPDATE;
+				doc->type = DB::PLAYER_EXP_MONEY_UPDATE;
 				json j = { {"Exp",m_nExp},{"Gold",m_nGold},{"Kill",m_nKillcount} };
-				doc.value = j.dump();
+				doc->value = j.dump();
 				//"SELECT EXISTS(SELECT 1 FROM `default` USE KEYS [\"" + doc.key + "\"]);";
 			//std::string query = "SELECT EXISTS(SELECT 1 FROM `default` USE KEYS [\"" + key_to_check + "\"]);";
 				pDBConnect->upsert(doc);

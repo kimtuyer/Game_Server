@@ -13,7 +13,7 @@ struct PlayerInfo {
 };
 // from_json과 to_json 함수 정의
 inline void from_json(const json& j, PlayerInfo& p) {
-	j.at("id").get_to(p.id);
+	j.at("playerid").get_to(p.id);
 	j.at("type").get_to(p.type);
 	j.at("Level").get_to(p.level);
 	j.at("Exp").get_to(p.Exp);
@@ -25,7 +25,7 @@ inline void from_json(const json& j, PlayerInfo& p) {
 
 inline void to_json(json& j, const PlayerInfo& p) {
 	j = json{
-		{"id", p.id},
+		{"playerid", p.id},
 		{"type", p.type},
 		{"Level", p.level},
 		{"Exp", p.Exp},

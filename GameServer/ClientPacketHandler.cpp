@@ -40,12 +40,24 @@ bool Handle_C_LOGIN(PacketSessionRef& session, Protocol::C_LOGIN& pkt)
 		CouchbaseClient* pDBConnect = g_CouchbaseManager->GetConnection(LThreadId);
 		document doc;
 		doc.threadID = LThreadId;
-		doc.key = idGenerator++;
+		int key = idGenerator++;
+		doc.key =to_string(key);
 		doc.type = DB::PLAYER_KEY_REQ;
-		doc.value= "SELECT EXISTS(SELECT 1 FROM `default` USE KEYS [\"" + doc.key + "\"]);";
+		doc.value = "SELECT EXISTS(SELECT 1 FROM `default` USE KEYS['"+doc.key+"'])";
+		doc.cas = 0;
+		doc.sendTime = GetTickCount64();
 		//std::string query = "SELECT EXISTS(SELECT 1 FROM `default` USE KEYS [\"" + key_to_check + "\"]);";
-		pDBConnect->QueryExecute(doc.value,doc);
-		//pDBConnect->get(doc.key, doc);
+		//pDBConnect->get(doc.key,doc);
+		PlayerRef playerRef = MakeShared<CPlayer>();
+		playerRef->ownerSession = gameSession;
+		gameSession->_currentPlayer = playerRef;
+		GPlayerManager->Insert(key, playerRef);
+
+
+
+		pDBConnect->QueryExecute(doc.value, doc);
+
+		
 	}
 
 	{
@@ -53,8 +65,8 @@ bool Handle_C_LOGIN(PacketSessionRef& session, Protocol::C_LOGIN& pkt)
 		//int playertype=Util::Random_ClassType();
 		//player->set_playertype((PlayerType)playertype);
 
-		PlayerRef playerRef = MakeShared<CPlayer>();
-		playerRef->ownerSession = gameSession;
+		//PlayerRef playerRef = MakeShared<CPlayer>();
+		//playerRef->ownerSession = gameSession;
 		//playerRef->playerId = idGenerator++;
 		//playerRef->name = player->name();
 		//playerRef->type = player->playertype();
@@ -67,11 +79,11 @@ bool Handle_C_LOGIN(PacketSessionRef& session, Protocol::C_LOGIN& pkt)
 		//	playerRef->SetSectorID(nSectorID);
 		//}
 
-		gameSession->_currentPlayer = playerRef;
+		//gameSession->_currentPlayer = playerRef;
 		//player->set_id(playerRef->playerId);
 		//gameSession->_players.push_back(playerRef);
 		
-		GPlayerManager->Insert(playerRef->playerId, playerRef);
+		//GPlayerManager->Insert(key, playerRef);
 
 		//int nzoneid = GZoneManager->IssueZoneID();
 		//loginPkt.set_zoneid(playerRef->GetZoneID());

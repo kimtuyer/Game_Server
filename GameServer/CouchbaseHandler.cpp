@@ -9,14 +9,14 @@
 #include "CZone.h"
 shared_ptr<CouchbaseHandler> GCouchbaseHandler = make_shared<CouchbaseHandler>();
 
-void CouchbaseHandler::HandleDBJob(const document doc, const json j)
+void CouchbaseHandler::HandleDBJob(const document doc, const json j,const string s)
 {
 	DB::Type e;
 	//doc.type
 	switch (doc.type)
 	{
 	case DB::PLAYER_KEY_REQ:
-		Handle_PLAYER_KEY_REQ_ACK(doc, j);
+		Handle_PLAYER_KEY_REQ_ACK(doc, j,s);
 		break;
 	case DB::PLAYER_DATA_LOAD: //key_req후 있으면 요청후 그에 대한 결과값 처리
 		Handle_PLAYER_DATA_LOAD_ACK(doc, j);
@@ -41,32 +41,38 @@ void CouchbaseHandler::HandleDBJob(const document doc, const json j)
 	}
 }
 
-void CouchbaseHandler::Handle_PLAYER_KEY_REQ_ACK(const document& doc, const json& j)
+void CouchbaseHandler::Handle_PLAYER_KEY_REQ_ACK(const document& doc, const json& j,const string s)
 {
-	document doc_new;
-	doc_new.key = doc.key;
-	doc_new.threadID = doc.threadID;
+	document* doc_new=new document;
+	doc_new->key = doc.key;
+	doc_new->threadID = doc.threadID;
 
-	if (j[0].contains("$1"))
+	if(j.contains("$1"))
 	{
-		bool exists = j[0]["$1"].get<bool>();
 
-		if (j[0]["$1"].get<bool>() == true) //해당 id키값 존재
+		bool exists = j["$1"].get<bool>();
+
+		if (exists == true) //해당 id키값 존재
 		{
-			doc_new.type = DB::PLAYER_DATA_LOAD;
-			doc_new.value = "SELECT* FROM `default` USE KEYS [\"" + doc.key + "\"]);";
+			doc_new->type = DB::PLAYER_DATA_LOAD;
+			doc_new->value = "SELECT* FROM `default` USE KEYS ["+ doc.key +"];";
 
-			g_CouchbaseManager->GetConnection(doc.threadID)->QueryExecute(doc_new.value, doc_new);
+			g_CouchbaseManager->GetConnection(doc.threadID)->get(doc_new->key, doc_new);
+
+			//g_CouchbaseManager->GetConnection(doc.threadID)->QueryExecute(doc_new.value, doc_new);
 			//요청해 get 해오면 결과물 플레이어 및 클라로 전달
 		}
 		else
 		{
 			//새로 플레이어정보 생성시,
 			int playertype = Util::Random_ClassType();
-			json document1 = { {"playerID", doc.key}, {"Class",playertype },{"Level",1 }};
+			int id = stoi(doc.key);
+			json document1 = { {"playerid",id } ,{"type",playertype },{"Level",1 }, { "Exp",0 }, {"Gold",0 },{"Kill",0 } };
 
-			doc_new.type = DB::PLAYER_DATA_CREATE;
-			doc_new.value = document1.dump();
+			doc_new->type = DB::PLAYER_DATA_CREATE;
+			doc_new->value = document1.dump();
+			doc_new->cas = 0;
+			
 
 			g_CouchbaseManager->GetConnection(doc.threadID)->upsert(doc_new);
 
@@ -96,6 +102,8 @@ void CouchbaseHandler::Handle_PLAYER_DATA_CREATE_ACK(const document& doc)
 	}
 	else
 	{
+		playerRef->nCas = doc.cas;
+
 		loginPkt.set_success(true);
 
 		auto player = loginPkt.mutable_players();

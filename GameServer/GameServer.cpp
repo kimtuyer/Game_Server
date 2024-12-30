@@ -160,35 +160,40 @@ int main()
 	
 		//GRoom->DoTimer(1000, [] { cout << "Hello 1000" << endl; });
 	//GRoom->DoTimer(2000, [] { cout << "Hello 2000" << endl; });
-
+	//CouchbaseClient* g_pCouchbaseClient=nullptr;
 	//try {
-	//	//g_pCouchbaseClient = new CouchbaseClient("couchbase://localhost",
-	//	//	"Cached",//"default",
-	//	//	"admin",
-	//	//	"552123");
-	//	//
-	//	
+	//	 g_pCouchbaseClient = new CouchbaseClient("couchbase://localhost",
+	//		"default",//"default",
+	//		"admin",
+	//		"552123");
 	//
+	//	//	
+	//	//
 	//}
 	//catch (const std::exception& e) {
 	//	delete g_pCouchbaseClient;
-	//	std::cerr << "Error: " << e.what() << std::endl;
+	//std::cerr << "Error: " << e.what() << std::endl;
 	//	return 1;
 	//}
+	//string query;
+	////json document1 = { {"name", "John Doe"}, {"age", 30} };
+	//document cb;
+	//cb.key = "User5";
+	//cb.cas = 0;
+	//cb.threadID = 1;
+	//g_pCouchbaseClient->get(cb.key, cb);
 
-	json document1 = { {"name", "John Doe"}, {"age", 30} };
 	
 	//document1.insert()
 
 	//json document1 = { {"name", "John Doe"}, {"age", 30} };
-	string doculment_id = "User";
-	doculment_id += "5";
+//	string doculment_id = "User";
+	//doculment_id += "5";
 	//string json_string = document.dump();
 
-	document cb;
-	cb.key = doculment_id;
-	cb.value = document1.dump();
-	cb.cas = 0; //최초 저장 문서시
+	//cb.key = doculment_id;
+	//cb.value = document1.dump();
+	//cb.cas = 0; //최초 저장 문서시
 
 	//g_pCouchbaseClient->upsert(cb);
 
@@ -225,7 +230,6 @@ int main()
 	unsigned int core_count = std::thread::hardware_concurrency();
 	int nThreadCnt = core_count * 2;//+ 1;
 
-	g_CouchbaseManager->Init(nThreadCnt);
 #//ifdef __CONSOLE_UI__
 	GThreadManager->Launch([]()
 		{
@@ -241,6 +245,8 @@ int main()
 				DoWorkerJob(service);
 			});
 	}
+	g_CouchbaseManager->Init(nThreadCnt+1);
+
 
 	// Main Thread
 	//DoMainJob(service);

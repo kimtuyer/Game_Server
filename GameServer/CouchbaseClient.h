@@ -49,9 +49,9 @@ public:
 
 	void connect();
 
-	void upsert(document doc);
+	void upsert(document* doc);
 
-	void get(const std::string key, document doc);
+	void get(const std::string key, document* doc);
 
 	void QueryExecute(const std::string query, document doc);
 
@@ -80,7 +80,7 @@ public:
 	CouchbaseClient* GetConnection(int threadId) {
 
 
-		return connections[threadId].get();
+		return connections[threadId-1].get();
 	}
 private:
 	std::vector<std::unique_ptr<CouchbaseClient>> connections;
