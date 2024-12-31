@@ -59,8 +59,7 @@ void CouchbaseHandler::Handle_PLAYER_KEY_REQ_ACK(const document& doc, const json
 
 			g_CouchbaseManager->GetConnection(doc.threadID)->get(doc_new->key, doc_new);
 
-			//g_CouchbaseManager->GetConnection(doc.threadID)->QueryExecute(doc_new.value, doc_new);
-			//요청해 get 해오면 결과물 플레이어 및 클라로 전달
+			
 		}
 		else
 		{
@@ -86,8 +85,6 @@ void CouchbaseHandler::Handle_PLAYER_DATA_CREATE_ACK(const document& doc)
 	플레이어 정보 불러와서, 해당 정보 메모리 삽입후, 클라에게도 알림
 	*/
 	json jsonObject = json::parse(doc.value);
-	//std::string jsonString = R"({"name": "John", "age": 30})";	
-	//json jsonObject = json::parse(doc.value);
 	PlayerInfo s = jsonObject.get<PlayerInfo>();
 
 	int playerid = stoi(doc.key);
@@ -139,8 +136,6 @@ void CouchbaseHandler::Handle_PLAYER_DATA_LOAD_ACK(const document& doc, const js
 		나머지 플레이어정보 json ->구조체 파싱후, 내 메모리 저장후 클라에게도 전송
 	
 	*/
-	//std::string jsonString = R"({"name": "John", "age": 30})";	
-	//json jsonObject = json::parse(doc.value);
 	PlayerInfo s = j.get<PlayerInfo>();
 	Protocol::S_LOGIN loginPkt;
 
@@ -148,9 +143,7 @@ void CouchbaseHandler::Handle_PLAYER_DATA_LOAD_ACK(const document& doc, const js
 	if (playerRef == nullptr)
 	{
 		return;
-		//loginPkt.set_success(false);
-		//auto sendBuffer = ClientPacketHandler::MakeSendBuffer(loginPkt);
-		//pPlayer->ownerSession.lock()->Send(sendBuffer);
+		
 	}
 	else
 	{

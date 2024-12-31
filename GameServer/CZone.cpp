@@ -246,6 +246,9 @@ void CZone::Update()
 	Send_SectorInsertObject();
 
 	Send_SectorRemoveObject();
+
+	//Send_MonsterUpdateList();
+
 #endif
 	///////////////////////////////////////////////////////////////////////////
 #ifdef __SECTOR_UPDATE__

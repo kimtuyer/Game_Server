@@ -63,6 +63,8 @@ public:
 	virtual ~ClientService() {}
 
 	virtual bool	Start() override;
+
+	int64 m_connectwait=0;
 };
 
 

@@ -10,7 +10,6 @@
 Service::Service(ServiceType type, NetAddress address, IocpCoreRef core, SessionFactory factory, int32 maxSessionCount)
 	: _type(type), _netAddress(address), _iocpCore(core), _sessionFactory(factory), _maxSessionCount(maxSessionCount)
 {
-
 }
 
 Service::~Service()
@@ -71,12 +70,36 @@ bool ClientService::Start()
 		return false;
 
 	const int32 sessionCount = GetMaxSessionCount();
-	for (int32 i = 0; i < sessionCount; i++)
+	int connectcnt = 0;
+
+	int now = GetTickCount64();
+
+	if (m_connectwait < now)
 	{
-		SessionRef session = CreateSession();
-		if (session->Connect() == false)
-			return false;
+		for (int32 i = 0; i < sessionCount; i++)
+		{
+			SessionRef session = CreateSession();
+			if (session->Connect() == false)
+				return false;
+			int now = GetTickCount64();
+			if (m_connectwait < now && connectcnt==100)
+			{
+				m_connectwait = now + Tick::SECOND_TICK;
+				connectcnt = 0;
+			}
+
+			connectcnt++;
+		}
+		m_connectwait = now + Tick::SECOND_TICK;
 	}
+
+	//const int32 sessionCount = GetMaxSessionCount();
+	//for (int32 i = 0; i < sessionCount; i++)
+	//{
+	//	SessionRef session = CreateSession();
+	//	if (session->Connect() == false)
+	//		return false;
+	//}
 
 	return true;
 }

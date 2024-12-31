@@ -19,14 +19,6 @@ static void query_callback(lcb_INSTANCE* instance, int cbtype, const lcb_RESPQUE
 		return;
 	}
 
-	//const char* row;
-	//size_t nrow;
-	//
-	//lcb_respquery_row(rb, &row, &nrow);
-	//if (row) {
-	//	printf("Got row: %.*s\n", (int)nrow, row);
-	//}
-
 	const lcb_RESPQUERY* resp = (const lcb_RESPQUERY*)rb;
 	void* cookie = nullptr;
 
@@ -58,10 +50,6 @@ static void query_callback(lcb_INSTANCE* instance, int cbtype, const lcb_RESPQUE
 			{
 				throw std::runtime_error("Json File is empty"); // 파일이 비어있을 경우 예외 발생
 			}
-			//if (j.is_array() == false)
-			//{
-			//	throw std::runtime_error("Json File is not array"); // 파일이 비어있을 경우 예외 발생
-			//}
 
 			document* doc = static_cast<document*>(cookie);
 			document doc_new;
@@ -70,34 +58,7 @@ static void query_callback(lcb_INSTANCE* instance, int cbtype, const lcb_RESPQUE
 			doc_new.threadID = doc->threadID;
 
 			GCouchbaseHandler->HandleDBJob(doc_new, j,ret);
-			//if (doc->type == DB::PLAYER_KEY_REQ)
-			//{
-			//
-			//	if (j[0].contains("$1"))
-			//	{
-			//		bool exists = j[0]["$1"].get<bool>();
-			//
-			//		if (j[0]["$1"].get<bool>() == true) //해당 id키값 존재
-			//		{
-			//			doc_new.type = DB::PLAYER_DATA_LOAD;
-			//			doc_new.value = "SELECT* FROM `default` USE KEYS [\"" + doc->key + "\"]);";
-			//
-			//			g_CouchbaseManager->GetConnection(doc->threadID)->QueryExecute(doc_new.value, doc_new);
-			//			//요청해 get 해오면 결과물 플레이어 및 클라로 전달
-			//
-			//		}
-			//		else
-			//		{
-			//			//새로 플레이어정보 생성시,
-			//			DB::PLAYER_DATA_CREATE
-			//
-			//		}
-			//
-			//
-			//
-			//	}
-			//
-			//}
+			
 
 			
 		}
@@ -131,11 +92,8 @@ static void store_callback(lcb_INSTANCE* instance, int cbtype, const lcb_RESPSTO
 		if (cas_status == LCB_ERR_CAS_MISMATCH) {
 			std::cerr << "CAS 불일치! 다른 클라이언트가 문서를 수정했습니다." << std::endl;
 
-			//document doc;
 			context->cas = cas;
-		//	doc.key = context->key;
-			//doc.value = context->value;
-
+	
 			//cas값 새로 받아서 업뎃 재시도
 			CouchbaseClient* pDBConnect = g_CouchbaseManager->GetConnection(LThreadId);
 			pDBConnect->DoAsync(&CouchbaseClient::upsert, context);
@@ -161,14 +119,9 @@ static void store_callback(lcb_INSTANCE* instance, int cbtype, const lcb_RESPSTO
 		업뎃 성공
 	*/
 	
-
-
-	//	printf("status: %s, key: %.*s, CAS: 0x%" PRIx64 "\n",
-			//lcb_strerror_short(lcb_respstore_status(resp)), (int)nkey, key, cas);
 }
 static void get_callback(lcb_INSTANCE*, int cbtype, const lcb_RESPGET* resp)
 {
-	//std::lock_guard<std::mutex> lock(get_lock); // 뮤텍스로 공유 데이터 접근 보호
 	CouchbaseClient* pDBConnect = g_CouchbaseManager->GetConnection(LThreadId);
 
 	size_t nvalue;
@@ -188,23 +141,15 @@ static void get_callback(lcb_INSTANCE*, int cbtype, const lcb_RESPGET* resp)
 	document doc;
 
 	if (status != LCB_SUCCESS) {
-		if (status == LCB_ERR_DOCUMENT_NOT_FOUND)
-		{
-		}
-
+		
 		fprintf(stderr, "Failed to get document: %s\n", lcb_strerror_short(status));
 		if (cas_status == LCB_ERR_CAS_MISMATCH) {
 			std::cerr << "CAS 불일치! 다른 클라이언트가 문서를 수정했습니다." << std::endl;
 
-			//document doc;
 			document* context = static_cast<document*>(cookie);
 			context->cas = caskey;
-			//doc.cas = caskey;
-			//doc.key = context->key;
-			//doc.value = context->value;
-
+		
 			//cas값 새로 받아서 업뎃 재시도
-			//CouchbaseClient* pDBConnect = g_CouchbaseManager->GetConnection(LThreadId);
 			pDBConnect->DoAsync(&CouchbaseClient::get, context->key, context);
 		}
 		return;
@@ -236,20 +181,6 @@ static void get_callback(lcb_INSTANCE*, int cbtype, const lcb_RESPGET* resp)
 	
 	delete context;
 
-	//j.get_ptr<>
-	//PlayerInfo s= j.get<PlayerInfo>();
-	
-	//context->type
-
-	////// 기존 메모리 해제
-	//if (doc_content.value.empty()==false) {
-	//	doc_content.value.clear();
-	//	//free(doc_content.value);
-	//}
-
-	//// 새로운 값 복사
-	//doc_content.value = malloc(nvalue + 1
-	//printf("Document content: %.*s\n", (int)nvalue, value);
 }
 
 void CouchbaseClient::connect()
@@ -325,7 +256,6 @@ void CouchbaseClient::get(const std::string key, document* doc)
 {
 	CouchbaseClient* pDBConnect = g_CouchbaseManager->GetConnection(LThreadId);
 
-	//GetCallback cb;
 	doc->sendTime = GetTickCount64();
 
 	lcb_CMDGET* cmd;
@@ -355,18 +285,13 @@ void CouchbaseClient::get(const std::string key, document* doc)
 void CouchbaseClient::QueryExecute(const std::string query, document doc)
 {
 	
-	// N1QL 쿼리 실행
-	//std::string query = "SELECT * FROM `travel-sample` LIMIT 10;";
-	//lcb_CMDGET* cmd;
 	lcb_CMDQUERY* qrycmd;
 	auto rc=lcb_cmdquery_create(&qrycmd);
 	if (rc != LCB_SUCCESS)
 	{
 		return;
 	}
-
-	//const char* statement = "SELECT * FROM `default` LIMIT 10;";
-	//rc=lcb_cmdquery_statement(qrycmd, statement, strlen(statement));
+	
 	rc=lcb_cmdquery_statement(qrycmd, query.c_str(), query.length());
 	if (rc != LCB_SUCCESS)
 	{
@@ -374,9 +299,6 @@ void CouchbaseClient::QueryExecute(const std::string query, document doc)
 	}
 
 	lcb_cmdquery_callback(qrycmd, query_callback);
-
-	//std::string params = "[\"" + doc.key + "\"]";  // JSON 배열 형태로
-	//lcb_cmdquery_positional_params(qrycmd, params.c_str(), params.length());
 
 	rc = lcb_query(instance, &doc, qrycmd);
 	lcb_cmdquery_destroy(qrycmd);
@@ -393,5 +315,4 @@ void CouchbaseClient::QueryExecute(const std::string query, document doc)
 		throw std::runtime_error("Failed to get: " +
 			std::string(lcb_strerror_short(rc)));
 	}
-	//lcb_destroy(instance);
 }

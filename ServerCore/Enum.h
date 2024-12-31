@@ -15,7 +15,7 @@ namespace Tick
 	};
 }
 static const	int	g_nServerMaxUser = 5000;
-static const	int	g_nClientMaxCount = 1;
+static const	int	g_nClientMaxCount = 1000;
 static 	int	g_nConnectedUser = 0;
 
 namespace Zone

@@ -24,6 +24,8 @@ public:
 
 	void SendObjectlist();
 
+	void BroadCast_MonsterList();
+
 	void BroadCast_Player(Sector::UpdateType eType, Sector::ObjectInfo object);
 
 	template <typename T>
@@ -80,7 +82,7 @@ public:
 private:
 	USE_MANY_LOCKS(lock::End);
 	
-
+	int64 m_lBroadTime = 0;
 	int m_nZoneID;
 	int	m_nSectorID;
 	bool m_bActivate;

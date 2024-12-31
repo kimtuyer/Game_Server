@@ -229,6 +229,9 @@ int main()
 
 	unsigned int core_count = std::thread::hardware_concurrency();
 	int nThreadCnt = core_count * 2;//+ 1;
+#ifdef __COUCHBASE_DB__
+	g_CouchbaseManager->Init(nThreadCnt + 1);
+#endif // __COUCHBASE_DB__
 
 #//ifdef __CONSOLE_UI__
 	GThreadManager->Launch([]()
@@ -245,8 +248,7 @@ int main()
 				DoWorkerJob(service);
 			});
 	}
-	g_CouchbaseManager->Init(nThreadCnt+1);
-
+	
 
 	// Main Thread
 	//DoMainJob(service);

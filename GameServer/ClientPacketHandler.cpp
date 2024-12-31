@@ -35,8 +35,13 @@ bool Handle_C_LOGIN(PacketSessionRef& session, Protocol::C_LOGIN& pkt)
 
 	// ID 발급 (DB 아이디가 아니고, 인게임 아이디)
 	static Atomic<uint64> idGenerator = 1;
-
+	PlayerRef playerRef = MakeShared<CPlayer>();
+	playerRef->ownerSession = gameSession;
+	gameSession->_currentPlayer = playerRef;
 	{
+		
+
+#ifdef  __COUCHBASE_DB__
 		CouchbaseClient* pDBConnect = g_CouchbaseManager->GetConnection(LThreadId);
 		document doc;
 		doc.threadID = LThreadId;
@@ -48,53 +53,51 @@ bool Handle_C_LOGIN(PacketSessionRef& session, Protocol::C_LOGIN& pkt)
 		doc.sendTime = GetTickCount64();
 		//std::string query = "SELECT EXISTS(SELECT 1 FROM `default` USE KEYS [\"" + key_to_check + "\"]);";
 		//pDBConnect->get(doc.key,doc);
-		PlayerRef playerRef = MakeShared<CPlayer>();
-		playerRef->ownerSession = gameSession;
-		gameSession->_currentPlayer = playerRef;
 		GPlayerManager->Insert(key, playerRef);
 
-
-
+#endif  __COUCHBASE_DB__
+		
+#ifdef  __COUCHBASE_DB__
 		pDBConnect->QueryExecute(doc.value, doc);
-
+#endif
 		
 	}
 
+#ifdef  __COUCHBASE_DB__
+#else
 	{
-		//auto player = loginPkt.mutable_players();
-		//int playertype=Util::Random_ClassType();
-		//player->set_playertype((PlayerType)playertype);
+		auto player = loginPkt.mutable_players();
+		int playertype=Util::Random_ClassType();
+		player->set_playertype((PlayerType)playertype);
 
 		//PlayerRef playerRef = MakeShared<CPlayer>();
-		//playerRef->ownerSession = gameSession;
-		//playerRef->playerId = idGenerator++;
-		//playerRef->name = player->name();
-		//playerRef->type = player->playertype();
-		//playerRef->SetObjectType(Object::Player);
-		//playerRef->SetZoneID(GZoneManager->IssueZoneID());
+		playerRef->ownerSession = gameSession;
+		playerRef->playerId = idGenerator++;
+		playerRef->name = player->name();
+		playerRef->type = player->playertype();
+		playerRef->SetObjectType(Object::Player);
+		playerRef->SetZoneID(GZoneManager->IssueZoneID());
 
-		//{
-		//	CZoneRef Zone = GZoneManager->GetZone(playerRef->GetZoneID());
-		//	int nSectorID = Zone->GetInitSectorID();
-		//	playerRef->SetSectorID(nSectorID);
-		//}
+		{
+			CZoneRef Zone = GZoneManager->GetZone(playerRef->GetZoneID());
+			int nSectorID = Zone->GetInitSectorID();
+			playerRef->SetSectorID(nSectorID);
+		}
 
 		//gameSession->_currentPlayer = playerRef;
-		//player->set_id(playerRef->playerId);
-		//gameSession->_players.push_back(playerRef);
+		player->set_id(playerRef->playerId);
 		
-		//GPlayerManager->Insert(key, playerRef);
+		GPlayerManager->Insert(playerRef->playerId, playerRef);
 
 		//int nzoneid = GZoneManager->IssueZoneID();
-		//loginPkt.set_zoneid(playerRef->GetZoneID());
-		//loginPkt.set_sectorid(playerRef->GetSectorID());
-		//loginPkt.set_
+		loginPkt.set_zoneid(playerRef->GetZoneID());
+		loginPkt.set_sectorid(playerRef->GetSectorID());
 	}
 
 	
-	//auto sendBuffer = ClientPacketHandler::MakeSendBuffer(loginPkt);
-	//session->Send(sendBuffer);
-
+	auto sendBuffer = ClientPacketHandler::MakeSendBuffer(loginPkt);
+	session->Send(sendBuffer);
+#endif
 	return true;
 }
 

@@ -65,7 +65,6 @@ public:
 class CouchbaseManager
 {
 public:
-	//CouchbaseManager)
 	void Init(int threadCnt)
 	{
 		for (int32 i = 0; i <= threadCnt; i++)
