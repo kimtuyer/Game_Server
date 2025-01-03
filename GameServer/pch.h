@@ -20,3 +20,4 @@ using ObjectRef = shared_ptr<class CObject>;
 using PlayerRef = shared_ptr<class CPlayer>;
 using MonsterRef = shared_ptr<class CMonster>;
 using CouchbaseRef = shared_ptr<class CouchbaseClient>;
+extern array<shared_ptr<ZoneQueue>, Zone::g_nZoneCount + 1> zoneQueues;

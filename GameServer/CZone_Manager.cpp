@@ -33,8 +33,12 @@ void CZone_Manager::Init(const int nZoneCount,const int nZoneUserMax )
 			CZoneRef Zone = MakeShared<CZone>(nZoneUserMax, nZoneid, startpos);
 			m_listZone.insert({ nZoneid,Zone });
 
+#ifdef __ZONE_THREAD__
+#else
 			Zone->DoTimer(Tick::AI_TICK, &CZone::Update);
 			Zone->DoTimer(Tick::AI_TICK, &CZone::Update_Player);
+#endif // __ZONE_THREAD__
+
 
 			nZoneid++;
 		}

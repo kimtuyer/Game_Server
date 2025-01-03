@@ -17,10 +17,13 @@
 #include "cJSON.h"
 #include <fstream>
 #include "CouchbaseClient.h"
+#include "CZone.h"
 //#include "tao/json.hpp"
 //atomic<int>	g_nPacketCount = 0;
 
 //class CZone_Manager;
+array<shared_ptr<ZoneQueue>, Zone::g_nZoneCount + 1> zoneQueues = {};
+
 void DoMainJob(ServerServiceRef& service)
 {
 	while (true)
@@ -28,7 +31,7 @@ void DoMainJob(ServerServiceRef& service)
 		//if (LSecondTickCount < GetTickCount64())
 		//{
 		//	LSecondTickCount = GetTickCount64() + Tick::SECOND_TICK;
-		//	
+		//
 		//	GConsoleViewer->gotoxy(0, 0);
 		//	cout << "전체 초당 패킷 처리량:" << g_nPacketCount << endl;
 		//
@@ -36,15 +39,12 @@ void DoMainJob(ServerServiceRef& service)
 		//}
 
 		//LEndTickCount = ::GetTickCount64() + Tick::WORKER_TICK;
-
 	}
 }
-
 void DoWorkerJob(ServerServiceRef& service)
 {
 	bool bFlag = false;
 	while (true)
-
 
 	{
 		if (LSecondTickCount < GetTickCount64())
@@ -61,26 +61,110 @@ void DoWorkerJob(ServerServiceRef& service)
 		{
 			bFlag = false;
 			//LPacketCount++;
-
 		}
 
 		LEndTickCount = ::GetTickCount64() + Tick::WORKER_TICK;
 
 		// 네트워크 입출력 처리 -> 인게임 로직까지 (패킷 핸들러에 의해)
-		if(service->GetIocpCore()->Dispatch(10)==true )
+		if (service->GetIocpCore()->Dispatch(10) == true)
 			LPacketCount++;
-
 
 		// 예약된 일감 처리
 		ThreadManager::DistributeReservedJobs();
 
 		// 글로벌 큐
 		ThreadManager::DoGlobalQueueWork();
-
-
 	}
 }
 
+void DoIOCPJob(ServerServiceRef& service)
+{
+	bool bFlag = false;
+	while (true)
+	{
+		if (LSecondTickCount < GetTickCount64())
+		{
+			LSecondTickCount = GetTickCount64() + Tick::SECOND_TICK;
+			bFlag = true;
+			g_nPacketCount.fetch_add(LPacketCount);
+
+			//cout << LThreadId <<" : 워커스레드의  초당 패킷 처리량:" << LPacketCount << endl;
+
+			LPacketCount = 0;
+		}
+		else
+		{
+			bFlag = false;
+			//LPacketCount++;
+		}
+		LEndTickCount = ::GetTickCount64() + Tick::WORKER_TICK;
+		// 네트워크 입출력 처리 -> 인게임 로직까지 (패킷 핸들러에 의해)
+		if (service->GetIocpCore()->Dispatch(10) == true)
+			LPacketCount++;
+	}
+}
+
+void DoZoneJob(ServerServiceRef& service, int ZoneID)
+{
+	auto Zone = GZoneManager->GetZone(ZoneID);
+	if (Zone == nullptr)
+		return;
+#ifdef __ZONE_THREAD_VER1__
+	zoneQueues[ZoneID] = MakeShared<ZoneQueue>();
+	auto& ZoneQueue = zoneQueues[ZoneID];
+#endif	
+	uint64 lastUpdatetime = 0;
+	while (true)
+	{
+		uint64 nowtime = GetTickCount64();
+		uint64 elapsedtime = nowtime - lastUpdatetime;
+
+		if (elapsedtime >= Tick::AI_TICK) {
+			Zone->Update();
+			lastUpdatetime = nowtime;
+		}
+
+		uint64 nextUpdateTime = lastUpdatetime + Tick::AI_TICK;
+		uint64 timeUntilNextUpdate = nextUpdateTime - GetTickCount64();
+
+	
+		if (timeUntilNextUpdate > 0) {
+			uint64 endTime = timeUntilNextUpdate + GetTickCount64();
+
+			while (GetTickCount64() < endTime)
+			{
+#ifdef __ZONE_THREAD_VER1__
+				PacketInfo job;
+				if (ZoneQueue->jobs.try_pop(job))
+					ClientPacketHandler::HandlePacket(job.m_session, job.m_buffer, job.m_len);
+				else
+				{
+					ThreadManager::DistributeReservedJobs();
+
+					ThreadManager::DoGlobalQueueWork();
+
+					std::this_thread::sleep_for(std::chrono::milliseconds(1));
+				}
+#endif // __ZONE_THREAD_VER1__
+#ifdef __ZONE_THREAD_VER2__
+				if (service->GetIocpCore()->Dispatch(10) == true)
+					LPacketCount++;
+				else
+				{
+					ThreadManager::DistributeReservedJobs();
+
+					ThreadManager::DoGlobalQueueWork();
+
+					std::this_thread::sleep_for(std::chrono::milliseconds(1));
+				}
+#endif
+				
+			}
+		}
+
+		
+	}
+}
 
 void DoRenderingJob()
 {
@@ -89,9 +173,8 @@ void DoRenderingJob()
 		if (LSecondTickCount < GetTickCount64())
 		{
 			LSecondTickCount = GetTickCount64() + Tick::SECOND_TICK;
-	
-			//GConsoleViewer->refreshCurrentDisplay();
 
+			//GConsoleViewer->refreshCurrentDisplay();
 		}
 
 		if (LRenderingTickCount < GetTickCount64())
@@ -100,17 +183,13 @@ void DoRenderingJob()
 
 			GConsoleViewer->renderFrame();
 
-
 			//락 프리 기법 렌더링
 			//GConsoleViewer->processUpdates();
-
 		}
 
 		//LEndTickCount = ::GetTickCount64() + Tick::WORKER_TICK;
-
 	}
 }
-
 
 void DoBroadJob(ServerServiceRef& service, bool bMain = false)
 {
@@ -157,66 +236,11 @@ json read_json_from_file(const std::string& filename) {
 }
 int main()
 {
-	
-		//GRoom->DoTimer(1000, [] { cout << "Hello 1000" << endl; });
-	//GRoom->DoTimer(2000, [] { cout << "Hello 2000" << endl; });
-	//CouchbaseClient* g_pCouchbaseClient=nullptr;
-	//try {
-	//	 g_pCouchbaseClient = new CouchbaseClient("couchbase://localhost",
-	//		"default",//"default",
-	//		"admin",
-	//		"552123");
-	//
-	//	//	
-	//	//
-	//}
-	//catch (const std::exception& e) {
-	//	delete g_pCouchbaseClient;
-	//std::cerr << "Error: " << e.what() << std::endl;
-	//	return 1;
-	//}
-	//string query;
-	////json document1 = { {"name", "John Doe"}, {"age", 30} };
-	//document cb;
-	//cb.key = "User5";
-	//cb.cas = 0;
-	//cb.threadID = 1;
-	//g_pCouchbaseClient->get(cb.key, cb);
-
-	
-	//document1.insert()
-
-	//json document1 = { {"name", "John Doe"}, {"age", 30} };
-//	string doculment_id = "User";
-	//doculment_id += "5";
-	//string json_string = document.dump();
-
-	//cb.key = doculment_id;
-	//cb.value = document1.dump();
-	//cb.cas = 0; //최초 저장 문서시
-
-	//g_pCouchbaseClient->upsert(cb);
-
-
-	//// 데이터 조회
-	//GetCallback cb;
-	//cb.threadid = 1;
-	//auto value = g_pCouchbaseClient->get("user:1", LCB_WAIT_DEFAULT,cb);
-	//
-	//GetCallback cb2;
-	//cb2.threadid = 2;
-	// value = g_pCouchbaseClient->get("user:2", LCB_WAIT_DEFAULT, cb2);
-
-	//if (doc_content.value.length() > 0)
-	//	std::cout << "Retrieved value: " << doc_content.value << std::endl;
-	
-
-	//printf("Libcouchbase version: %s\n", lcb_get_version(NULL));
-
-
+	//GRoom->DoTimer(1000, [] { cout << "Hello 1000" << endl; });
+//GRoom->DoTimer(2000, [] { cout << "Hello 2000" << endl; });
 	ClientPacketHandler::Init();
 	GZoneManager->Init(g_nZoneCount, g_nZoneUserMax);
-	
+
 	//ZoneManager()->Init();
 
 	ServerServiceRef service = MakeShared<ServerService>(
@@ -238,17 +262,26 @@ int main()
 		{
 			DoRenderingJob();
 		});
-//#endif	
+	//#endif
+	int zoneCnt = 0;
 	for (int32 i = 0; i < nThreadCnt; i++)
 	{
-		
-
-		GThreadManager->Launch([&service]()
+		GThreadManager->Launch([&service, i, &zoneCnt]()
 			{
+#ifdef __ZONE_THREAD__
+				if (i < Thread::IOCP_THREADS)
+					DoIOCPJob(service);
+				else if (i < g_nZoneCount + Thread::IOCP_THREADS)
+				{
+					zoneCnt++;
+					DoZoneJob(service, zoneCnt);
+				}
+
+#else
 				DoWorkerJob(service);
+#endif // __ZONE_THREAD__
 			});
 	}
-	
 
 	// Main Thread
 	//DoMainJob(service);

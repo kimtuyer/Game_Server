@@ -1,5 +1,6 @@
 #pragma once
 #include <concurrent_queue.h>
+#include <concurrent_unordered_map.h>
 using namespace Concurrency;
 using namespace Zone;
 extern atomic<int>	g_nPacketCount;
@@ -36,6 +37,8 @@ private:
 	concurrent_queue<Update> updateQueue;  // lock-free 큐
 
 	//더블 버퍼링+주기적 업데이트
+	//concurrent_unordered_map<int, ObjectPos>pendingUpdates;
+
 	std::map<int/*Objectid*/, ObjectPos> pendingUpdates;  // 업데이트 버퍼
 	std::map<int, std::pair<int, int>> currentDisplay;  // 현재 화면
 
@@ -222,6 +225,8 @@ public:
 		std::lock_guard<std::mutex> lock(mtx);
 		//gotoxy(1,0);
 		//cout << "x ,y : " << x << "," << y << endl;
+		//pendingUpdates.insert({ objectid,{ zoneId, x, y,bAlive}});
+
 		pendingUpdates[objectid]={ zoneId, x, y,bAlive };
 	}
 
@@ -230,6 +235,7 @@ public:
 
 		//displayPacketCnt();
 
+		//concurrent_unordered_map<int, ObjectPos> updates;
 		std::map<int, ObjectPos> updates;
 		{
 			std::lock_guard<std::mutex> lock(mtx);

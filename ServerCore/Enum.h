@@ -18,6 +18,12 @@ static const	int	g_nServerMaxUser = 5000;
 static const	int	g_nClientMaxCount = 1000;
 static 	int	g_nConnectedUser = 0;
 
+namespace Thread {
+
+	static const int IOCP_THREADS = 8;
+
+}
+
 namespace Zone
 {
 	static const	int	g_nZoneCount = 15;

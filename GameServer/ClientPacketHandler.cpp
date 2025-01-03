@@ -154,7 +154,11 @@ bool Handle_C_ENTER_ZONE(PacketSessionRef& session, Protocol::C_ENTER_ZONE& pkt)
 		}
 	}
 
-	auto sendBuffer = ClientPacketHandler::MakeSendBuffer(enterpkt);
+#ifdef __ZONE_THREAD__
+	auto sendBuffer = ClientPacketHandler::MakeSendBuffer(enterpkt, nZoneid);
+#else
+	auto sendBuffer = ClientPacketHandler::MakeSendBuffer(enterpkt, nZoneid);
+#endif // __ZONE_THREAD__	
 	session->Send(sendBuffer);
 
 	/*
@@ -254,7 +258,11 @@ bool Handle_C_MOVE(PacketSessionRef& session, Protocol::C_MOVE& pkt)
 		moveackpkt.set_success(true);
 		moveackpkt.set_sectorid(nCurSectorID);
 
-		auto sendBuffer = ClientPacketHandler::MakeSendBuffer(moveackpkt);
+#ifdef __ZONE_THREAD__
+		auto sendBuffer = ClientPacketHandler::MakeSendBuffer(moveackpkt, nZoneid);
+#else
+		auto sendBuffer = ClientPacketHandler::MakeSendBuffer(moveackpkt, nZoneid);
+#endif // __ZONE_THREAD__	
 		session->Send(sendBuffer);
 	}
 
@@ -318,8 +326,11 @@ bool Handle_C_CHAT(PacketSessionRef& session, Protocol::C_CHAT& pkt)
 
 	Protocol::S_CHAT chatPkt;
 	chatPkt.set_msg(pkt.msg());
-	auto sendBuffer = ClientPacketHandler::MakeSendBuffer(chatPkt);
-
+#ifdef __ZONE_THREAD__
+	auto sendBuffer = ClientPacketHandler::MakeSendBuffer(chatPkt, 0);
+#else
+	auto sendBuffer = ClientPacketHandler::MakeSendBuffer(chatPkt,0);
+#endif // __ZONE_THREAD__
 	//Room->DoTimer(3000, CM, sendBuffer);
 	//GRoom->DoTimer(3000 ,&Room::Broadcast, sendBuffer);
 

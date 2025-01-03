@@ -5,7 +5,7 @@
 void ClientSession::OnConnected()
 {
 	Protocol::C_LOGIN pkt;
-	auto sendBuffer = ServerPacketHandler::MakeSendBuffer(pkt);
+	auto sendBuffer = ServerPacketHandler::MakeSendBuffer(pkt,0);
 	Send(sendBuffer);
 }
 

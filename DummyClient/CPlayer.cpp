@@ -49,7 +49,7 @@ void CClientPlayer::AI_Idle()
 			vPos->set_z(m_vPos.z());
 		}
 
-		auto sendBuffer = ServerPacketHandler::MakeSendBuffer(pkt);
+		auto sendBuffer = ServerPacketHandler::MakeSendBuffer(pkt,m_nZoneID);
 		ownerSession->Send(sendBuffer);
 
 		m_eState = Object::Move;
@@ -94,7 +94,7 @@ void CClientPlayer::AI_Idle()
 			pkt.set_skillid(1);
 			pkt.set_targetid(m_targetInfo.id());
 		}
-		auto sendBuffer = ServerPacketHandler::MakeSendBuffer(pkt);
+		auto sendBuffer = ServerPacketHandler::MakeSendBuffer(pkt, m_nZoneID);
 		ownerSession->Send(sendBuffer);
 
 		DoTimer(Tick::AI_TICK, &CClientPlayer::AI_Attack);
@@ -136,7 +136,7 @@ void CClientPlayer::AI_Move()
 		vPos->set_z(m_vPos.z());
 	}
 
-	auto sendBuffer = ServerPacketHandler::MakeSendBuffer(pkt);
+	auto sendBuffer = ServerPacketHandler::MakeSendBuffer(pkt, m_nZoneID);
 	ownerSession->Send(sendBuffer);
 	m_eState = Object::Idle;
 	DoTimer(Tick::AI_TICK, &CClientPlayer::AI_Idle);
@@ -165,7 +165,7 @@ void CClientPlayer::AI_Attack()
 		pkt.set_skillid(1);
 		pkt.set_targetid(m_targetInfo.id());
 	}
-	auto sendBuffer = ServerPacketHandler::MakeSendBuffer(pkt);
+	auto sendBuffer = ServerPacketHandler::MakeSendBuffer(pkt, m_nZoneID);
 	ownerSession->Send(sendBuffer);
 
 	DoTimer(Tick::SECOND_TICK, &CClientPlayer::AI_Attack);

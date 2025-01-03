@@ -63,11 +63,11 @@ public:
 		PacketHeader* header = reinterpret_cast<PacketHeader*>(buffer);
 		return GPacketHandler[header->id](session, buffer, len);
 	}
-	static SendBufferRef MakeSendBuffer(Protocol::C_LOGIN& pkt) { return MakeSendBuffer(pkt, PKT_C_LOGIN); }
-	static SendBufferRef MakeSendBuffer(Protocol::C_ENTER_ZONE& pkt) { return MakeSendBuffer(pkt, PKT_C_ENTER_ZONE); }
-	static SendBufferRef MakeSendBuffer(Protocol::C_MOVE& pkt) { return MakeSendBuffer(pkt, PKT_C_MOVE); }
-	static SendBufferRef MakeSendBuffer(Protocol::C_ATTACK& pkt) { return MakeSendBuffer(pkt, PKT_C_ATTACK); }
-	static SendBufferRef MakeSendBuffer(Protocol::C_CHAT& pkt) { return MakeSendBuffer(pkt, PKT_C_CHAT); }
+static SendBufferRef MakeSendBuffer(Protocol::C_LOGIN&pkt, uint16 zoneID) { return MakeSendBuffer(pkt, PKT_C_LOGIN, zoneID); }
+static SendBufferRef MakeSendBuffer(Protocol::C_ENTER_ZONE&pkt, uint16 zoneID) { return MakeSendBuffer(pkt, PKT_C_ENTER_ZONE, zoneID); }
+static SendBufferRef MakeSendBuffer(Protocol::C_MOVE&pkt, uint16 zoneID) { return MakeSendBuffer(pkt, PKT_C_MOVE, zoneID); }
+static SendBufferRef MakeSendBuffer(Protocol::C_ATTACK&pkt, uint16 zoneID) { return MakeSendBuffer(pkt, PKT_C_ATTACK, zoneID); }
+static SendBufferRef MakeSendBuffer(Protocol::C_CHAT&pkt, uint16 zoneID) { return MakeSendBuffer(pkt, PKT_C_CHAT, zoneID); }
 
 private:
 	template<typename PacketType, typename ProcessFunc>
@@ -90,6 +90,23 @@ private:
 		PacketHeader* header = reinterpret_cast<PacketHeader*>(sendBuffer->Buffer());
 		header->size = packetSize;
 		header->id = pktId;
+		ASSERT_CRASH(pkt.SerializeToArray(&header[1], dataSize));
+		sendBuffer->Close(packetSize);
+
+		return sendBuffer;
+	}
+
+	template<typename T>
+	static SendBufferRef MakeSendBuffer(T& pkt, uint16 pktId,uint16 zoneID)
+	{
+		const uint16 dataSize = static_cast<uint16>(pkt.ByteSizeLong());
+		const uint16 packetSize = dataSize + sizeof(PacketHeader);
+
+		SendBufferRef sendBuffer = GSendBufferManager->Open(packetSize);
+		PacketHeader* header = reinterpret_cast<PacketHeader*>(sendBuffer->Buffer());
+		header->size = packetSize;
+		header->id = pktId;
+		header->zoneID = zoneID;
 		ASSERT_CRASH(pkt.SerializeToArray(&header[1], dataSize));
 		sendBuffer->Close(packetSize);
 

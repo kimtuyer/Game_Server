@@ -80,7 +80,7 @@ int main()
 	//chatPkt.set_msg(strTemp);
 
 	//chatPkt.set_msg(u8"Hello World !");
-	auto sendBuffer = ServerPacketHandler::MakeSendBuffer(chatPkt);
+	auto sendBuffer = ServerPacketHandler::MakeSendBuffer(chatPkt,0);
 	service->Broadcast(sendBuffer);
 
 	//while (true)  

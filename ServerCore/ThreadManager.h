@@ -2,10 +2,11 @@
 
 #include <thread>
 #include <functional>
-
+//#include "Enum.h"
 /*------------------
 	ThreadManager
 -------------------*/
+
 
 class ThreadManager
 {
@@ -27,8 +28,10 @@ public:
 	static void DoBroadQueueWork();
 
 
+	//array<unique_ptr<ZoneQueue>, Zone::g_nZoneCount+1> zoneQueues;
 private:
 	Mutex			_lock;
 	vector<thread>	_threads;
+
 };
 

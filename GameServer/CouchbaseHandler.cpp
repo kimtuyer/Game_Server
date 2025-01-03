@@ -123,8 +123,14 @@ void CouchbaseHandler::Handle_PLAYER_DATA_CREATE_ACK(const document& doc)
 		//loginPkt.set_
 	}
 
+#ifdef __ZONE_THREAD__
+	int zoneid = playerRef->GetZoneID();
+	auto sendBuffer = ClientPacketHandler::MakeSendBuffer(loginPkt, playerRef->GetZoneID());
 
-	auto sendBuffer = ClientPacketHandler::MakeSendBuffer(loginPkt);
+#else
+	auto sendBuffer = ClientPacketHandler::MakeSendBuffer(loginPkt, playerRef->GetZoneID());
+#endif // __ZONE_THREAD__
+
 	playerRef->ownerSession.lock()->Send(sendBuffer);
 
 }
@@ -174,7 +180,12 @@ void CouchbaseHandler::Handle_PLAYER_DATA_LOAD_ACK(const document& doc, const js
 	}
 
 
-	auto sendBuffer = ClientPacketHandler::MakeSendBuffer(loginPkt);
+#ifdef __ZONE_THREAD__
+	auto sendBuffer = ClientPacketHandler::MakeSendBuffer(loginPkt, playerRef->GetZoneID());
+
+#else
+	auto sendBuffer = ClientPacketHandler::MakeSendBuffer(loginPkt, playerRef->GetZoneID());
+#endif // __ZONE_THREAD__	playerRef->ownerSession.lock()->Send(sendBuffer);
 	playerRef->ownerSession.lock()->Send(sendBuffer);
 
 

@@ -247,6 +247,11 @@ void CZone::Update()
 
 	Send_SectorRemoveObject();
 
+#ifdef __ZONE_THREAD__
+	Send_SectorInsertPlayer();
+
+	Send_SectorRemovePlayer();
+#endif
 	//Send_MonsterUpdateList();
 
 #endif
@@ -288,7 +293,11 @@ void CZone::Update()
 #endif
 
 	//ZoneManager에서 모든 zone update 호출중
+#ifdef __ZONE_THREAD__
+#else
 	DoTimer(Tick::AI_TICK, &CZone::Update);
+#endif // __ZONE_THREAD__
+
 }
 
 void CZone::Update_Player()
@@ -297,7 +306,10 @@ void CZone::Update_Player()
 
 	Send_SectorRemovePlayer();
 
+#ifdef __ZONE_THREAD__
+#else
 	DoTimer(Tick::AI_TICK, &CZone::Update_Player);
+#endif
 }
 
 CObject* CZone::SearchEnemy(CObject* pMonster)
@@ -490,7 +502,11 @@ void CZone::Send_PlayerUpdateList()
 
 void CZone::BroadCast_Monster(Protocol::S_MOVE_MONSTER& movepkt)
 {
-	auto sendBuffer = ClientPacketHandler::MakeSendBuffer(movepkt);
+#ifdef __ZONE_THREAD__
+	auto sendBuffer = ClientPacketHandler::MakeSendBuffer(movepkt, m_nZoneID);
+#else
+	auto sendBuffer = ClientPacketHandler::MakeSendBuffer(movepkt, m_nZoneID);
+#endif // __ZONE_THREAD__	
 	int nCnt = 0;
 	for (auto& [playerid, ObjectRef] : m_nlistObject[Object::Player])
 	{
@@ -528,7 +544,11 @@ void CZone::BroadCast_Player(Protocol::S_MOVE_PLAYER& movepkt)
 	//Pos->set_x(vPos.x());
 	//Pos->set_y(vPos.y());
 	//Pos->set_z(vPos.z());
-	auto sendBuffer = ClientPacketHandler::MakeSendBuffer(movepkt);
+#ifdef __ZONE_THREAD__
+	auto sendBuffer = ClientPacketHandler::MakeSendBuffer(movepkt, m_nZoneID);
+#else
+	auto sendBuffer = ClientPacketHandler::MakeSendBuffer(movepkt, m_nZoneID);
+#endif // __ZONE_THREAD__	
 	int nCnt = 0;
 	for (auto& [playerid, ObjectRef] : m_nlistObject[Object::Player])
 	{
@@ -667,7 +687,11 @@ void CZone::Send_SectorInsertObject()
 			}
 			if (bSend == false)
 				continue;
-			auto sendBuffer = ClientPacketHandler::MakeSendBuffer(objpkt);
+#ifdef __ZONE_THREAD__
+			auto sendBuffer = ClientPacketHandler::MakeSendBuffer(objpkt, m_nZoneID);
+#else
+			auto sendBuffer = ClientPacketHandler::MakeSendBuffer(objpkt, m_nZoneID);
+#endif // __ZONE_THREAD__	
 			CPlayer* pPlayer = static_cast<CPlayer*>(Player.get());
 			if (pPlayer->ownerSession.expired() == false)
 			{
@@ -781,7 +805,11 @@ void CZone::Send_SectorRemoveObject()
 				continue;
 			nCnt++;
 
-			auto sendBuffer = ClientPacketHandler::MakeSendBuffer(objpkt);
+#ifdef __ZONE_THREAD__
+			auto sendBuffer = ClientPacketHandler::MakeSendBuffer(objpkt, m_nZoneID);
+#else
+			auto sendBuffer = ClientPacketHandler::MakeSendBuffer(objpkt, m_nZoneID);
+#endif // __ZONE_THREAD__	
 			CPlayer* pPlayer = static_cast<CPlayer*>(Player.get());
 			if (pPlayer->ownerSession.expired() == false)
 			{
@@ -892,7 +920,11 @@ void CZone::Send_SectorInsertPlayer()
 			}
 			if (bSend == false)
 				continue;
-			auto sendBuffer = ClientPacketHandler::MakeSendBuffer(objpkt);
+#ifdef __ZONE_THREAD__
+			auto sendBuffer = ClientPacketHandler::MakeSendBuffer(objpkt, m_nZoneID);
+#else
+			auto sendBuffer = ClientPacketHandler::MakeSendBuffer(objpkt, m_nZoneID);
+#endif // __ZONE_THREAD__	
 			CPlayer* pPlayer = static_cast<CPlayer*>(Player.get());
 			if (pPlayer->ownerSession.expired() == false)
 			{
@@ -973,7 +1005,11 @@ void CZone::Send_SectorRemovePlayer()
 			if (bSend == false)
 				continue;
 
-			auto sendBuffer = ClientPacketHandler::MakeSendBuffer(objpkt);
+#ifdef __ZONE_THREAD__
+			auto sendBuffer = ClientPacketHandler::MakeSendBuffer(objpkt, m_nZoneID);
+#else
+			auto sendBuffer = ClientPacketHandler::MakeSendBuffer(objpkt, m_nZoneID);
+#endif // __ZONE_THREAD__	
 			CPlayer* pPlayer = static_cast<CPlayer*>(Player.get());
 			if (pPlayer->ownerSession.expired() == false)
 			{

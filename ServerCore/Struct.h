@@ -1,6 +1,35 @@
 #pragma once
+#include <concurrent_queue.h>
 #include <nlohmann/json.hpp>
 using json = nlohmann::json;
+
+struct PacketInfo
+{
+	PacketInfo()
+	{
+		PacketSessionRef m_session = nullptr;
+		BYTE* m_buffer = nullptr;
+		int32 m_len = 0;
+	}
+
+	PacketInfo(PacketSessionRef& session, BYTE* buffer, int32 len)
+	{
+		m_session = session;
+		m_buffer = buffer;
+		m_len = len;
+	}
+
+	PacketSessionRef m_session=nullptr;
+	BYTE* m_buffer=nullptr;
+	int32 m_len=0;
+};
+struct ZoneQueue {
+	concurrency::concurrent_queue<PacketInfo> jobs;
+	mutex zoneMutex;
+	// 존 관련 데이터
+	//vector<User*> users;
+	// ... 기타 존 데이터
+};
 
 struct PlayerInfo {
     int id;

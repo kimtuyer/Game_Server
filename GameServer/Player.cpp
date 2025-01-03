@@ -110,7 +110,11 @@ bool CPlayer::Attack(Protocol::C_ATTACK& pkt)
 
 		ackpkt.set_success(true);
 	}
-	auto sendBuffer = ClientPacketHandler::MakeSendBuffer(ackpkt);
+#ifdef __ZONE_THREAD__
+	auto sendBuffer = ClientPacketHandler::MakeSendBuffer(ackpkt, m_nZoneID);
+#else
+	auto sendBuffer = ClientPacketHandler::MakeSendBuffer(ackpkt, m_nZoneID);
+#endif // __ZONE_THREAD__	
 	ownerSession.lock()->Send(sendBuffer);
 
 	

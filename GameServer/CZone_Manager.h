@@ -38,7 +38,11 @@ public:
 	int	IssueZoneID();
 
 
+	bool		IsZone(int nZoneID)
+	{
 
+		return m_listZone.contains(nZoneID);
+	}
 	CZoneRef	GetZone(int nZoneID);
 
 	bool GetStartPos(int nZoneID, D3DVECTOR*);

@@ -11,7 +11,7 @@ auto RTT = [](int64 nowtime, int64 arrivetime, string packetName)
 {
 	int64 responstime = nowtime - arrivetime;
 
-	if (responstime <=100)
+	if (responstime >100)
 	{
 
 		cout << packetName << ":  RTT 응답 시간 :" << responstime <<"ms " << endl;
@@ -57,7 +57,7 @@ bool Handle_S_LOGIN(PacketSessionRef& session, Protocol::S_LOGIN& pkt)
 	enterGamePkt.set_zoneid(pkt.zoneid());
 	enterGamePkt.set_sectorid(pkt.sectorid());
 
-	auto sendBuffer = ServerPacketHandler::MakeSendBuffer(enterGamePkt);
+	auto sendBuffer = ServerPacketHandler::MakeSendBuffer(enterGamePkt, zoneid);
 	session->Send(sendBuffer);
 
 	return true;

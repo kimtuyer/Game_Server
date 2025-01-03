@@ -172,7 +172,11 @@ void CSector::BroadCast_MonsterList()
 		if (bSend == false)
 			continue;
 
-		auto sendBuffer = ClientPacketHandler::MakeSendBuffer(objpkt);
+#ifdef __ZONE_THREAD__
+		auto sendBuffer = ClientPacketHandler::MakeSendBuffer(objpkt, m_nZoneID);
+#else
+		auto sendBuffer = ClientPacketHandler::MakeSendBuffer(objpkt, m_nZoneID);
+#endif // __ZONE_THREAD__		
 		CPlayer* pPlayer = static_cast<CPlayer*>(Player.get());
 		if (pPlayer->ownerSession.expired() == false)
 		{
@@ -212,7 +216,11 @@ void CSector::BroadCast_Player(Sector::UpdateType eType, Sector::ObjectInfo Obje
 			continue;
 		}
 
-		auto sendBuffer = ClientPacketHandler::MakeSendBuffer(objpkt);
+#ifdef __ZONE_THREAD__
+		auto sendBuffer = ClientPacketHandler::MakeSendBuffer(objpkt, m_nZoneID);
+#else
+		auto sendBuffer = ClientPacketHandler::MakeSendBuffer(objpkt, m_nZoneID);
+#endif // __ZONE_THREAD__			
 		CPlayer* pPlayer = static_cast<CPlayer*>(Player.get());
 		if (pPlayer->ownerSession.expired() == false)
 		{

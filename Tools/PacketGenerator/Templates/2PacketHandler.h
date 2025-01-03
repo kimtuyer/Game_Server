@@ -52,8 +52,9 @@ private:
 		return func(session, pkt);
 	}
 
+
 	template<typename T>
-	static SendBufferRef MakeSendBuffer(T& pkt, uint16 pktId)
+	static SendBufferRef MakeSendBuffer(T& pkt, uint16 pktId ,uint16 playerid)
 	{
 		const uint16 dataSize = static_cast<uint16>(pkt.ByteSizeLong());
 		const uint16 packetSize = dataSize + sizeof(PacketHeader);
@@ -62,9 +63,11 @@ private:
 		PacketHeader* header = reinterpret_cast<PacketHeader*>(sendBuffer->Buffer());
 		header->size = packetSize;
 		header->id = pktId;
+		header->playerid = playerid;
 		ASSERT_CRASH(pkt.SerializeToArray(&header[1], dataSize));
 		sendBuffer->Close(packetSize);
 
 		return sendBuffer;
 	}
+
 };
