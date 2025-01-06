@@ -19,7 +19,7 @@ public:
 	//유저 입장시 해당 존 활성화 및 추가 및 업데이트
 
 	//리스트 순회하면서 업데이트
-	void Init(const int nZoneCount, const int nZoneUserMax);
+	void Init(const int nZoneCount,  int nZoneUserMax);
 
 	//오브젝트 리스트에 객체 삽입
 	bool PlayerEnter(int& nZoneID, PlayerRef object);

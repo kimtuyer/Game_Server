@@ -28,14 +28,14 @@ ConsoleMapViewer::ConsoleMapViewer()
 {
 
 	int totalWidth = (ZONE_WIDTH + 1) * ZONES_PER_ROW + 30;  // Zone Info 영역 포함
-	int totalHeight = (ZONE_HEIGHT + 1) * ZONES_PER_COL + 10;
+	int totalHeight = (ZONE_HEIGHT + 1) * ZONES_PER_COL + 15;
 
 	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 	CONSOLE_SCREEN_BUFFER_INFO csbi;
 	GetConsoleScreenBufferInfo(hConsole, &csbi);
 	COORD bufferSize = {
 		static_cast<SHORT>(totalWidth + 10),  // 여유 공간 추가
-		static_cast<SHORT>(totalHeight + 15)
+		static_cast<SHORT>(totalHeight + 30)
 	};
 	SetConsoleScreenBufferSize(hConsole, bufferSize);
 

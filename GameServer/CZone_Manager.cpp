@@ -11,13 +11,10 @@ CZone_Manager::CZone_Manager():m_nZoneCount(0)
 	m_listZone.clear();
 }
 
-void CZone_Manager::Init(const int nZoneCount,const int nZoneUserMax )
+void CZone_Manager::Init(const int nZoneCount, int nZoneUserMax )
 {
 	m_nZoneCount = nZoneCount;
-	/*
-	
-	
-	*/
+
 	int nZoneid = 1;
 	for (int HEIGHT = 1; HEIGHT <= ZONES_PER_COL; HEIGHT++)	//콘솔 세로 1줄 개수
 		for (int WIDTH = 1; WIDTH <= ZONES_PER_ROW; WIDTH++) //콘솔 가로 1줄 개수
@@ -25,11 +22,10 @@ void CZone_Manager::Init(const int nZoneCount,const int nZoneUserMax )
 			float x = (WIDTH - 1) * Zone::ZONE_WIDTH + ZONE_WIDTH / 2;
 			float y = (HEIGHT - 1) * Zone::ZONE_HEIGHT + ZONE_HEIGHT / 2;
 
-
 			Protocol::D3DVECTOR startpos;
 			startpos.set_x(x);
 			startpos.set_y(y);
-
+			
 			CZoneRef Zone = MakeShared<CZone>(nZoneUserMax, nZoneid, startpos);
 			m_listZone.insert({ nZoneid,Zone });
 
@@ -42,23 +38,6 @@ void CZone_Manager::Init(const int nZoneCount,const int nZoneUserMax )
 
 			nZoneid++;
 		}
-
-	//	for (int i = 1; i <= m_nZoneCount; i++)
-	//{
-	//
-	//	//CZoneRef Zone = MakeShared<CZone>(200);
-	//	float x =  (nCnt - 1) * Zone::ZONE_WIDTH + ZONE_WIDTH / 2;
-	//	float y=   (nCnt - 1) * Zone::ZONE_HEIGHT + ZONE_HEIGHT / 2;
-	//
-	//	Protocol::D3DVECTOR startpos;
-	//	startpos.set_x(x);
-	//	startpos.set_y(y);
-	//
-	//	m_listZone.insert({ i,MakeShared<CZone>(nZoneUserMax,i,startpos)});
-	//	//Zone->DoTimer(Tick::AI_TICK, &CZone::Update);
-	//
-	//}
-
 
 	/*
 	!!!!!존 매니저단위에서 존을 돌리지말고, 존 단위에서 타이머를 돌려서

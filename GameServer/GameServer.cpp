@@ -57,12 +57,6 @@ void DoWorkerJob(ServerServiceRef& service)
 
 			LPacketCount = 0;
 		}
-		else
-		{
-			bFlag = false;
-			//LPacketCount++;
-		}
-
 		LEndTickCount = ::GetTickCount64() + Tick::WORKER_TICK;
 
 		// 네트워크 입출력 처리 -> 인게임 로직까지 (패킷 핸들러에 의해)
@@ -85,19 +79,12 @@ void DoIOCPJob(ServerServiceRef& service)
 		if (LSecondTickCount < GetTickCount64())
 		{
 			LSecondTickCount = GetTickCount64() + Tick::SECOND_TICK;
-			bFlag = true;
 			g_nPacketCount.fetch_add(LPacketCount);
-
-			//cout << LThreadId <<" : 워커스레드의  초당 패킷 처리량:" << LPacketCount << endl;
 
 			LPacketCount = 0;
 		}
-		else
-		{
-			bFlag = false;
-			//LPacketCount++;
-		}
 		LEndTickCount = ::GetTickCount64() + Tick::WORKER_TICK;
+
 		// 네트워크 입출력 처리 -> 인게임 로직까지 (패킷 핸들러에 의해)
 		if (service->GetIocpCore()->Dispatch(10) == true)
 			LPacketCount++;
@@ -236,23 +223,20 @@ json read_json_from_file(const std::string& filename) {
 }
 int main()
 {
-	//GRoom->DoTimer(1000, [] { cout << "Hello 1000" << endl; });
-//GRoom->DoTimer(2000, [] { cout << "Hello 2000" << endl; });
 	ClientPacketHandler::Init();
 	GZoneManager->Init(g_nZoneCount, g_nZoneUserMax);
 
-	//ZoneManager()->Init();
 
 	ServerServiceRef service = MakeShared<ServerService>(
 		NetAddress(L"127.0.0.1", 7777),
 		MakeShared<IocpCore>(),
-		MakeShared<GameSession>, // TODO : SessionManager 등
+		MakeShared<GameSession>,
 		g_nServerMaxUser);
 
 	ASSERT_CRASH(service->Start());
 
 	unsigned int core_count = std::thread::hardware_concurrency();
-	int nThreadCnt = core_count * 2;//+ 1;
+	int nThreadCnt = core_count * 2+ 1;
 #ifdef __COUCHBASE_DB__
 	g_CouchbaseManager->Init(nThreadCnt + 1);
 #endif // __COUCHBASE_DB__
