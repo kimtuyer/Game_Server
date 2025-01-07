@@ -232,6 +232,7 @@ void CZone::Update()
 	//	return;
 	//}
 ///////////////////////////////////////////////////////////////
+	int zone = m_nZoneID;
 #ifdef __SECTOR_UPDATE__
 	for (auto& [sectorID, Sector] : m_listSector)
 	{
@@ -311,6 +312,373 @@ void CZone::Update_Player()
 #else
 	DoTimer(Tick::AI_TICK, &CZone::Update_Player);
 #endif
+}
+
+void CZone::Update(int beginSectorID, int endSectorID)
+{
+	int zone = m_nZoneID;
+	for (auto& [sectorID, Sector] : m_listSector)
+	{
+		//if (Object->GetActivate() == false)
+		//	continue;
+		//if (Sector->Empty())
+		//	continue;
+
+		Sector->Update();
+	}
+
+	Send_SectorInsertObject(beginSectorID, endSectorID);
+
+	Send_SectorRemoveObject(beginSectorID, endSectorID);
+
+	Send_SectorInsertPlayer(beginSectorID, endSectorID);
+
+	Send_SectorRemovePlayer(beginSectorID, endSectorID);
+
+}
+
+void CZone::Send_SectorInsertObject(int beginSectorID, int endSectorID)
+{
+	//섹터리스트 복사해와서 lock 줄여야하나?
+	map<SectorID, vector<Sector::ObjectInfo>> InsertList;
+	{
+		//swap후 원본 컨테이너는 clear상태, 이후에 들어온 데이터는 다음tick에 처리!
+		int lock = lock::Monster;
+		WRITE_LOCK_IDX(lock);
+		InsertList.swap(m_InsertList);
+	}
+	//WRITE_LOCK;
+
+
+	for (auto& [SectorID, sData] : InsertList)
+	{
+		if (Util::SectorRange(beginSectorID, endSectorID,SectorID) == false)
+			continue;
+
+		CSectorRef Sector = m_listSector[SectorID];
+		if (Sector->Empty_Player())
+			continue;
+		
+		auto Playerlist = Sector->PlayerList();
+		for (auto& [playerid, Player] : Playerlist)
+		{
+			Protocol::S_OBJ_LIST objpkt;
+			int64 nowtime = GetTickCount64();
+
+			objpkt.set_sendtime(nowtime);
+
+			int nCnt = 0;
+
+			bool bSend = false;
+			for (auto& ObjectInfo : sData)
+			{
+				ObjectRef Object = m_nlistObject[ObjectInfo.nObjectType][ObjectInfo.nObjectID];
+				if (Object == nullptr)
+					continue;
+				Sector->Insert(ObjectInfo.nObjectType, Object);
+
+				float dist = Util::distance(ObjectInfo.vPos.x, ObjectInfo.vPos.y, Player->GetPos().x(), Player->GetPos().y());
+
+				if (dist > BroadCast_Distance)
+				{
+					continue;
+				}
+
+				bSend = true;
+				nCnt++;
+
+				Protocol::Object_Pos objectPos;
+				objectPos.set_id(ObjectInfo.nObjectID);
+				Protocol::D3DVECTOR* vPos = objectPos.mutable_vpos();
+				vPos->set_x(ObjectInfo.vPos.x);
+				vPos->set_y(ObjectInfo.vPos.y);
+
+				objpkt.add_pos()->CopyFrom(objectPos);
+			}
+			if (bSend == false)
+				continue;
+#ifdef __ZONE_THREAD__
+			auto sendBuffer = ClientPacketHandler::MakeSendBuffer(objpkt, m_nZoneID);
+#else
+			auto sendBuffer = ClientPacketHandler::MakeSendBuffer(objpkt, m_nZoneID);
+#endif // __ZONE_THREAD__	
+			CPlayer* pPlayer = static_cast<CPlayer*>(Player.get());
+			if (pPlayer->ownerSession.expired() == false)
+			{
+				pPlayer->ownerSession.lock()->Send(sendBuffer);
+			}
+			else
+			{
+				pPlayer->SetActivate(false);
+				///세션 소멸, 해당 플레이어 객체도
+			}
+		}
+
+	}
+}
+
+void CZone::Send_SectorRemoveObject(int beginSectorID, int endSectorID)
+{
+	map<SectorID, vector<Sector::ObjectInfo>> RemoveList;
+	{
+		//swap후 원본 컨테이너는 clear상태, 이후에 들어온 데이터는 다음tick에 처리!
+		int lock = lock::Monster;
+		WRITE_LOCK_IDX(lock);
+		RemoveList.swap(m_RemoveList);
+	}
+	//WRITE_LOCK;
+	for (auto& [SectorID, sData] : RemoveList)
+	{
+		if (Util::SectorRange(beginSectorID, endSectorID, SectorID) == false)
+			continue;
+
+		CSectorRef Sector = m_listSector[SectorID];
+
+		if (Sector->Empty_Player())
+			continue;
+
+		
+		auto Playerlist = Sector->PlayerList();
+		for (auto& [playerid, Player] : Playerlist)
+		{
+			int64 nowtime = GetTickCount64();
+
+			Protocol::S_OBJ_REMOVE_ACK objpkt;
+			objpkt.set_sendtime(nowtime);
+
+			int nCnt = 0;
+
+			bool bSend = false;
+			for (auto& ObjectInfo : sData)
+			{
+				ObjectRef Object = m_nlistObject[ObjectInfo.nObjectType][ObjectInfo.nObjectID];
+				if (Object == nullptr)
+					continue;
+				Sector->Delete(ObjectInfo.nObjectType, Object);
+
+				float dist = Util::distance(ObjectInfo.vPos.x, ObjectInfo.vPos.y, Player->GetPos().x(), Player->GetPos().y());
+
+				if (dist > BroadCast_Distance)
+				{
+					continue;
+				}
+
+				bSend = true;
+
+				Protocol::Object_Pos objectPos;
+				objectPos.set_id(ObjectInfo.nObjectID);
+				Protocol::D3DVECTOR* vPos = objectPos.mutable_vpos();
+				vPos->set_x(ObjectInfo.vPos.x);
+				vPos->set_y(ObjectInfo.vPos.y);
+
+				objpkt.add_pos()->CopyFrom(objectPos);
+			}
+			if (bSend == false)
+				continue;
+			nCnt++;
+
+#ifdef __ZONE_THREAD__
+			auto sendBuffer = ClientPacketHandler::MakeSendBuffer(objpkt, m_nZoneID);
+#else
+			auto sendBuffer = ClientPacketHandler::MakeSendBuffer(objpkt, m_nZoneID);
+#endif // __ZONE_THREAD__	
+			CPlayer* pPlayer = static_cast<CPlayer*>(Player.get());
+			if (pPlayer->ownerSession.expired() == false)
+			{
+				pPlayer->ownerSession.lock()->Send(sendBuffer);
+			}
+			else
+			{
+				pPlayer->SetActivate(false);
+				///세션 소멸, 해당 플레이어 객체도
+			}
+		}
+
+
+	}
+}
+
+void CZone::Send_SectorInsertPlayer(int beginSectorID, int endSectorID)
+{
+	//섹터리스트 복사해와서 lock 줄여야하나?
+	map<SectorID, vector<Sector::ObjectInfo>> InsertList;
+	{
+		//swap후 원본 컨테이너는 clear상태, 이후에 들어온 데이터는 다음tick에 처리!
+		int lock = lock::Player;
+		WRITE_LOCK_IDX(lock);
+		InsertList.swap(m_PlayerInsertList);
+	}
+	//WRITE_LOCK;
+
+	for (auto& [SectorID, sData] : InsertList)
+	{
+		if (Util::SectorRange(beginSectorID, endSectorID, SectorID) == false)
+			continue;
+
+		CSectorRef Sector = m_listSector[SectorID];
+		if (Sector->Empty_Player())
+			continue;
+
+		
+		auto Playerlist = Sector->PlayerList();
+		for (auto& [playerid, Player] : Playerlist)
+		{
+			int64 nowtime = GetTickCount64();
+			Protocol::S_PLAYER_LIST objpkt;
+			objpkt.set_sendtime(nowtime);
+			int nCnt = BroadCast_Cnt;
+
+			bool bSend = false;
+			for (auto& ObjectInfo : sData)
+			{
+				if (nCnt <= 0)
+					break;
+				ObjectRef Object = m_nlistObject[ObjectInfo.nObjectType][ObjectInfo.nObjectID];
+				if (Object == nullptr)
+					continue;
+				Sector->Insert(ObjectInfo.nObjectType, Object);
+
+				float dist = Util::distance(ObjectInfo.vPos.x, ObjectInfo.vPos.y, Player->GetPos().x(), Player->GetPos().y());
+
+				if (dist > BroadCast_Distance)
+				{
+					continue;
+				}
+
+				bSend = true;
+				nCnt--;
+
+				Protocol::Object_Pos objectPos;
+				objectPos.set_id(ObjectInfo.nObjectID);
+				Protocol::D3DVECTOR* vPos = objectPos.mutable_vpos();
+				vPos->set_x(ObjectInfo.vPos.x);
+				vPos->set_y(ObjectInfo.vPos.y);
+
+				objpkt.add_pos()->CopyFrom(objectPos);
+			}
+			if (bSend == false)
+				continue;
+			
+			int size = objpkt.ByteSizeLong();
+			if (size >= 6000)
+			{
+				string data;
+				objpkt.SerializeToString(&data);
+				int length = data.length();
+
+			}
+
+
+#ifdef __ZONE_THREAD__
+			auto sendBuffer = ClientPacketHandler::MakeSendBuffer(objpkt, m_nZoneID);
+#else
+			auto sendBuffer = ClientPacketHandler::MakeSendBuffer(objpkt, m_nZoneID);
+#endif // __ZONE_THREAD__	
+			CPlayer* pPlayer = static_cast<CPlayer*>(Player.get());
+			if (pPlayer->ownerSession.expired() == false)
+			{
+				pPlayer->ownerSession.lock()->Send(sendBuffer);
+			}
+			else
+			{
+				pPlayer->SetActivate(false);
+				///세션 소멸, 해당 플레이어 객체도
+			}
+		}
+	}
+}
+
+void CZone::Send_SectorRemovePlayer(int beginSectorID, int endSectorID)
+{
+	map<SectorID, vector<Sector::ObjectInfo>> RemoveList;
+	{
+		//swap후 원본 컨테이너는 clear상태, 이후에 들어온 데이터는 다음tick에 처리!
+		int lock = lock::Player;
+		WRITE_LOCK_IDX(lock);
+		RemoveList.swap(m_PlayerRemoveList);
+	}
+	//int nCnt = 0;
+	//WRITE_LOCK;
+	for (auto& [SectorID, sData] : RemoveList)
+	{
+		if (Util::SectorRange(beginSectorID, endSectorID, SectorID) == false)
+			continue;
+
+		CSectorRef Sector = m_listSector[SectorID];
+
+		if (Sector->Empty_Player())
+			continue;
+
+		auto Playerlist = Sector->PlayerList();
+		for (auto& [playerid, Player] : Playerlist)
+		{
+			int64 nowtime = GetTickCount64();
+			Protocol::S_PLAYER_REMOVE_ACK objpkt;
+			objpkt.set_sendtime(nowtime);
+
+			int nCnt = BroadCast_Cnt;
+
+			bool bSend = false;
+			for (auto& ObjectInfo : sData)
+			{
+				if (nCnt <= 0)
+					break;
+
+				ObjectRef Object = m_nlistObject[ObjectInfo.nObjectType][ObjectInfo.nObjectID];
+				if (Object == nullptr)
+					continue;
+				Sector->Delete(ObjectInfo.nObjectType, Object);
+
+				float dist = Util::distance(ObjectInfo.vPos.x, ObjectInfo.vPos.y, Player->GetPos().x(), Player->GetPos().y());
+
+				if (ObjectInfo.nObjectID == playerid)
+					continue;
+
+				if (dist > BroadCast_Distance)
+				{
+					continue;
+				}
+
+				bSend = true;
+
+				Protocol::Object_Pos objectPos;
+				objectPos.set_id(ObjectInfo.nObjectID);
+				Protocol::D3DVECTOR* vPos = objectPos.mutable_vpos();
+				vPos->set_x(ObjectInfo.vPos.x);
+				vPos->set_y(ObjectInfo.vPos.y);
+
+				objpkt.add_pos()->CopyFrom(objectPos);
+
+				nCnt--;
+			}
+			if (bSend == false)
+				continue;
+
+			int size = objpkt.ByteSizeLong();
+			if (size >= 6000)
+			{
+				string data;
+				objpkt.SerializeToString(&data);
+				int length = data.length();
+
+			}
+#ifdef __ZONE_THREAD__
+			auto sendBuffer = ClientPacketHandler::MakeSendBuffer(objpkt, m_nZoneID);
+#else
+			auto sendBuffer = ClientPacketHandler::MakeSendBuffer(objpkt, m_nZoneID);
+#endif // __ZONE_THREAD__	
+			CPlayer* pPlayer = static_cast<CPlayer*>(Player.get());
+			if (pPlayer->ownerSession.expired() == false)
+			{
+				pPlayer->ownerSession.lock()->Send(sendBuffer);
+			}
+			else
+			{
+				pPlayer->SetActivate(false);
+				///세션 소멸, 해당 플레이어 객체도
+			}
+		}
+	}
 }
 
 CObject* CZone::SearchEnemy(CObject* pMonster)
@@ -647,25 +1015,29 @@ void CZone::Send_SectorInsertObject()
 		CSectorRef Sector = m_listSector[SectorID];
 		if (Sector->Empty_Player())
 			continue;
-		Protocol::S_OBJ_LIST objpkt;
 #ifdef __BROADCAST_DISTANCE__
-		int64 nowtime = GetTickCount64();
 		//auto distance = [](float source_x, float source_y, float target_x, float target_y)->float
 		//	{
 		//		return sqrt(pow(target_x - source_x, 2) + pow(target_y - source_y, 2));
 		//
 		//	};
 
-		objpkt.set_sendtime(GetTickCount64());
 		auto Playerlist = Sector->PlayerList();
 		for (auto& [playerid, Player] : Playerlist)
 		{
+			Protocol::S_OBJ_LIST objpkt;
+			int64 nowtime = GetTickCount64();
+			objpkt.set_sendtime(nowtime);
+
+
 			int nCnt = 0;
 
 			bool bSend = false;
 			for (auto& ObjectInfo : sData)
 			{
 				ObjectRef Object = m_nlistObject[ObjectInfo.nObjectType][ObjectInfo.nObjectID];
+				if (Object == nullptr)
+					continue;
 				Sector->Insert(ObjectInfo.nObjectType, Object);
 
 				float dist = Util::distance(ObjectInfo.vPos.x, ObjectInfo.vPos.y, Player->GetPos().x(), Player->GetPos().y());
@@ -765,24 +1137,27 @@ void CZone::Send_SectorRemoveObject()
 			continue;
 
 #ifdef __BROADCAST_DISTANCE__
-		int64 nowtime = GetTickCount64();
 		//auto distance = [](float source_x, float source_y, float target_x, float target_y)->float
 		//	{
 		//		return sqrt(pow(target_x - source_x, 2) + pow(target_y - source_y, 2));
 		//
 		//	};
-
-		Protocol::S_OBJ_REMOVE_ACK objpkt;
-		objpkt.set_sendtime(GetTickCount64());
 		auto Playerlist = Sector->PlayerList();
 		for (auto& [playerid, Player] : Playerlist)
 		{
+			int64 nowtime = GetTickCount64();
+
+			Protocol::S_OBJ_REMOVE_ACK objpkt;
+			objpkt.set_sendtime(nowtime);
+
 			int nCnt = 0;
 
 			bool bSend = false;
 			for (auto& ObjectInfo : sData)
 			{
 				ObjectRef Object = m_nlistObject[ObjectInfo.nObjectType][ObjectInfo.nObjectID];
+				if (Object == nullptr)
+					continue;
 				Sector->Delete(ObjectInfo.nObjectType, Object);
 
 				float dist = Util::distance(ObjectInfo.vPos.x, ObjectInfo.vPos.y, Player->GetPos().x(), Player->GetPos().y());
@@ -879,18 +1254,20 @@ void CZone::Send_SectorInsertPlayer()
 		CSectorRef Sector = m_listSector[SectorID];
 		if (Sector->Empty_Player())
 			continue;
-		Protocol::S_PLAYER_LIST objpkt;
-		int64 nowtime = GetTickCount64();
+
 		//auto distance = [](float source_x, float source_y, float target_x, float target_y)->float
 		//	{
 		//		return sqrt(pow(target_x - source_x, 2) + pow(target_y - source_y, 2));
 		//
 		//	};
 
-		objpkt.set_sendtime(GetTickCount64());
 		auto Playerlist = Sector->PlayerList();
 		for (auto& [playerid, Player] : Playerlist)
 		{
+			int64 nowtime = GetTickCount64();
+			Protocol::S_PLAYER_LIST objpkt;
+			objpkt.set_sendtime(nowtime);
+
 			int nCnt = BroadCast_Cnt;
 
 			bool bSend = false;
@@ -899,6 +1276,8 @@ void CZone::Send_SectorInsertPlayer()
 				if (nCnt <= 0)
 					break;
 				ObjectRef Object = m_nlistObject[ObjectInfo.nObjectType][ObjectInfo.nObjectID];
+				if (Object == nullptr)
+					continue;
 				Sector->Insert(ObjectInfo.nObjectType, Object);
 
 				float dist = Util::distance(ObjectInfo.vPos.x, ObjectInfo.vPos.y, Player->GetPos().x(), Player->GetPos().y());
@@ -921,6 +1300,13 @@ void CZone::Send_SectorInsertPlayer()
 			}
 			if (bSend == false)
 				continue;
+			int size = objpkt.ByteSizeLong();
+			if (size >= 6000)
+			{
+				string data;
+				objpkt.SerializeToString(&data);
+				int length = data.length();
+			}
 #ifdef __ZONE_THREAD__
 			auto sendBuffer = ClientPacketHandler::MakeSendBuffer(objpkt, m_nZoneID);
 #else
@@ -958,18 +1344,20 @@ void CZone::Send_SectorRemovePlayer()
 		if (Sector->Empty_Player())
 			continue;
 
-		int64 nowtime = GetTickCount64();
 		//auto distance = [](float source_x, float source_y, float target_x, float target_y)->float
 		//	{
 		//		return sqrt(pow(target_x - source_x, 2) + pow(target_y - source_y, 2));
 		//
 		//	};
 
-		Protocol::S_PLAYER_REMOVE_ACK objpkt;
-		objpkt.set_sendtime(GetTickCount64());
+		
 		auto Playerlist = Sector->PlayerList();
 		for (auto& [playerid, Player] : Playerlist)
 		{
+			int64 nowtime = GetTickCount64();
+
+			Protocol::S_PLAYER_REMOVE_ACK objpkt;
+			objpkt.set_sendtime(nowtime);
 			int nCnt = BroadCast_Cnt;
 
 			bool bSend = false;
@@ -979,6 +1367,8 @@ void CZone::Send_SectorRemovePlayer()
 					break;
 
 				ObjectRef Object = m_nlistObject[ObjectInfo.nObjectType][ObjectInfo.nObjectID];
+				if (Object == nullptr)
+					continue;
 				Sector->Delete(ObjectInfo.nObjectType, Object);
 
 				float dist = Util::distance(ObjectInfo.vPos.x, ObjectInfo.vPos.y, Player->GetPos().x(), Player->GetPos().y());
@@ -1005,7 +1395,14 @@ void CZone::Send_SectorRemovePlayer()
 			}
 			if (bSend == false)
 				continue;
+			int size = objpkt.ByteSizeLong();
+			if (size >= 6000)
+			{
+				string data;
+				objpkt.SerializeToString(&data);
+				int length = data.length();
 
+			}
 #ifdef __ZONE_THREAD__
 			auto sendBuffer = ClientPacketHandler::MakeSendBuffer(objpkt, m_nZoneID);
 #else

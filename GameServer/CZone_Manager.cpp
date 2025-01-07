@@ -25,7 +25,22 @@ void CZone_Manager::Init(const int nZoneCount, int nZoneUserMax )
 			Protocol::D3DVECTOR startpos;
 			startpos.set_x(x);
 			startpos.set_y(y);
-			
+#ifdef __ZONE_THREAD_VER3__
+			if (nZoneid < 6)
+				nZoneUserMax = 200;
+			else if(nZoneid==6 || nZoneid == 11)
+				nZoneUserMax = 300;
+			else if (nZoneid == 7 || nZoneid == 12)
+				nZoneUserMax = 250;
+			else if (nZoneid == 8 || nZoneid == 13)
+				nZoneUserMax = 200;
+			else if (nZoneid == 9 || nZoneid == 14)
+				nZoneUserMax = 150;
+			else if (nZoneid == 10 || nZoneid == 15)
+				nZoneUserMax = 100;
+#endif
+
+
 			CZoneRef Zone = MakeShared<CZone>(nZoneUserMax, nZoneid, startpos);
 			m_listZone.insert({ nZoneid,Zone });
 
@@ -102,18 +117,104 @@ void CZone_Manager::Remove(int nZoneID, CZoneRef)
 
 void CZone_Manager::Update()
 {
-	g_nConnectedUser = 0;
-	for (auto& [zoneID, zoneRef] : m_listZone)
-	{	
-		if (zoneRef->GetActivate() == false)
-			continue;
 
-		g_nConnectedUser += zoneRef->GetUserCount();
-		//zoneRef->DoAsync(&CZone::Update);
-		//zoneRef->DoTimer(10, &CZone::Update);
-		//zoneRef->Update();
+	auto Compare = [](const std::pair<int, int>& left, const std::pair<int, int>& right) ->bool {
+		return left.second > right.second; // 내림차순
+		//return left.second < right.second; // 오름차순
+
+		};
+
+
+	int64 nowtime = GetTickCount64();
+	g_nConnectedUser = 0;
+	//bool bFlag = true;
+	//if (LmeasureTime < nowtime)
+	//{
+	//	LmeasureTime = nowtime + Tick::SECOND_TICK;
+	//
+	//}
+	//else
+	//{
+	//	bFlag = false;
+	//}
+	map<ZoneID, int> zoneUserCount;
+	for (auto& [zoneID, zoneRef] : m_listZone)
+	{
+			if (zoneRef->GetActivate() == false)
+				continue;
+
+			g_nConnectedUser += zoneRef->GetUserCount();
+
+			{
+			//일정 시간동안 유저수, 해당 존 패킷수 측정
+				//m_zoneUserCount[zoneID] = zoneRef->GetUserCount();
+
+				zoneUserCount[zoneID] = zoneRef->GetUserCount();
+
+				m_zonePacketCount[zoneID] = zoneRef->GetPacketCnt();
+
+				zoneRef->ResetPacketCount();
+
+			}
 
 	}
+	//if (m_zoneUserCount.empty())
+	//{
+	//	m_zoneUserCount.swap(zoneUserCount);
+	//}
+	//else
+	//{
+	//
+	//
+	//
+	//
+	//}
+
+
+	if (g_nConnectedUser > 0)
+	{
+		WRITE_LOCK;
+		vector<pair<int, int>> Orderlist(zoneUserCount.begin(), zoneUserCount.end());
+		std::sort(Orderlist.begin(), Orderlist.end(), Compare);	
+		
+		
+		if (m_zoneOrderlist.empty())
+		{
+			DistributeThreads(Orderlist);
+			m_zoneOrderlist.swap(Orderlist);
+
+			if (m_ThreadToZoneList.size() > 0)
+			{
+				int b = 1;
+			}
+
+		}
+		else
+		{
+			for (int i = 0; i < Orderlist.size(); i++)
+			{
+				if (Orderlist[i].first != m_zoneOrderlist[i].first)
+				{
+					DistributeThreads(Orderlist);
+					m_zoneOrderlist.swap(Orderlist);
+					break;
+
+				}
+
+			}
+
+		}
+	}
+
+
+	/*
+		
+	
+	
+	*/
+
+
+
 //#ifdef __CONSOLE_UI__
 	//GConsoleViewer->gotoxy(30,0);
 	//cout << "현재 접속중인 유저 수 :" << g_nConnectedUser << endl;
@@ -168,4 +269,121 @@ bool  CZone_Manager::GetStartPos(int nZoneID, D3DVECTOR* vPos)
 	else
 		return false;
 		//return nullptr;
+}
+
+void CZone_Manager::DistributeThreads(vector<pair<int, int>>list)
+{
+	int nThreadCnt = g_nThreadCnt;
+	/*
+		4등까지는 2개 스레드
+
+		고 중 저 로 등수 매김.
+
+		기존에 존 배정받은 스레드가 같은 등급의 존 아이디를 배정받은
+		상태시 재할당 제외.
+	
+	*/
+	queue<pair<int,int>> loadRanklist;
+
+	int nCnt = 0;
+	for (auto [ZoneID, number] : list)
+	{
+		if (number == 0)
+		{
+			loadRanklist.push(pair(ZoneID, 3));
+			//loadRanklist[ZoneID] = 3;
+			continue;
+		}
+
+		nCnt++;
+		if (nCnt < 5) //30$
+			loadRanklist.push(pair(ZoneID, 1));
+//			loadRanklist[ZoneID] = 1;
+		else if (nCnt < 16) //60%
+			loadRanklist.push(pair(ZoneID, 2));
+			//loadRanklist[ZoneID] = 2;
+		else //10%
+			loadRanklist.push(pair(ZoneID, 3));
+			//loadRanklist[ZoneID] = 3;
+	}
+
+
+	int rank_1 = 0;
+	for (auto& [ThreadID, Zonelist] : m_ThreadToZoneList)
+	{
+		int nCnt = 1;
+		//Zonelist.clear();
+		m_ThreadToZoneList[ThreadID].clear();
+		//for(auto iter=loadRanklist.)
+		while(loadRanklist.empty()==false)
+		//for (auto ZoneRank : loadRanklist)
+		{
+			auto ZoneData = loadRanklist.front();
+
+			if (ZoneData.second == 3 && nCnt < 3) //부하가 제일 약한 존
+			{
+				//for (int i = 0; i < 2; i++)
+				{
+					m_ThreadToZoneList[ThreadID].push_back(pair(ZoneData.first, 0));
+					//Zonelist.push_back(pair(ZoneData.first, 0));
+					loadRanklist.pop();
+					nCnt++;
+
+				}
+				if (nCnt == 3)
+				{
+					break;
+				}
+			
+			}
+			else if (ZoneData.second == 2) //부하 보통 존은 1개의 스레드만
+			{
+				m_ThreadToZoneList[ThreadID].push_back(pair(ZoneData.first, 0));
+				//Zonelist.push_back(pair(ZoneData.first, 0));
+				loadRanklist.pop();
+
+				break;
+
+			}
+			else if (ZoneData.second == 1) //부하 심한 존은 두개의 스레드가 담당
+			{
+				rank_1++;
+				m_ThreadToZoneList[ThreadID].push_back(pair(ZoneData.first, rank_1));
+				//Zonelist.push_back(pair(ZoneData.first, rank_1));
+				if (rank_1 == 2)
+				{
+					rank_1 = 0;
+					loadRanklist.pop();
+					break;
+
+				}
+				break;
+				//Zonelist.push_back(pair(ZoneData.first, 0));
+				//nCnt++;
+				//
+				//if (nCnt == 3)
+				//{
+				//	loadRanklist.pop();
+				//	break;
+				//}
+
+			}
+
+		}
+
+		threadRebalance[ThreadID] = true;
+
+
+	}
+
+	//2~25 threaed id
+
+
+
+	//m_ThreadToZoneList[]
+
+	//g_nThreadCnt
+
+		//threadRebalance[];
+
 }

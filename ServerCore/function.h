@@ -3,6 +3,12 @@
 #include <random>
 namespace Util
 {
+	bool static SectorRange (int beginSectorID, int endSectorID,int SectorID) 
+		{
+			return (beginSectorID <= SectorID && SectorID <= endSectorID);
+
+		};
+
 	float static distance(float source_x, float source_y, float target_x, float target_y)
 	{
 		return sqrt(pow(target_x - source_x, 2) + pow(target_y - source_y, 2));

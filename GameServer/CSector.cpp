@@ -44,7 +44,7 @@ void CSector::Update()
 
 	{
 		int lock = lock::Die;
-		READ_LOCK_IDX(lock);
+		WRITE_LOCK_IDX(lock);
 		for (auto it = m_DeadMonsterList.begin(); it != m_DeadMonsterList.end();)
 			// for (auto& [objectID, respawntime] : m_DeadMonsterList)
 		{
@@ -109,7 +109,7 @@ bool CSector::Delete(int nObjectType, ObjectRef Object)
 {
 	int lock = lock::Object;
 	WRITE_LOCK_IDX(lock);
-	m_nlistObject[nObjectType].insert({ Object->ObjectID(),Object });
+	m_nlistObject[nObjectType].erase(Object->ObjectID());
 	return true;
 }
 

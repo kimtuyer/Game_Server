@@ -39,25 +39,46 @@ void GameSession::OnRecvPacket(BYTE* buffer, int32 len)
 	PacketSessionRef session = GetPacketSessionRef();
 	PacketHeader* header = reinterpret_cast<PacketHeader*>(buffer);
 
-#ifdef __ZONE_THREAD_VER1__
+#ifdef __ZONE_THREAD_VER3__
 	if (header->id != PKT_C_LOGIN)
 	{
 		int Zoneid = header->zoneID;
-		if (GZoneManager->IsZone(Zoneid)==false)
+		auto Zone = GZoneManager->GetZone(Zoneid);
+		if (Zone == nullptr)
 		{
 			return;
 		}
+		Zone->AddPacketCount();
 		/*
 			해당 Zone 큐에 넣고 나옴.
 		*/
-		zoneQueues[Zoneid]->jobs.push(PacketInfo(session, buffer, len));
+		
+		//zoneQueues[Zoneid]->jobs.push(PacketInfo(session, buffer, len));
 
 	}
-	else
 		ClientPacketHandler::HandlePacket(session, buffer, len);
-#endif
+
+#endif // __ZONE_THREAD_VER3__
+//#ifdef __ZONE_THREAD_VER1__
+//	if (header->id != PKT_C_LOGIN)
+//	{
+//		int Zoneid = header->zoneID;
+//		if (GZoneManager->IsZone(Zoneid)==false)
+//		{
+//			return;
+//		}
+//		/*
+//			해당 Zone 큐에 넣고 나옴.
+//		*/
+//		zoneQueues[Zoneid]->jobs.push(PacketInfo(session, buffer, len));
+//
+//	}
+//	else
+//		ClientPacketHandler::HandlePacket(session, buffer, len);
+//#endif //__ZONE_THREAD_VER1__
+
 #ifdef __ZONE_THREAD_VER2__
-	ClientPacketHandler::HandlePacket(session, buffer, len);
+	//ClientPacketHandler::HandlePacket(session, buffer, len);
 #endif
 	// TODO : packetId 대역 체크
 }

@@ -23,7 +23,7 @@
 
 //class CZone_Manager;
 array<shared_ptr<ZoneQueue>, Zone::g_nZoneCount + 1> zoneQueues = {};
-
+map<int, bool>	threadRebalance;
 void DoMainJob(ServerServiceRef& service)
 {
 	while (true)
@@ -99,6 +99,7 @@ void DoZoneJob(ServerServiceRef& service, int ZoneID)
 #ifdef __ZONE_THREAD_VER1__
 	zoneQueues[ZoneID] = MakeShared<ZoneQueue>();
 	auto& ZoneQueue = zoneQueues[ZoneID];
+	//queue<PacketInfo> localqueue;
 #endif	
 	uint64 lastUpdatetime = 0;
 	while (true)
@@ -114,7 +115,7 @@ void DoZoneJob(ServerServiceRef& service, int ZoneID)
 		uint64 nextUpdateTime = lastUpdatetime + Tick::AI_TICK;
 		uint64 timeUntilNextUpdate = nextUpdateTime - GetTickCount64();
 
-	
+
 		if (timeUntilNextUpdate > 0) {
 			uint64 endTime = timeUntilNextUpdate + GetTickCount64();
 
@@ -153,6 +154,136 @@ void DoZoneJob(ServerServiceRef& service, int ZoneID)
 	}
 }
 
+
+void DoZoneJob3(ServerServiceRef& service, int ZoneID)
+{
+	threadRebalance.insert({LThreadId, false});
+
+	auto Zone = GZoneManager->GetZone(ZoneID);
+	if (Zone == nullptr)
+		return;
+
+	uint64 lastUpdatetime = 0;
+
+	vector<CZoneRef> Zones;
+	Zones.push_back(Zone);
+
+	vector<pair<int, int>> Zonelist;
+	int nbeginSecID = 0;
+	int nendSecID = 0;
+
+
+	auto getZone = [&]()
+		{
+
+			for (auto [zoneid, AssignNumber] : Zonelist)
+			{
+				if (AssignNumber == 0) // 해당 존은 하나의 스레드 만 할당
+				{
+					Zones.push_back(GZoneManager->GetZone(zoneid));
+					nbeginSecID = 0;
+					nendSecID = 0;
+				}
+
+				else if (AssignNumber == 1)
+				{
+					//해당 존 1번째 분할 스레드,  0~ n/2-1 번째까지 섹터만 담당
+					Zones.push_back(GZoneManager->GetZone(zoneid));
+					nbeginSecID = 0;
+					nendSecID = (Sector_Count / 2) - 1;
+				}
+
+				else
+				{
+					//해당 존 2번째 분할 스레드,  n/2+1 ~ n-1 번째까지 섹터만 담당
+					Zones.push_back(GZoneManager->GetZone(zoneid));
+					nbeginSecID = (Sector_Count / 2) + 1;
+					nendSecID = (Sector_Count - 1);
+
+				}
+
+
+			}
+		};
+
+	while (true)
+	{
+		if (threadRebalance[LThreadId] == true)
+		{
+			Zones.clear();
+			Zonelist.clear();
+
+			//새로운 존 정보 재할당 받음.
+			if (GZoneManager->ReassignThreadtoZone(LThreadId, Zonelist) == false)
+				break;
+
+			if (Zonelist.empty())
+			{
+				int a = 1;
+			}
+
+			getZone();
+
+			threadRebalance[LThreadId] = false;
+
+		}
+
+		if (Zones.empty())
+		{
+			if (GZoneManager->ReassignThreadtoZone(LThreadId, Zonelist) == false)
+				break;
+			getZone();
+
+		}
+
+		uint64 nowtime = GetTickCount64();
+		uint64 elapsedtime = nowtime - lastUpdatetime;
+
+		if (elapsedtime >= Tick::AI_TICK) {
+			int id = Zone->ZoneID();
+			for (auto Zone : Zones)
+			{
+
+				if(nbeginSecID==0 && nendSecID==0)
+					Zone->Update();
+				else
+					Zone->Update(nbeginSecID,nendSecID);
+
+			}
+			lastUpdatetime = nowtime;
+		}
+
+		uint64 nextUpdateTime = lastUpdatetime + Tick::AI_TICK;
+		uint64 timeUntilNextUpdate = nextUpdateTime - GetTickCount64();
+
+
+		if (timeUntilNextUpdate > 0) {
+			uint64 endTime = timeUntilNextUpdate + GetTickCount64();
+
+			while (GetTickCount64() < endTime)
+			{
+
+#ifdef __ZONE_THREAD_VER2__
+				if (service->GetIocpCore()->Dispatch(10) == true)
+					LPacketCount++;
+				else
+				{
+					ThreadManager::DistributeReservedJobs();
+
+					ThreadManager::DoGlobalQueueWork();
+
+					std::this_thread::sleep_for(std::chrono::milliseconds(1));
+				}
+#endif
+
+			}
+		}
+
+
+	}
+
+
+}
 void DoRenderingJob()
 {
 	while (true)
@@ -236,16 +367,13 @@ int main()
 	ASSERT_CRASH(service->Start());
 
 	unsigned int core_count = std::thread::hardware_concurrency();
-	int nThreadCnt = core_count * 2+ 1;
+	int nThreadCnt = core_count * 2;
+	g_nThreadCnt = nThreadCnt;
 #ifdef __COUCHBASE_DB__
 	g_CouchbaseManager->Init(nThreadCnt + 1);
 #endif // __COUCHBASE_DB__
 
 #//ifdef __CONSOLE_UI__
-	GThreadManager->Launch([]()
-		{
-			DoRenderingJob();
-		});
 	//#endif
 	int zoneCnt = 0;
 	for (int32 i = 0; i < nThreadCnt; i++)
@@ -258,7 +386,12 @@ int main()
 				else if (i < g_nZoneCount + Thread::IOCP_THREADS)
 				{
 					zoneCnt++;
+#ifdef __ZONE_THREAD_VER3__
+					GZoneManager->PushThreadToZoneList(i + 2, pair(zoneCnt, 0));
+					DoZoneJob3(service, zoneCnt);
+#else
 					DoZoneJob(service, zoneCnt);
+#endif
 				}
 
 #else
@@ -266,6 +399,11 @@ int main()
 #endif // __ZONE_THREAD__
 			});
 	}
+
+	GThreadManager->Launch([]()
+		{
+			DoRenderingJob();
+		});
 
 	// Main Thread
 	//DoMainJob(service);

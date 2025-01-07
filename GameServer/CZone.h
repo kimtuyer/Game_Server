@@ -32,6 +32,26 @@ public:
 	void Update();
 	void Update_Player();
 	
+	void Update(int beginSectorID, int endSectorID);
+
+	void Send_SectorInsertObject(int beginSectorID, int endSectorID);
+	void Send_SectorRemoveObject(int beginSectorID, int endSectorID);
+
+	void Send_SectorInsertPlayer(int beginSectorID, int endSectorID);
+	void Send_SectorRemovePlayer(int beginSectorID, int endSectorID);
+
+	void AddPacketCount()
+	{
+		m_nPacketCnt.fetch_add(1);
+	}
+	void ResetPacketCount()
+	{
+		m_nPacketCnt.store(0);
+	}
+	atomic<int>& GetPacketCnt()
+	{
+		return m_nPacketCnt;
+	}
 	
 	//몬스터 객체 받아서 플레이어 탐색
 	CObject* SearchEnemy(CObject* pMonster);//or MonsterID
@@ -147,6 +167,7 @@ private:	//오브젝트 리스트도 맵 or set이 나은가?
 
 	int			m_nMaxUserCnt;
 	atomic<int>	m_nUserCnt;
+	atomic<int> m_nPacketCnt;
 
 	map<SectorID, CSectorRef> m_listSector;
 
