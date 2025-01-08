@@ -24,10 +24,11 @@
 //class CZone_Manager;
 array<shared_ptr<ZoneQueue>, Zone::g_nZoneCount + 1> zoneQueues = {};
 map<int, bool>	threadRebalance;
-void DoMainJob(ServerServiceRef& service)
+void DoMainJob()
 {
 	while (true)
 	{
+		//GZoneManager->DoTimer(Tick::AI_TICK, &CZone_Manager::Update);
 		//if (LSecondTickCount < GetTickCount64())
 		//{
 		//	LSecondTickCount = GetTickCount64() + Tick::SECOND_TICK;
@@ -158,15 +159,19 @@ void DoZoneJob(ServerServiceRef& service, int ZoneID)
 void DoZoneJob3(ServerServiceRef& service, int ZoneID)
 {
 	threadRebalance.insert({LThreadId, false});
+	vector<CZoneRef> Zones;
 
-	auto Zone = GZoneManager->GetZone(ZoneID);
-	if (Zone == nullptr)
+	if (ZoneID <= g_nZoneCount)
+	{
+		GZoneManager->PushThreadToZoneList(LThreadId, pair(ZoneID, 0));
+		auto Zone = GZoneManager->GetZone(ZoneID);
+		if (Zone == nullptr)
 		return;
+		Zones.push_back(Zone);
+	}
 
 	uint64 lastUpdatetime = 0;
 
-	vector<CZoneRef> Zones;
-	Zones.push_back(Zone);
 
 	vector<pair<int, int>> Zonelist;
 	int nbeginSecID = 0;
@@ -189,8 +194,8 @@ void DoZoneJob3(ServerServiceRef& service, int ZoneID)
 				{
 					//해당 존 1번째 분할 스레드,  0~ n/2-1 번째까지 섹터만 담당
 					Zones.push_back(GZoneManager->GetZone(zoneid));
-					nbeginSecID = 0;
-					nendSecID = (Sector_Count / 2) - 1;
+					nbeginSecID = 1;
+					nendSecID = (Sector_Count / 2);
 				}
 
 				else
@@ -198,7 +203,7 @@ void DoZoneJob3(ServerServiceRef& service, int ZoneID)
 					//해당 존 2번째 분할 스레드,  n/2+1 ~ n-1 번째까지 섹터만 담당
 					Zones.push_back(GZoneManager->GetZone(zoneid));
 					nbeginSecID = (Sector_Count / 2) + 1;
-					nendSecID = (Sector_Count - 1);
+					nendSecID = (Sector_Count);
 
 				}
 
@@ -232,22 +237,23 @@ void DoZoneJob3(ServerServiceRef& service, int ZoneID)
 		{
 			if (GZoneManager->ReassignThreadtoZone(LThreadId, Zonelist) == false)
 				break;
-			getZone();
+			if(Zonelist.empty()==false)
+				getZone();
 
 		}
 
 		uint64 nowtime = GetTickCount64();
 		uint64 elapsedtime = nowtime - lastUpdatetime;
-
+		int threadid = LThreadId;
 		if (elapsedtime >= Tick::AI_TICK) {
-			int id = Zone->ZoneID();
 			for (auto Zone : Zones)
 			{
+				int id = Zone->ZoneID();
 
 				if(nbeginSecID==0 && nendSecID==0)
 					Zone->Update();
 				else
-					Zone->Update(nbeginSecID,nendSecID);
+					Zone->Update_Partial(nbeginSecID,nendSecID);
 
 			}
 			lastUpdatetime = nowtime;
@@ -375,7 +381,32 @@ int main()
 
 #//ifdef __CONSOLE_UI__
 	//#endif
-	int zoneCnt = 0;
+	int zoneID = 1;
+#ifdef __ZONE_THREAD_VER3__
+	for (int32 i = 0; i < Thread::IOCP_THREADS; i++)
+	{
+			GThreadManager->Launch([&service]()
+				{
+					DoIOCPJob(service);
+				});
+
+	}
+
+	for (int32 i = 0; i < nThreadCnt-Thread::IOCP_THREADS; i++)
+	{
+		
+
+		GThreadManager->Launch([&service,&zoneID]()
+			{
+
+				DoZoneJob3(service, zoneID++);
+			});
+
+	}
+
+
+
+#else
 	for (int32 i = 0; i < nThreadCnt; i++)
 	{
 		GThreadManager->Launch([&service, i, &zoneCnt]()
@@ -385,27 +416,30 @@ int main()
 					DoIOCPJob(service);
 				else if (i < g_nZoneCount + Thread::IOCP_THREADS)
 				{
-					zoneCnt++;
-#ifdef __ZONE_THREAD_VER3__
-					GZoneManager->PushThreadToZoneList(i + 2, pair(zoneCnt, 0));
-					DoZoneJob3(service, zoneCnt);
-#else
-					DoZoneJob(service, zoneCnt);
-#endif
-				}
 
+					DoZoneJob(service, zoneCnt);
+				}
 #else
 				DoWorkerJob(service);
 #endif // __ZONE_THREAD__
 			});
+
 	}
+
+#endif // __ZONE_THREAD_VER3__
+
+
 
 	GThreadManager->Launch([]()
 		{
 			DoRenderingJob();
 		});
 
+	//GThreadManager->Launch([]()
+	//	{
+	//		DoMainJob();
+	//	});
+	//
 	// Main Thread
-	//DoMainJob(service);
 	GThreadManager->Join();
 }

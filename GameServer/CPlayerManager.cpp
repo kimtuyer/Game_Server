@@ -6,7 +6,7 @@ CPlayerManager::CPlayerManager()
     m_mapPlayerlist.clear();
 }
 
-void CPlayerManager::Insert(int nPlayerid,PlayerRef Player)
+void CPlayerManager::Insert(int nPlayerid,PlayerRef& Player)
 {
     WRITE_LOCK; 
     m_mapPlayerlist.insert({ nPlayerid ,Player });

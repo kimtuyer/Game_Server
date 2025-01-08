@@ -130,9 +130,10 @@ CZone::CZone(int nMaxUserCnt, int nZoneID, Protocol::D3DVECTOR vPos)
 		auto Sector = m_listSector[sectorID];
 
 		MonsterRef Monster = MakeShared<CMonster>(startID, m_nZoneID, sectorID, Sector->StartPos(), true);
+		ObjectRef pObject = Monster;
 
 		m_nlistObject[Object::Monster].insert({ startID,Monster });
-		Sector->Insert(Object::Monster, Monster); //원래 ObjectRef 넣어야하는데..
+		Sector->Insert(Object::Monster, pObject); //원래 ObjectRef 넣어야하는데..
 	}
 	//몬스터 색터 id 랜덤으로 넣어줄려면  1~16번 섹터중 랜덤으로 가져와 그 섹터의 좌표를 가져와 삽입!
 }
@@ -142,7 +143,7 @@ CZone::~CZone()
 	m_nlistObject.clear(); //shared_ptr도 바로 클리어 호출해도 되나?
 }
 
-bool CZone::_Enter(ObjectType eObjectType, ObjectRef object)
+bool CZone::_Enter(ObjectType eObjectType, PlayerRef& object)
 {
 	int lock = lock::Object;
 	WRITE_LOCK_IDX(lock);
@@ -194,6 +195,10 @@ void CZone::Remove(ObjectType eObjectType, int objectID)
 			auto iter = listObject.find(objectID);
 			if (iter != listObject.end())
 			{
+				auto Sector = GetSector((*iter).second->GetSectorID());
+				if (Sector == nullptr)
+					return;
+				Sector->Delete(Object::Player, objectID);
 				listObject.erase(iter);
 			}
 			//for (auto iter = listObject.begin(); iter != listObject.end();)
@@ -240,7 +245,8 @@ void CZone::Update()
 		//	continue;
 		//if (Sector->Empty())
 		//	continue;
-
+		if (Sector == nullptr)
+			continue;
 		Sector->Update();
 	}
 
@@ -314,17 +320,16 @@ void CZone::Update_Player()
 #endif
 }
 
-void CZone::Update(int beginSectorID, int endSectorID)
+void CZone::Update_Partial(int beginSectorID, int endSectorID)
 {
 	int zone = m_nZoneID;
-	for (auto& [sectorID, Sector] : m_listSector)
+	for (int secID = beginSectorID; secID <= endSectorID; secID++)
 	{
-		//if (Object->GetActivate() == false)
-		//	continue;
-		//if (Sector->Empty())
-		//	continue;
+		auto sector = m_listSector[secID];
+		if (sector == nullptr)
+			continue;
+		m_listSector[secID]->Update();
 
-		Sector->Update();
 	}
 
 	Send_SectorInsertObject(beginSectorID, endSectorID);
@@ -454,7 +459,7 @@ void CZone::Send_SectorRemoveObject(int beginSectorID, int endSectorID)
 				ObjectRef Object = m_nlistObject[ObjectInfo.nObjectType][ObjectInfo.nObjectID];
 				if (Object == nullptr)
 					continue;
-				Sector->Delete(ObjectInfo.nObjectType, Object);
+				Sector->Delete(ObjectInfo.nObjectType, Object->ObjectID());
 
 				float dist = Util::distance(ObjectInfo.vPos.x, ObjectInfo.vPos.y, Player->GetPos().x(), Player->GetPos().y());
 
@@ -627,7 +632,7 @@ void CZone::Send_SectorRemovePlayer(int beginSectorID, int endSectorID)
 				ObjectRef Object = m_nlistObject[ObjectInfo.nObjectType][ObjectInfo.nObjectID];
 				if (Object == nullptr)
 					continue;
-				Sector->Delete(ObjectInfo.nObjectType, Object);
+				Sector->Delete(ObjectInfo.nObjectType, Object->ObjectID());
 
 				float dist = Util::distance(ObjectInfo.vPos.x, ObjectInfo.vPos.y, Player->GetPos().x(), Player->GetPos().y());
 
@@ -687,6 +692,8 @@ CObject* CZone::SearchEnemy(CObject* pMonster)
 	if (Playerlist.empty())
 		return nullptr;
 
+	//lock이 있어야, 해당 오브젝트의 접속이 끊겨서 삭제하려할때
+	//접근 막을수 있음.
 	for (auto& [playerid, ObjectRef] : Playerlist)
 	{
 		float targetRange = ObjectRef->GetSearchRange();
@@ -1158,7 +1165,7 @@ void CZone::Send_SectorRemoveObject()
 				ObjectRef Object = m_nlistObject[ObjectInfo.nObjectType][ObjectInfo.nObjectID];
 				if (Object == nullptr)
 					continue;
-				Sector->Delete(ObjectInfo.nObjectType, Object);
+				Sector->Delete(ObjectInfo.nObjectType, Object->ObjectID());
 
 				float dist = Util::distance(ObjectInfo.vPos.x, ObjectInfo.vPos.y, Player->GetPos().x(), Player->GetPos().y());
 
@@ -1369,7 +1376,7 @@ void CZone::Send_SectorRemovePlayer()
 				ObjectRef Object = m_nlistObject[ObjectInfo.nObjectType][ObjectInfo.nObjectID];
 				if (Object == nullptr)
 					continue;
-				Sector->Delete(ObjectInfo.nObjectType, Object);
+				Sector->Delete(ObjectInfo.nObjectType, Object->ObjectID());
 
 				float dist = Util::distance(ObjectInfo.vPos.x, ObjectInfo.vPos.y, Player->GetPos().x(), Player->GetPos().y());
 

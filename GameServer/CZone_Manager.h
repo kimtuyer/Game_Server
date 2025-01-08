@@ -25,7 +25,7 @@ public:
 	//오브젝트 리스트에 객체 삽입
 	bool PlayerEnter(int& nZoneID, PlayerRef object);
 
-	bool Enter(OUT int& nZoneID,ObjectRef object);
+	bool Enter(OUT int& nZoneID, PlayerRef& object);
 
 	bool Insert(int nZoneID, const CZoneRef);
 
@@ -67,10 +67,7 @@ public:
 
 	void DistributeThreads(vector<pair<int, int>>);
 
-	void PushThreadToZoneList(int threadid, pair<int, int> value)
-	{
-		m_ThreadToZoneList[threadid].push_back(value);
-	}
+	void PushThreadToZoneList(int threadid, pair<int, int> value);
 
 private:
 	USE_LOCK;
@@ -85,7 +82,8 @@ private:
 	map<ZoneID, int> m_zoneUserCount;
 	map<ZoneID, int> m_zonePacketCount;
 
-	map<ZoneID, vector<int>> m_zoneToThreadList;
+	vector<ZoneID> m_RemainZonelist;
+	//map<ZoneID, vector<int>> m_zoneToThreadList;
 	map<ThreadID, vector<pair<int,int>>> m_ThreadToZoneList;
 
 };

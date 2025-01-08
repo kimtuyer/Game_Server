@@ -18,9 +18,9 @@ public:
 	ObjectRef GetMonster(int objectID);
 
 
-	bool Insert(int nObjectType, ObjectRef Object);
+	bool Insert(int nObjectType, ObjectRef& Object);
 
-	bool Delete(int nObjectType, ObjectRef Object);
+	bool Delete(int nObjectType, int objectID);
 
 	void SendObjectlist();
 
@@ -69,6 +69,8 @@ public:
 	{
 		return m_vStartpos;
 	}
+
+	CObject* SearchEnemy(CObject* pMonster);
 
 	void Insert_adjSector(int sectorID, float x, float y);
 

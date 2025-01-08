@@ -35,9 +35,10 @@ bool Handle_C_LOGIN(PacketSessionRef& session, Protocol::C_LOGIN& pkt)
 
 	// ID 발급 (DB 아이디가 아니고, 인게임 아이디)
 	static Atomic<uint64> idGenerator = 1;
-	PlayerRef playerRef = MakeShared<CPlayer>();
-	playerRef->ownerSession = gameSession;
-	gameSession->_currentPlayer = playerRef;
+	//PlayerRef playerRef = MakeShared<CPlayer>();
+	//playerRef->ownerSession = gameSession;
+	gameSession->_currentPlayer = MakeShared<CPlayer>();
+	gameSession->_currentPlayer->ownerSession = gameSession;
 	{
 		
 
@@ -53,7 +54,7 @@ bool Handle_C_LOGIN(PacketSessionRef& session, Protocol::C_LOGIN& pkt)
 		doc.sendTime = GetTickCount64();
 		//std::string query = "SELECT EXISTS(SELECT 1 FROM `default` USE KEYS [\"" + key_to_check + "\"]);";
 		//pDBConnect->get(doc.key,doc);
-		GPlayerManager->Insert(key, playerRef);
+		GPlayerManager->Insert(key, gameSession->_currentPlayer);
 
 #endif  __COUCHBASE_DB__
 		
@@ -149,7 +150,10 @@ bool Handle_C_ENTER_ZONE(PacketSessionRef& session, Protocol::C_ENTER_ZONE& pkt)
 			enterpkt.set_zoneid(nZoneid);
 			enterpkt.set_sectorid(enterpkt.sectorid());
 
-			Sector->Insert(Object::Player, gameSession->_currentPlayer); //원래 ObjectRef 넣어야하는데..
+			ObjectRef pObject = gameSession->_currentPlayer;
+
+
+			Sector->Insert(Object::Player, pObject); //원래 ObjectRef 넣어야하는데..
 
 		}
 	}

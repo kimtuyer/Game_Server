@@ -90,8 +90,11 @@ void CMonster::AI_Idle()
 	CZoneRef pZone = GZoneManager->GetZone(m_nZoneID);
 	if (pZone == nullptr)
 		return;
+	auto Sector = pZone->GetSector(m_nSectorID);
+	if (Sector == nullptr)
+		return;
 
-	CObject* pEnemy=pZone->SearchEnemy(this);
+	CObject* pEnemy=Sector->SearchEnemy(this);
 	if (pTarget == nullptr)
 	{
 		/*

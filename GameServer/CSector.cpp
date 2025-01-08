@@ -97,7 +97,7 @@ ObjectRef CSector::GetMonster(int objectID)
 		nullptr;
 }
 
-bool CSector::Insert(int nObjectType, ObjectRef Object)
+bool CSector::Insert(int nObjectType, ObjectRef& Object)
 {
 	int lock = lock::Object;
 	WRITE_LOCK_IDX(lock);
@@ -105,11 +105,11 @@ bool CSector::Insert(int nObjectType, ObjectRef Object)
 	return true;
 }
 
-bool CSector::Delete(int nObjectType, ObjectRef Object)
+bool CSector::Delete(int nObjectType, int objectID)
 {
 	int lock = lock::Object;
 	WRITE_LOCK_IDX(lock);
-	m_nlistObject[nObjectType].erase(Object->ObjectID());
+	m_nlistObject[nObjectType].erase(objectID);
 	return true;
 }
 
@@ -245,6 +245,34 @@ ObjectList& CSector::PlayerList()
 	}
 
 	// TODO: 여기에 return 문을 삽입합니다.
+}
+
+CObject* CSector::SearchEnemy(CObject* pMonster)
+{
+	ObjectList Playerlist = PlayerList();
+	if (Playerlist.empty())
+		return nullptr;
+
+	//lock이 있어야, 해당 오브젝트의 접속이 끊겨서 삭제하려할때
+	//접근 막을수 있음.
+	int lock = lock::Player;
+	READ_LOCK_IDX(lock);
+	for (auto& [playerid, ObjectRef] : Playerlist)
+	{
+		float targetRange = ObjectRef->GetSearchRange();
+
+		float dist = Util::distance(pMonster->GetPos().x(), pMonster->GetPos().y(), ObjectRef->GetPos().x(), ObjectRef->GetPos().y());
+
+		if (dist > Zone::BroadCast_Distance)
+			continue;
+		return ObjectRef.get();
+
+		// Player* pPlayer = (Player*)(ObjectRef.get());
+
+		//Player* pPlayer = static_cast<Player*>(ObjectRef.get());
+	}
+
+	return nullptr;
 }
 
 void CSector::Insert_adjSector(int sectorID, float x, float y)

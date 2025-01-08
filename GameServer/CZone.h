@@ -23,7 +23,7 @@ public:
 		return m_nZoneID;
 	}
 	//오브젝트 리스트에 객체 삽입
-	bool _Enter(ObjectType, ObjectRef);
+	bool _Enter(ObjectType, PlayerRef&);
 
 	//오브젝트 리스트 객체 삭제
 	void Remove(ObjectType, int objectID);
@@ -32,7 +32,7 @@ public:
 	void Update();
 	void Update_Player();
 	
-	void Update(int beginSectorID, int endSectorID);
+	void Update_Partial(int beginSectorID, int endSectorID);
 
 	void Send_SectorInsertObject(int beginSectorID, int endSectorID);
 	void Send_SectorRemoveObject(int beginSectorID, int endSectorID);

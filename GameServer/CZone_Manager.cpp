@@ -2,6 +2,7 @@
 #include "CZone_Manager.h"
 #include "CZone.h"
 #include "ConsoleMapViewer.h"
+#include "Player.h"
 //IMPLEMENT_SIGNLETON(CZone_Manager);
 using namespace Zone;
 shared_ptr<CZone_Manager> GZoneManager = make_shared<CZone_Manager>();
@@ -67,7 +68,7 @@ bool CZone_Manager::PlayerEnter(int& nZoneID, PlayerRef object)
 	return false;
 }
 
-bool CZone_Manager::Enter(OUT int& nZoneID, ObjectRef object)
+bool CZone_Manager::Enter(OUT int& nZoneID, PlayerRef& object)
 {
 	auto zone_iter = m_listZone.find(nZoneID);
 	if (zone_iter == m_listZone.end())
@@ -158,17 +159,12 @@ void CZone_Manager::Update()
 			}
 
 	}
-	//if (m_zoneUserCount.empty())
-	//{
-	//	m_zoneUserCount.swap(zoneUserCount);
-	//}
-	//else
-	//{
-	//
-	//
-	//
-	//
-	//}
+	
+	for (auto zoneid : m_RemainZonelist)
+	{
+		auto Zoneref = GetZone(zoneid);
+		Zoneref->DoTimer(Tick::AI_TICK,&CZone::Update);
+	}
 
 
 	if (g_nConnectedUser > 0)
@@ -312,9 +308,8 @@ void CZone_Manager::DistributeThreads(vector<pair<int, int>>list)
 	for (auto& [ThreadID, Zonelist] : m_ThreadToZoneList)
 	{
 		int nCnt = 1;
-		//Zonelist.clear();
 		m_ThreadToZoneList[ThreadID].clear();
-		//for(auto iter=loadRanklist.)
+
 		while(loadRanklist.empty()==false)
 		//for (auto ZoneRank : loadRanklist)
 		{
@@ -322,14 +317,11 @@ void CZone_Manager::DistributeThreads(vector<pair<int, int>>list)
 
 			if (ZoneData.second == 3 && nCnt < 3) //부하가 제일 약한 존
 			{
-				//for (int i = 0; i < 2; i++)
-				{
-					m_ThreadToZoneList[ThreadID].push_back(pair(ZoneData.first, 0));
-					//Zonelist.push_back(pair(ZoneData.first, 0));
-					loadRanklist.pop();
-					nCnt++;
-
-				}
+				
+				m_ThreadToZoneList[ThreadID].push_back(pair(ZoneData.first, 0));
+				loadRanklist.pop();
+				nCnt++;
+	
 				if (nCnt == 3)
 				{
 					break;
@@ -339,7 +331,6 @@ void CZone_Manager::DistributeThreads(vector<pair<int, int>>list)
 			else if (ZoneData.second == 2) //부하 보통 존은 1개의 스레드만
 			{
 				m_ThreadToZoneList[ThreadID].push_back(pair(ZoneData.first, 0));
-				//Zonelist.push_back(pair(ZoneData.first, 0));
 				loadRanklist.pop();
 
 				break;
@@ -358,24 +349,23 @@ void CZone_Manager::DistributeThreads(vector<pair<int, int>>list)
 
 				}
 				break;
-				//Zonelist.push_back(pair(ZoneData.first, 0));
-				//nCnt++;
-				//
-				//if (nCnt == 3)
-				//{
-				//	loadRanklist.pop();
-				//	break;
-				//}
-
+				
 			}
 
 		}
 
 		threadRebalance[ThreadID] = true;
 
-
 	}
 
+	m_RemainZonelist.clear();
+	while (loadRanklist.empty() == false)
+	{
+		int zoneid = loadRanklist.front().first;
+		m_RemainZonelist.push_back(zoneid);
+
+		loadRanklist.pop();		
+	}
 	//2~25 threaed id
 
 
@@ -386,4 +376,9 @@ void CZone_Manager::DistributeThreads(vector<pair<int, int>>list)
 
 		//threadRebalance[];
 
+}
+
+void CZone_Manager::PushThreadToZoneList(int threadid, pair<int, int> value)
+{
+	m_ThreadToZoneList[threadid].push_back(value);
 }

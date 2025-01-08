@@ -8,7 +8,7 @@ public:
 	CPlayerManager();
 	
 
-	void Insert(int nPlayerid,PlayerRef Player);
+	void Insert(int nPlayerid,PlayerRef& Player);
 	bool Find(int nPlayerid);
 	void Remove(int nPlayerid);
 
