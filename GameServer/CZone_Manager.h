@@ -55,10 +55,6 @@ public:
 		if (m_ThreadToZoneList.contains(threadid))
 		{
 			zonelist = m_ThreadToZoneList[threadid];
-			if (zonelist.empty())
-			{
-				int b = 12;
-			}
 			return true;
 		}
 		else

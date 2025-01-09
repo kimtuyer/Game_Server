@@ -11,7 +11,7 @@ auto RTT = [](int64 nowtime, int64 arrivetime, string packetName)
 {
 	int64 responstime = nowtime - arrivetime;
 
-	if (responstime >100)
+	if (responstime <=100)
 	{
 
 		cout << packetName << ":  RTT 응답 시간 :" << responstime <<"ms " << endl;
@@ -139,7 +139,7 @@ bool Handle_S_ATTACK_ACK(PacketSessionRef& session, Protocol::S_ATTACK_ACK& pkt)
 	if (pkt.success() && pkt.targetalive()==false)
 	{
 		gameSession->_currentPlayer->m_eState=Object::Attack;
-		cout << "해당 몹 킬 성공!" << endl;
+		//cout << "해당 몹 킬 성공!" << endl;
 
 	}
 	else

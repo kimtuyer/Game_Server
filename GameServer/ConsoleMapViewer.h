@@ -45,7 +45,10 @@ private:
 	std::unordered_map<int, std::vector<int>> playersInZone;  // zoneId -> vector of playerIds
 	std::unordered_map<int, std::vector<int>> monsterInZone;  // zoneId -> vector of playerIds
 
-
+	concurrent_unordered_map<int, int64>threadLatencyTime;
+	map<int,vector<pair<int, int>>> ThreadtoZonelist;
+	std::mutex threadlock;
+	//std::map<int, int64> threadLatencyTime;
 
 	
 
@@ -53,6 +56,25 @@ private:
 		system("cls");
 	}
 public:
+	void update_threadLatency(int threadid, int64 time, vector<pair<int, int>> zonelist)
+	{
+		//threadLatencyTime
+		{
+			std::lock_guard<mutex>lock(threadlock);
+			ThreadtoZonelist[threadid].swap(zonelist);
+
+		}
+		auto it = threadLatencyTime.find(threadid);
+		if (it != threadLatencyTime.end())
+			threadLatencyTime[threadid] = time;
+		else
+			threadLatencyTime.insert({ threadid ,time });
+
+
+	}
+
+
+
 	std::vector<int> DBRTT;
 	void gotoxy(int x, int y) {
 		COORD pos = { static_cast<SHORT>(x), static_cast<SHORT>(y) };

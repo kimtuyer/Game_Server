@@ -91,36 +91,19 @@ void ConsoleMapViewer::drawZoneInfo()
 	}
 	// 전체 플레이어 수 출력
 	gotoxy(startX + 22, startY);  // "== Zone Information ==" 옆에 출력
-	std::cout << "전체 유저: " << totalPlayers;
+	std::cout << "전체 유저:" << totalPlayers;
 
 	if (LSecondTickCount < GetTickCount64())
 	{
 		LSecondTickCount = GetTickCount64() + Tick::SECOND_TICK;
 
-		gotoxy(startX + 35 , startY);
-		cout << "   초당 패킷 처리량:" << g_nPacketCount << endl;
+		gotoxy(startX + 22, startY+2);
+		cout  << "  초당 패킷 처리량:"<< g_nPacketCount <<" " << endl;
 
 		g_nPacketCount.store(0);
 	}
-	std::vector<int>Rttlist;
-	{
-		std::lock_guard<std::mutex> lock(mtx);
-		Rttlist.swap(DBRTT);  // 빠른 스왑으로 lock 시간 최소화
-	}
-	int nCnt = 0;
-	for (auto time : DBRTT)
-	{
-		if (nCnt == 10)
-			break;
 
-		gotoxy(startX + 22, startY+1);
-
-		nCnt++;
-		cout << "DB RTT:" << time << endl;
-
-	}
 	
-
 
 	// 존 정보 출력
 	for (int zoneId = 1; zoneId <= g_nZoneCount; zoneId++) {
@@ -131,5 +114,50 @@ void ConsoleMapViewer::drawZoneInfo()
 		std::cout << "M(" << counts.second << ")   ";  // 공백으로 이전 텍스트 덮어쓰기
 	}
 	
+
+	concurrent_unordered_map<int, int64>threadLatency;
+	map<int, vector<pair<int, int>>> tempThreadtoZonelist;
+
+	{
+		std::lock_guard<mutex>lock(threadlock);
+
+		threadLatency.swap(threadLatencyTime);
+		tempThreadtoZonelist.swap(ThreadtoZonelist);
+
+	}
+
+
+	int nCnt = 0;
+	
+	//for (auto [threadid, Latency] : threadLatency)
+	//{
+	//	gotoxy(startX, startY + g_nZoneCount + 3+ nCnt);
+	//
+	//	if(tempThreadtoZonelist[threadid].empty())
+	//	std::cout << "Thread :" << threadid << " UpdateTime: " << Latency <<" ZoneID1: empty" << "     " << endl;
+	//	else if (tempThreadtoZonelist[threadid].size()==1)
+	//		std::cout << "Thread :" << threadid << " UpdateTime: " << Latency << " ZoneID1:" << tempThreadtoZonelist[threadid][0].first << "     " << endl;
+	//	else if (tempThreadtoZonelist[threadid].size() == 2)
+	//		std::cout << "Thread :" << threadid << " UpdateTime: " << Latency << " ZoneID1:" << tempThreadtoZonelist[threadid][0].first << " ZoneID2:" << tempThreadtoZonelist[threadid][1].first << "     " << endl;
+	//
+	//	nCnt++;
+	//}
+
+	//for (int threadid = 8; threadid < 23; threadid++)
+	//{
+	//	gotoxy(startX, startY + g_nZoneCount + 3 + nCnt);
+	//
+	//	if (tempThreadtoZonelist[threadid].empty())
+	//		std::cout << "Thread :" << threadid << " UpdateTime: " <<"(" << threadLatency[threadid] <<")" << " ZoneID1:" <<"("<< " " << ")" <<  " ZoneID2:" << "(" << "0" <<")"<<"     " << endl;
+	//	else if (tempThreadtoZonelist[threadid].size() == 1)
+	//		std::cout << "Thread :" << threadid << " UpdateTime: " <<"(" << threadLatency[threadid] <<")" << " ZoneID1:" <<"("<< tempThreadtoZonelist[threadid][0].first << ")" << " ZoneID2:" << "(" << "0" << ")" << "     " << endl;
+	//	else if (tempThreadtoZonelist[threadid].size() == 2)
+	//		std::cout << "Thread :" << threadid << " UpdateTime: " <<"(" << threadLatency[threadid] <<")" << " ZoneID1:" <<"("<< tempThreadtoZonelist[threadid][0].first << ")" << " ZoneID2:" << "(" << tempThreadtoZonelist[threadid][1].first << ")" << "     " << endl;
+	//
+	//	nCnt++;
+	//
+	//
+	//}
+
 
 }

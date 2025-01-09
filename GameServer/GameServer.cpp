@@ -160,6 +160,10 @@ void DoZoneJob3(ServerServiceRef& service, int ZoneID)
 {
 	threadRebalance.insert({LThreadId, false});
 	vector<CZoneRef> Zones;
+	vector<pair<int, int>> Zonelist;
+	uint64 lastUpdatetime = 0;
+	int nbeginSecID = 0;
+	int nendSecID = 0;
 
 	if (ZoneID <= g_nZoneCount)
 	{
@@ -169,14 +173,6 @@ void DoZoneJob3(ServerServiceRef& service, int ZoneID)
 		return;
 		Zones.push_back(Zone);
 	}
-
-	uint64 lastUpdatetime = 0;
-
-
-	vector<pair<int, int>> Zonelist;
-	int nbeginSecID = 0;
-	int nendSecID = 0;
-
 
 	auto getZone = [&]()
 		{
@@ -222,11 +218,6 @@ void DoZoneJob3(ServerServiceRef& service, int ZoneID)
 			if (GZoneManager->ReassignThreadtoZone(LThreadId, Zonelist) == false)
 				break;
 
-			if (Zonelist.empty())
-			{
-				int a = 1;
-			}
-
 			getZone();
 
 			threadRebalance[LThreadId] = false;
@@ -244,7 +235,6 @@ void DoZoneJob3(ServerServiceRef& service, int ZoneID)
 
 		uint64 nowtime = GetTickCount64();
 		uint64 elapsedtime = nowtime - lastUpdatetime;
-		int threadid = LThreadId;
 		if (elapsedtime >= Tick::AI_TICK) {
 			for (auto Zone : Zones)
 			{
@@ -269,7 +259,7 @@ void DoZoneJob3(ServerServiceRef& service, int ZoneID)
 			while (GetTickCount64() < endTime)
 			{
 
-#ifdef __ZONE_THREAD_VER2__
+//#ifdef __ZONE_THREAD_VER2__
 				if (service->GetIocpCore()->Dispatch(10) == true)
 					LPacketCount++;
 				else
@@ -280,13 +270,17 @@ void DoZoneJob3(ServerServiceRef& service, int ZoneID)
 
 					std::this_thread::sleep_for(std::chrono::milliseconds(1));
 				}
-#endif
+//#endif
 
 			}
 		}
 
+		LEndTickCount = ::GetTickCount64()- nowtime; //+ Tick::WORKER_TICK;
+		GConsoleViewer->update_threadLatency(LThreadId, LEndTickCount,Zonelist);
 
 	}
+
+
 
 
 }
@@ -395,13 +389,13 @@ int main()
 	for (int32 i = 0; i < nThreadCnt-Thread::IOCP_THREADS; i++)
 	{
 		
-
 		GThreadManager->Launch([&service,&zoneID]()
 			{
 
 				DoZoneJob3(service, zoneID++);
 			});
 
+		Thread::ZONE_THREADS++;
 	}
 
 
@@ -409,7 +403,7 @@ int main()
 #else
 	for (int32 i = 0; i < nThreadCnt; i++)
 	{
-		GThreadManager->Launch([&service, i, &zoneCnt]()
+		GThreadManager->Launch([&service, i, &zoneID]()
 			{
 #ifdef __ZONE_THREAD__
 				if (i < Thread::IOCP_THREADS)
@@ -417,12 +411,13 @@ int main()
 				else if (i < g_nZoneCount + Thread::IOCP_THREADS)
 				{
 
-					DoZoneJob(service, zoneCnt);
+					DoZoneJob(service, zoneID++);
 				}
 #else
 				DoWorkerJob(service);
 #endif // __ZONE_THREAD__
 			});
+		Thread::ZONE_THREADS++;
 
 	}
 

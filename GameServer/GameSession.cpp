@@ -59,26 +59,26 @@ void GameSession::OnRecvPacket(BYTE* buffer, int32 len)
 		ClientPacketHandler::HandlePacket(session, buffer, len);
 
 #endif // __ZONE_THREAD_VER3__
-//#ifdef __ZONE_THREAD_VER1__
-//	if (header->id != PKT_C_LOGIN)
-//	{
-//		int Zoneid = header->zoneID;
-//		if (GZoneManager->IsZone(Zoneid)==false)
-//		{
-//			return;
-//		}
-//		/*
-//			해당 Zone 큐에 넣고 나옴.
-//		*/
-//		zoneQueues[Zoneid]->jobs.push(PacketInfo(session, buffer, len));
-//
-//	}
-//	else
-//		ClientPacketHandler::HandlePacket(session, buffer, len);
-//#endif //__ZONE_THREAD_VER1__
+#ifdef __ZONE_THREAD_VER1__
+	if (header->id != PKT_C_LOGIN)
+	{
+		int Zoneid = header->zoneID;
+		if (GZoneManager->IsZone(Zoneid)==false)
+		{
+			return;
+		}
+		/*
+			해당 Zone 큐에 넣고 나옴.
+		*/
+		zoneQueues[Zoneid]->jobs.push(PacketInfo(session, buffer, len));
+
+	}
+	else
+		ClientPacketHandler::HandlePacket(session, buffer, len);
+#endif //__ZONE_THREAD_VER1__
 
 #ifdef __ZONE_THREAD_VER2__
-	//ClientPacketHandler::HandlePacket(session, buffer, len);
+	ClientPacketHandler::HandlePacket(session, buffer, len);
 #endif
 	// TODO : packetId 대역 체크
 }

@@ -21,6 +21,7 @@ static	int	g_nThreadCnt = 0;
 namespace Thread {
 
 	static const int IOCP_THREADS = 6;
+	static	int	ZONE_THREADS = 0;
 
 }
 
