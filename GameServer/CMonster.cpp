@@ -145,9 +145,9 @@ void CMonster::AI_Move()
 
 	int64 ActionEndTime= GetTickCount64() + Tick::SECOND_TICK;
 	m_nStateTime[m_eState]=(ActionEndTime);
-#ifdef __CONSOLE_UI__
+//#ifdef __CONSOLE_UI__
 	GConsoleViewer->queuePlayerUpdate(m_nObjectID, m_nZoneID, m_vPos.x(), m_vPos.y());
-#endif
+//#endif
 
 	CZoneRef Zone = GZoneManager->GetZone(m_nZoneID);
 	Zone->Update_Pos(Object::Monster, m_nObjectID, m_vPos);

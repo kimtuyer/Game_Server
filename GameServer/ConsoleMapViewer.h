@@ -269,8 +269,10 @@ public:
 			// 이전 위치 지우기
 			if (currentDisplay.count(objectid)) {
 				auto& prevPos = currentDisplay[objectid];
+#ifdef __CONSOLE_UI__
 				gotoxy(prevPos.first, prevPos.second);
 				std::cout << " ";
+#endif		
 			}
 
 			if (!pos.bAlive) {
@@ -283,6 +285,8 @@ public:
 			// 새 위치 그리기
 			auto screenPos = getScreenPosition(pos.zoneId, pos.x, pos.y);
 			currentDisplay[objectid] = screenPos;
+#ifdef __CONSOLE_UI__
+
 			gotoxy(screenPos.first, screenPos.second);
 
 			if(objectid<= g_nZoneCount*g_nZoneUserMax)
@@ -295,7 +299,7 @@ public:
 					std::cout << "x";
 
 			}
-
+#endif
 		}
 		if (!updates.empty()) {
 			drawZoneInfo();
