@@ -213,9 +213,7 @@ bool Handle_C_MOVE(PacketSessionRef& session, Protocol::C_MOVE& pkt)
 	pPlayer->UpdatePos(true);
 
 	//비동기로 호출해서 그릴지,바로 그리고 나올지..
-#ifdef __CONSOLE_UI__
 	GConsoleViewer->queuePlayerUpdate(pkt.playerid(), Zone->ZoneID(), vPos.x(), vPos.y());
-#endif // __CONSOLE_UI__
 
 	//GConsoleViewer->Concurrent_queueUpdate(pkt.playerid(), Zone->ZoneID(), vPos.x(), vPos.y());
 	//GConsoleViewer->updatePlayerPosition(pkt.playerid(), Zone->ZoneID(), vPos.x(), vPos.y());
