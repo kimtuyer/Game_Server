@@ -17,21 +17,21 @@ void GameSession::OnDisconnected()
 {
 	GSessionManager.Remove(static_pointer_cast<GameSession>(shared_from_this()));
 
-	if (_currentPlayer)
+	//if (_currentPlayer)
 	{
 		//레드는 플레이어매니저는 자체적으로 초마다 체크하면서,로그아웃시간이 1시간경과시 삭제함.
-		GPlayerManager->Remove(_currentPlayer->playerId);
-		_currentPlayer->LeaveZone();
+		GPlayerManager->Remove(nPlayerID);
+		//_currentPlayer->LeaveZone();
 		//_currentPlayer->DoAsync(&CPlayer::LeaveZone);
 
-		if (auto room = _room.lock())
-			room->DoAsync(&Room::Leave, _currentPlayer);
+		//if (auto room = _room.lock())
+		//	room->DoAsync(&Room::Leave, _currentPlayer);
 
 
 	}
 
-	_currentPlayer = nullptr;
-	_players.clear();
+	//_currentPlayer = nullptr;
+	//_players.clear();
 }
 
 void GameSession::OnRecvPacket(BYTE* buffer, int32 len)

@@ -3,7 +3,7 @@
 class CPlayer: public CObject
 {
 public:
-	CPlayer();
+	CPlayer(GameSessionRef&);
 	CPlayer(int playerid, int zoneid, int sectorid);
 	//void	SetActivate(bool bFlag)
 	//{
@@ -13,6 +13,16 @@ public:
 	virtual void Update();
 
 	virtual void	LeaveZone();
+
+	void LoginOff(bool bFlag)
+	{
+		bLogin = bFlag;
+	}
+	bool IsLogin()
+	{
+		return bLogin;
+	}
+
 
 	bool	Attack(Protocol::C_ATTACK& pkt);
 
@@ -28,6 +38,7 @@ public:
 
 	Protocol::D3DVECTOR		Pos;
 private:
+	bool	bLogin;
 	//m_nf
 
 };

@@ -8,21 +8,17 @@ public:
 	CPlayerManager();
 	
 
-	void Insert(int nPlayerid,PlayerRef& Player);
+	void Insert(int nPlayerid, GameSessionRef&);
 	bool Find(int nPlayerid);
+	CPlayer* GetPlayer(int nPlayerid);
 	void Remove(int nPlayerid);
 
 
 
-	PlayerRef Player(int nPlayerID)
-	{
-		if (Find(nPlayerID))
-		{
-
-			return m_mapPlayerlist[nPlayerID];
-		}
-		return nullptr;
-	}
+	PlayerRef Player(int nPlayerID);
+	
+		
+	
 	PlayerList& GetPlayerList()
 	{
 		READ_LOCK;

@@ -35,10 +35,7 @@ bool Handle_C_LOGIN(PacketSessionRef& session, Protocol::C_LOGIN& pkt)
 
 	// ID 발급 (DB 아이디가 아니고, 인게임 아이디)
 	static Atomic<uint64> idGenerator = 1;
-	//PlayerRef playerRef = MakeShared<CPlayer>();
-	//playerRef->ownerSession = gameSession;
-	gameSession->_currentPlayer = MakeShared<CPlayer>();
-	gameSession->_currentPlayer->ownerSession = gameSession;
+
 	{
 		
 
@@ -54,7 +51,8 @@ bool Handle_C_LOGIN(PacketSessionRef& session, Protocol::C_LOGIN& pkt)
 		doc.sendTime = GetTickCount64();
 		//std::string query = "SELECT EXISTS(SELECT 1 FROM `default` USE KEYS [\"" + key_to_check + "\"]);";
 		//pDBConnect->get(doc.key,doc);
-		GPlayerManager->Insert(key, gameSession->_currentPlayer);
+		gameSession->SetPlayerID(key);
+		GPlayerManager->Insert(key, gameSession);
 
 #endif  __COUCHBASE_DB__
 		
@@ -117,11 +115,15 @@ bool Handle_C_ENTER_ZONE(PacketSessionRef& session, Protocol::C_ENTER_ZONE& pkt)
 
 	int nZoneid = 1;
 
-	gameSession->_currentPlayer->SetObjectID(pkt.playerid());
-	gameSession->_currentPlayer->SetActivate(true);
+	PlayerRef pPlayer = GPlayerManager->Player(pkt.playerid());
+	if (pPlayer == nullptr)
+		return false;
+
+	pPlayer->SetObjectID(pkt.playerid());
+	pPlayer->SetActivate(true);
 
 
-	if (GZoneManager->Enter(nZoneid, gameSession->_currentPlayer) == false)
+	if (GZoneManager->Enter(nZoneid, pPlayer) == false)
 	{
 		enterpkt.set_success(false);
 	
@@ -150,7 +152,8 @@ bool Handle_C_ENTER_ZONE(PacketSessionRef& session, Protocol::C_ENTER_ZONE& pkt)
 			enterpkt.set_zoneid(nZoneid);
 			enterpkt.set_sectorid(enterpkt.sectorid());
 
-			ObjectRef pObject = gameSession->_currentPlayer;
+			
+			ObjectRef pObject = (pPlayer);
 
 
 			Sector->Insert(Object::Player, pObject); //원래 ObjectRef 넣어야하는데..
@@ -181,10 +184,13 @@ bool Handle_C_MOVE(PacketSessionRef& session, Protocol::C_MOVE& pkt)
 
 	GameSessionRef gameSession = static_pointer_cast<GameSession>(session);
 
-	if (GPlayerManager->Find(pkt.playerid()) == false)
+
+	PlayerRef pPlayer = GPlayerManager->Player(pkt.playerid());
+	if (pPlayer == nullptr)
 		return false;
-	if (gameSession->_currentPlayer == nullptr)
-		return false;
+	//if (GPlayerManager->Find(pkt.playerid()) == false)
+	//	return false;
+	
 
 	//gameSession->_currentPlayer->
 	//PlayerRef Player=
@@ -196,15 +202,15 @@ bool Handle_C_MOVE(PacketSessionRef& session, Protocol::C_MOVE& pkt)
 
 	//나중엔 해당 유저가 이전위치와 비교, 움직였을때만 브로드캐스팅!
 	//Protocol::S_MOVE_PLAYER movepkt;
-	CZoneRef Zone = GZoneManager->GetZone(gameSession->_currentPlayer->GetZoneID());
+	CZoneRef Zone = GZoneManager->GetZone(pPlayer->GetZoneID());
 	if (Zone == nullptr)
 		return false;
 
-	int nZoneid = gameSession->_currentPlayer->GetZoneID();
+	int nZoneid = pPlayer->GetZoneID();
 
 	//일단 무조건 위치 바뀌었다 가정
 	Protocol::D3DVECTOR vPos = pkt.pos();
-	gameSession->_currentPlayer->UpdatePos(true);
+	pPlayer->UpdatePos(true);
 
 	//비동기로 호출해서 그릴지,바로 그리고 나올지..
 #ifdef __CONSOLE_UI__
@@ -216,7 +222,7 @@ bool Handle_C_MOVE(PacketSessionRef& session, Protocol::C_MOVE& pkt)
 	Zone->Update_Pos(Object::Player,pkt.playerid(), pkt.pos());
 
 
-	int nCurSectorID = gameSession->_currentPlayer->GetSectorID();
+	int nCurSectorID = pPlayer->GetSectorID();
 	int nPrevSectorID = nCurSectorID;
 	if (Zone->UpdateSectorID(nCurSectorID, vPos))
 	{
@@ -300,10 +306,12 @@ bool Handle_C_ATTACK(PacketSessionRef& session, Protocol::C_ATTACK& pkt)
 {
 
 	Protocol::S_ATTACK_ACK ackpkt;
-	GameSessionRef gameSession = static_pointer_cast<GameSession>(session);
+	//GameSessionRef gameSession = static_pointer_cast<GameSession>(session);
 
-
-	 gameSession->_currentPlayer->Attack(pkt);
+	PlayerRef pPlayer = GPlayerManager->Player(pkt.playerid());
+	if (pPlayer == nullptr)
+		return false;
+	pPlayer->Attack(pkt);
 
 
 

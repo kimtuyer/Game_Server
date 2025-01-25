@@ -181,7 +181,11 @@ private:	//오브젝트 리스트도 맵 or set이 나은가?
 //	vector<Sector::ObjectInfo> m_RemoveList;
 
 
-	map<ObjectType, map<ObjectID,ObjectRef>> m_nlistObject;
+	//map<ObjectID, ObjectRef>m_nMonsterList;
+	//set<int>m_nPlayerList;
+	//map<ObjectID, ObjectRef>m_nlistObject;
+
+	map<ObjectType, map<ObjectID, ObjectRef>> m_nlistObject;
 
 	bool m_bActivate;
 
