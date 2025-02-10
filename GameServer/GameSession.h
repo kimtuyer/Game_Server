@@ -11,7 +11,7 @@ public:
 	}
 	~GameSession()
 	{
-		cout << "~GameSession" << endl;
+		//cout << "~GameSession" << endl;
 	}
 
 	virtual void OnConnected() override;

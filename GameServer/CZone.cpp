@@ -217,8 +217,8 @@ void CZone::Remove(ObjectType eObjectType, int objectID)
 			WRITE_LOCK_IDX(lock);
 
 			m_nUserCnt.fetch_sub(1);
-			if (m_nlistObject[Object::Player].empty())
-				m_bActivate = false;
+			//if (m_nlistObject[Object::Player].empty())
+			//	m_bActivate = false;
 		}
 	}
 	/*
@@ -726,6 +726,11 @@ void CZone::Update_Pos(Object::ObjectType eObjectType, int nObjectID, const Prot
 		*/
 		m_nlistObject[eObjectType][nObjectID]->SetPos(vPos);
 	}
+}
+
+void CZone::SetActivate(bool bFlag)
+{
+	m_bActivate = bFlag;
 }
 
 bool CZone::Enter()

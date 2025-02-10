@@ -8,6 +8,7 @@
 #include "CZone_Manager.h"
 #include "CZone.h"
 #include "ThreadManager.h"
+#include "ConsoleMapViewer.h"
 void GameSession::OnConnected()
 {
 	GSessionManager.Add(static_pointer_cast<GameSession>(shared_from_this()));
@@ -21,6 +22,7 @@ void GameSession::OnDisconnected()
 	{
 		//레드는 플레이어매니저는 자체적으로 초마다 체크하면서,로그아웃시간이 1시간경과시 삭제함.
 		GPlayerManager->Remove(nPlayerID);
+		GConsoleViewer->queuePlayerUpdate(nPlayerID, 0, 0, 0, false);
 		//_currentPlayer->LeaveZone();
 		//_currentPlayer->DoAsync(&CPlayer::LeaveZone);
 

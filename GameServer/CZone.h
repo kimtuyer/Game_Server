@@ -65,10 +65,8 @@ public:
 
 
 
-	void	SetActivate(bool bFlag)
-	{
-		m_bActivate = bFlag;
-	}
+	void	SetActivate(bool bFlag);
+
 	bool	GetActivate()
 	{
 		return m_bActivate;

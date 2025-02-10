@@ -49,7 +49,7 @@ void Session::Disconnect(const WCHAR* cause)
 		return;
 
 	// TEMP
-	wcout << "Disconnect : " << cause << endl;
+	//wcout << "Disconnect : " << cause << endl;
 
 	RegisterDisconnect();
 }
