@@ -184,7 +184,6 @@
     <ClCompile Include="CItem.cpp" />
     <ClCompile Include="CMonster.cpp" />
     <ClCompile Include="CObject.cpp" />
-    <ClCompile Include="ConsoleMapViewer.cpp" />
     <ClCompile Include="CouchbaseClient.cpp" />
     <ClCompile Include="CouchbaseHandler.cpp" />
     <ClCompile Include="CPlayerManager.cpp" />
@@ -227,7 +226,6 @@
     <ClInclude Include="CItem.h" />
     <ClInclude Include="CMonster.h" />
     <ClInclude Include="CObject.h" />
-    <ClInclude Include="ConsoleMapViewer.h" />
     <ClInclude Include="CouchbaseClient.h" />
     <ClInclude Include="CouchbaseHandler.h" />
     <ClInclude Include="CPlayerManager.h" />

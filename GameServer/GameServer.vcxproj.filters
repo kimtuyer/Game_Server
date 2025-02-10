@@ -66,9 +66,6 @@
     <ClCompile Include="GameSession.cpp">
       <Filter>Session</Filter>
     </ClCompile>
-    <ClCompile Include="ConsoleMapViewer.cpp">
-      <Filter>UI</Filter>
-    </ClCompile>
     <ClCompile Include="CSector.cpp">
       <Filter>Zone</Filter>
     </ClCompile>
@@ -123,9 +120,6 @@
     </ClInclude>
     <ClInclude Include="GameSession.h">
       <Filter>Session</Filter>
-    </ClInclude>
-    <ClInclude Include="ConsoleMapViewer.h">
-      <Filter>UI</Filter>
     </ClInclude>
     <ClInclude Include="CSector.h">
       <Filter>Zone</Filter>

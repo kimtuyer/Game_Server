@@ -134,6 +134,7 @@
     <ClInclude Include="function.h">
       <Filter>Utils</Filter>
     </ClInclude>
+    <ClInclude Include="ConsoleMapViewer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CorePch.cpp">
@@ -221,5 +222,6 @@
     <ClCompile Include="RandomMove.cpp">
       <Filter>Utils</Filter>
     </ClCompile>
+    <ClCompile Include="ConsoleMapViewer.cpp" />
   </ItemGroup>
 </Project>

@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "ConsoleMapViewer.h"
-shared_ptr<ConsoleMapViewer> GConsoleViewer = make_shared<ConsoleMapViewer>();
+//shared_ptr<ConsoleMapViewer> GConsoleViewer = make_shared<ConsoleMapViewer>();
 atomic<int>	g_nPacketCount = 0;
 atomic<int>	g_nDBPacketCount = 0;
 
@@ -48,7 +48,7 @@ ConsoleMapViewer::ConsoleMapViewer()
 		totalHeight * 20, // 문자 높이를 픽셀로 변환 (약 20픽셀)
 		TRUE);
 
-	
+
 
 
 	// 커서 깜박임 제거
@@ -57,9 +57,9 @@ ConsoleMapViewer::ConsoleMapViewer()
 
 	// 초기 화면 설정
 	clearScreen();
-//#ifdef __CONSOLE_UI__
+	//#ifdef __CONSOLE_UI__
 	drawZoneBorders();
-//#endif // __CONSOLE_UI__
+	//#endif // __CONSOLE_UI__
 	drawZoneInfo();
 	//pendingUpdates.clear();
 	//currentDisplay.clear();
@@ -99,13 +99,13 @@ void ConsoleMapViewer::drawZoneInfo()
 	{
 		LSecondTickCount = GetTickCount64() + Tick::SECOND_TICK;
 
-		gotoxy(startX + 22, startY+2);
-		cout  << "  초당 패킷 처리량:"<< g_nPacketCount <<" " << endl;
+		gotoxy(startX + 22, startY + 2);
+		cout << "  초당 패킷 처리량:" << g_nPacketCount << " " << endl;
 
 		g_nPacketCount.store(0);
 	}
 
-	
+
 
 	// 존 정보 출력
 	for (int zoneId = 1; zoneId <= g_nZoneCount; zoneId++) {
@@ -115,7 +115,7 @@ void ConsoleMapViewer::drawZoneInfo()
 		std::cout << "P(" << counts.first << ") ";
 		std::cout << "M(" << counts.second << ")   ";  // 공백으로 이전 텍스트 덮어쓰기
 	}
-	
+
 
 	concurrent_unordered_map<int, int64>threadLatency;
 	map<int, vector<pair<int, int>>> tempThreadtoZonelist;
@@ -130,14 +130,7 @@ void ConsoleMapViewer::drawZoneInfo()
 
 
 	int nCnt = 0;
-	
-	//if (nUpdateTime < GetTickCount64())
-	//{
-	//	nUpdateTime = GetTickCount64() + Tick::SECOND_TICK;
-	//	refreshCurrentDisplay();
-	//
-	//}
-	//
+
 	//for (auto [threadid, Latency] : threadLatency)
 	//{
 	//	gotoxy(startX, startY + g_nZoneCount + 3+ nCnt);

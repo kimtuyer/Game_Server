@@ -46,11 +46,11 @@ private:
 	std::unordered_map<int, std::vector<int>> monsterInZone;  // zoneId -> vector of playerIds
 
 	concurrent_unordered_map<int, int64>threadLatencyTime;
-	map<int,vector<pair<int, int>>> ThreadtoZonelist;
+	map<int, vector<pair<int, int>>> ThreadtoZonelist;
 	std::mutex threadlock;
 	//std::map<int, int64> threadLatencyTime;
 
-	
+
 
 	void clearScreen() {
 		system("cls");
@@ -85,13 +85,13 @@ public:
 
 
 	void drawSectorBorders(int startX, int startY) {
-		int sectorWidth = (ZONE_WIDTH ) / 4;
-		int sectorHeight = (ZONE_HEIGHT ) / 4;
+		int sectorWidth = (ZONE_WIDTH) / 4;
+		int sectorHeight = (ZONE_HEIGHT) / 4;
 
 		// 섹터 세로 구분선
 		for (int i = 1; i < SECTORS_PER_SIDE; i++) {
 			int x = startX + i * sectorWidth;
-			for (int y = startY + 1; y < startY + ZONE_HEIGHT ; y++) {
+			for (int y = startY + 1; y < startY + ZONE_HEIGHT; y++) {
 				gotoxy(x, y);
 				std::cout << ":";
 			}
@@ -100,7 +100,7 @@ public:
 		// 섹터 가로 구분선
 		for (int i = 1; i < SECTORS_PER_SIDE; i++) {
 			int y = startY + i * sectorHeight;
-			for (int x = startX + 1; x < startX + ZONE_WIDTH ; x++) {
+			for (int x = startX + 1; x < startX + ZONE_WIDTH; x++) {
 				gotoxy(x, y);
 				std::cout << ".";
 			}
@@ -126,8 +126,8 @@ public:
 		//cout << "전체 초당 패킷 처리량:" << g_nPacketCount << endl;
 		for (int col = 0; col < ZONES_PER_COL; col++) {
 			for (int row = 0; row < ZONES_PER_ROW; row++) {
-				int startX = row * (ZONE_WIDTH );
-				int startY = col * (ZONE_HEIGHT );
+				int startX = row * (ZONE_WIDTH);
+				int startY = col * (ZONE_HEIGHT);
 
 
 				// 상단 테두리
@@ -140,7 +140,7 @@ public:
 				for (int i = 1; i < ZONE_HEIGHT; i++) {
 					gotoxy(startX, startY + i);
 					std::cout << "|";
-					gotoxy(startX + ZONE_WIDTH , startY + i);
+					gotoxy(startX + ZONE_WIDTH, startY + i);
 					std::cout << "|";
 				}
 
@@ -154,7 +154,7 @@ public:
 
 				gotoxy(startX + 2, startY + 1);
 				//gotoxy(startX + ZONE_WIDTH / 2, startY + ZONE_HEIGHT / 2);
-				std::cout <<"ZoneID:" << col * ZONES_PER_ROW + row + 1;
+				std::cout << "ZoneID:" << col * ZONES_PER_ROW + row + 1;
 
 				// 섹터 그리기
 				drawSectorBorders(startX, startY);
@@ -171,7 +171,7 @@ public:
 
 		//int zoneCol = (zoneId - 1) / ZONES_PER_ROW;
 
-		int screenX =localX + 1;
+		int screenX = localX + 1;
 		int screenY = localY + 1;
 
 		//int screenX = zoneRow * (ZONE_WIDTH + 1) + localX + 1;
@@ -230,9 +230,9 @@ public:
 			std::cout << ".";
 		}
 	}
-/*																		*/
+	/*																		*/
 
-/* 더블 버퍼링+	주기적 업데이트							*/	
+	/* 더블 버퍼링+	주기적 업데이트							*/
 
 
 	int getZoneIdFromScreenPos(int screenX, int screenY) {
@@ -243,13 +243,13 @@ public:
 
 	void drawZoneInfo();
 	// 패킷 수신 시 호출 (lock 최소화)
-	void queuePlayerUpdate(int objectid, int zoneId, int x, int y,bool bAlive=true) {
+	void queuePlayerUpdate(int objectid, int zoneId, int x, int y, bool bAlive = true) {
 		std::lock_guard<std::mutex> lock(mtx);
 		//gotoxy(1,0);
 		//cout << "x ,y : " << x << "," << y << endl;
 		//pendingUpdates.insert({ objectid,{ zoneId, x, y,bAlive}});
 
-		pendingUpdates[objectid]={ zoneId, x, y,bAlive };
+		pendingUpdates[objectid] = { zoneId, x, y,bAlive };
 	}
 
 	// 주기적으로 호출 (예: 16ms 마다)
@@ -289,11 +289,11 @@ public:
 
 			gotoxy(screenPos.first, screenPos.second);
 
-			if(objectid<= g_nZoneCount*g_nZoneUserMax)
+			if (objectid <= g_nZoneCount * g_nZoneUserMax)
 				std::cout << "p";
 			else
 			{
-				if(pos.bAlive)
+				if (pos.bAlive)
 					std::cout << "m";
 				else
 					std::cout << "x";
