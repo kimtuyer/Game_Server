@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "IocpCore.h"
 #include "IocpEvent.h"
-
+#include "ConsoleMapViewer.h"
 /*--------------
 	IocpCore
 ---------------*/
@@ -30,8 +30,18 @@ bool IocpCore::Dispatch(uint32 timeoutMs)
 
 	if (::GetQueuedCompletionStatus(_iocpHandle, OUT &numOfBytes, OUT &key, OUT reinterpret_cast<LPOVERLAPPED*>(&iocpEvent), timeoutMs))
 	{
+
+		if (LSecondTickCount < GetTickCount64())
+		{
+			LSecondTickCount = GetTickCount64() + Tick::SECOND_TICK;
+			g_nPacketCount.fetch_add(LPacketCount);
+		
+			LPacketCount = 0;
+		}
+		//LEndTickCount = ::GetTickCount64() + Tick::WORKER_TICK;
 		IocpObjectRef iocpObject = iocpEvent->owner;
 		iocpObject->Dispatch(iocpEvent, numOfBytes);
+		LPacketCount++;
 	}
 	else
 	{
