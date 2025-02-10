@@ -314,13 +314,20 @@ void CZone_Manager::DistributeThreads(vector<pair<int, int>>list)
 			continue;
 		}
 
-		nCnt++;
-		if (nCnt < 5) //30$
+		if(number>=300)
 			loadRanklist.push(pair(ZoneID, 1));
-		else if (nCnt < 16) //60%
+		else if(number>=200)
 			loadRanklist.push(pair(ZoneID, 2));
-		else //10%
+		else
 			loadRanklist.push(pair(ZoneID, 3));
+
+		//nCnt++;
+		//if (nCnt < 5) //30$
+		//	loadRanklist.push(pair(ZoneID, 1));
+		//else if (nCnt < 16) //60%
+		//	loadRanklist.push(pair(ZoneID, 2));
+		//else //10%
+		//	loadRanklist.push(pair(ZoneID, 3));
 	}
 
 
