@@ -87,7 +87,7 @@ void DoIOCPJob(ServerServiceRef& service)
 		LEndTickCount = ::GetTickCount64() + Tick::WORKER_TICK;
 
 		// 네트워크 입출력 처리 -> 인게임 로직까지 (패킷 핸들러에 의해)
-		if (service->GetIocpCore()->Dispatch(10) == true)
+		if (service->GetIocpCore()->Dispatch() == true)
 			LPacketCount++;
 	}
 }
@@ -159,6 +159,8 @@ void DoZoneJob(ServerServiceRef& service, int ZoneID)
 void DoZoneJob3(ServerServiceRef& service, int ZoneID)
 {
 	threadRebalance.insert({LThreadId, false});
+	zoneQueues[ZoneID] = MakeShared<ZoneQueue>();
+	auto& ZoneQueue = zoneQueues[ZoneID];
 	vector<CZoneRef> Zones;
 	vector<pair<int, int>> Zonelist;
 	uint64 lastUpdatetime = 0;
@@ -260,8 +262,9 @@ void DoZoneJob3(ServerServiceRef& service, int ZoneID)
 			{
 
 //#ifdef __ZONE_THREAD_VER2__
-				if (service->GetIocpCore()->Dispatch(10) == true)
-					LPacketCount++;
+				PacketInfo job;
+				if (ZoneQueue->jobs.try_pop(job))
+					ClientPacketHandler::HandlePacket(job.m_session, job.m_buffer, job.m_len);
 				else
 				{
 					ThreadManager::DistributeReservedJobs();
@@ -270,6 +273,17 @@ void DoZoneJob3(ServerServiceRef& service, int ZoneID)
 
 					std::this_thread::sleep_for(std::chrono::milliseconds(1));
 				}
+
+				//if (service->GetIocpCore()->Dispatch(10) == true)
+				//	LPacketCount++;
+				//else
+				//{
+				//	ThreadManager::DistributeReservedJobs();
+				//
+				//	ThreadManager::DoGlobalQueueWork();
+				//
+				//	std::this_thread::sleep_for(std::chrono::milliseconds(1));
+				//}
 //#endif
 
 			}
