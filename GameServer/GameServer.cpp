@@ -72,23 +72,39 @@ void DoWorkerJob(ServerServiceRef& service)
 	}
 }
 
+void ProcessGlobalJob(ServerServiceRef& service, uint64 endtime,bool bIOCP)
+{
+	if (bIOCP == true)
+		service->GetIocpCore()->Dispatch(1);
+
+	if (GetTickCount64() < endtime)
+	{
+		ThreadManager::DistributeReservedJobs();
+
+		ThreadManager::DoGlobalQueueWork();
+
+		std::this_thread::sleep_for(std::chrono::milliseconds(GetTickCount64()-endtime));
+	}
+}
+
+
 void DoIOCPJob(ServerServiceRef& service)
 {
-	bool bFlag = false;
+	//bool bFlag = false;
 	while (true)
 	{
-		if (LSecondTickCount < GetTickCount64())
-		{
-			LSecondTickCount = GetTickCount64() + Tick::SECOND_TICK;
-			g_nPacketCount.fetch_add(LPacketCount);
-
-			LPacketCount = 0;
-		}
-		LEndTickCount = ::GetTickCount64() + Tick::WORKER_TICK;
+		//if (LSecondTickCount < GetTickCount64())
+		//{
+		//	LSecondTickCount = GetTickCount64() + Tick::SECOND_TICK;
+		//	g_nPacketCount.fetch_add(LPacketCount);
+		//
+		//	LPacketCount = 0;
+		//}
+		//LEndTickCount = ::GetTickCount64() + Tick::WORKER_TICK;
 
 		// 네트워크 입출력 처리 -> 인게임 로직까지 (패킷 핸들러에 의해)
-		if (service->GetIocpCore()->Dispatch() == true)
-			LPacketCount++;
+		service->GetIocpCore()->Dispatch(INFINITE);
+			//LPacketCount++;
 	}
 }
 
@@ -156,11 +172,14 @@ void DoZoneJob(ServerServiceRef& service, int ZoneID)
 }
 
 
-void DoZoneJob3(ServerServiceRef& service, int ZoneID)
+void DoZoneJob3(ServerServiceRef& service, int ZoneID,bool bIsZone)
 {
 	threadRebalance.insert({LThreadId, false});
-	zoneQueues[ZoneID] = MakeShared<ZoneQueue>();
-	auto& ZoneQueue = zoneQueues[ZoneID];
+	if (bIsZone)
+	{
+		zoneQueues[ZoneID] = MakeShared<ZoneQueue>();
+		auto& ZoneQueue = zoneQueues[ZoneID];
+	}
 	vector<CZoneRef> Zones;
 	vector<pair<int, int>> Zonelist;
 	uint64 lastUpdatetime = 0;
@@ -223,7 +242,7 @@ void DoZoneJob3(ServerServiceRef& service, int ZoneID)
 			getZone();
 
 			threadRebalance[LThreadId] = false;
-
+			
 		}
 
 		if (Zones.empty())
@@ -259,38 +278,37 @@ void DoZoneJob3(ServerServiceRef& service, int ZoneID)
 			uint64 endTime = timeUntilNextUpdate + GetTickCount64();
 
 			while (GetTickCount64() < endTime)
-			{
-
-//#ifdef __ZONE_THREAD_VER2__
-				PacketInfo job;
-				if (ZoneQueue->jobs.try_pop(job))
-					ClientPacketHandler::HandlePacket(job.m_session, job.m_buffer, job.m_len);
+			{				
+				if (Zones.empty())
+				{
+					ProcessGlobalJob(service, endTime,true);
+				}
 				else
 				{
-					ThreadManager::DistributeReservedJobs();
+					ProcessGlobalJob(service, endTime,false);
 
-					ThreadManager::DoGlobalQueueWork();
-
-					std::this_thread::sleep_for(std::chrono::milliseconds(1));
+#ifdef __ZONE_THREAD_VER1__
+					PacketInfo job;
+					if (ZoneQueue->jobs.try_pop(job))
+						ClientPacketHandler::HandlePacket(job.m_session, job.m_buffer, job.m_len);
+					if (GetTickCount64() < endTime)
+					{
+					
+						ThreadManager::DistributeReservedJobs();
+					
+						ThreadManager::DoGlobalQueueWork();
+					
+						std::this_thread::sleep_for(std::chrono::milliseconds(1));
+					
+					}
+#endif // __ZONE_THREAD_VER1__
 				}
-
-				//if (service->GetIocpCore()->Dispatch(10) == true)
-				//	LPacketCount++;
-				//else
-				//{
-				//	ThreadManager::DistributeReservedJobs();
-				//
-				//	ThreadManager::DoGlobalQueueWork();
-				//
-				//	std::this_thread::sleep_for(std::chrono::milliseconds(1));
-				//}
-//#endif
 
 			}
 		}
 
 		LEndTickCount = ::GetTickCount64()- nowtime; //+ Tick::WORKER_TICK;
-		GConsoleViewer->update_threadLatency(LThreadId, LEndTickCount,Zonelist);
+		//GConsoleViewer->update_threadLatency(LThreadId, LEndTickCount,Zonelist);
 
 	}
 
@@ -323,43 +341,7 @@ void DoRenderingJob()
 	}
 }
 
-void DoBroadJob(ServerServiceRef& service, bool bMain = false)
-{
-	//bool bFlag = false;
-	while (true)
-	{
-		//if (LSecondTickCount < GetTickCount64())
-		//{
-		//	LSecondTickCount = GetTickCount64() + Tick::SECOND_TICK;
-		//	bFlag = true;
-		//	g_nPacketCount.fetch_add(LPacketCount);
-		//
-		//	//cout << LThreadId <<" : 워커스레드의  초당 패킷 처리량:" << LPacketCount << endl;
-		//
-		//	LPacketCount = 0;
-		//}
-		//else
-		//{
-		//	bFlag = false;
-		//	//LPacketCount++;
-		//
-		//}
 
-		//LEndTickCount = ::GetTickCount64() + Tick::WORKER_TICK;
-
-		// 네트워크 입출력 처리 -> 인게임 로직까지 (패킷 핸들러에 의해)
-		//if (service->GetIocpCore()->Dispatch(10) == true)
-		//	LPacketCount++;
-
-		ThreadManager::DistributeBroadJobs();
-
-		ThreadManager::DoBroadQueueWork();
-		// 예약된 일감 처리
-
-		// 글로벌 큐
-		//ThreadManager::DoGlobalQueueWork();
-	}
-}
 using json = nlohmann::json;
 json read_json_from_file(const std::string& filename) {
 	std::ifstream f(filename);
@@ -405,8 +387,11 @@ int main()
 		
 		GThreadManager->Launch([&service,&zoneID]()
 			{
+				if(zoneID <= g_nZoneCount)
+					DoZoneJob3(service, zoneID++,true);
+				else
+					DoZoneJob3(service, zoneID++, false);
 
-				DoZoneJob3(service, zoneID++);
 			});
 
 		Thread::ZONE_THREADS++;
