@@ -6,11 +6,13 @@
 #include "ClientPacketHandler.h"
 #include "CMonster.h"
 #include "CouchbaseClient.h"
-CPlayer::CPlayer()
+
+CPlayer::CPlayer(GameSessionRef& gamesession) :m_nKillcount(0), nLevel(0), bLogin(false), ownerSession(gamesession)
 {
+
 }
 
-CPlayer::CPlayer(int playerid, int zoneid, int sectorid):m_nKillcount(0),nLevel(0)
+CPlayer::CPlayer(int playerid, int zoneid, int sectorid):m_nKillcount(0),nLevel(0),bLogin(false)
 {
 }
 

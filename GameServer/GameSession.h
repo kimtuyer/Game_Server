@@ -4,6 +4,11 @@
 class GameSession : public PacketSession
 {
 public:
+	GameSession():nPlayerID(0)
+	{
+
+
+	}
 	~GameSession()
 	{
 		cout << "~GameSession" << endl;
@@ -14,9 +19,15 @@ public:
 	virtual void OnRecvPacket(BYTE* buffer, int32 len) override;
 	virtual void OnSend(int32 len) override;
 
-public:
-	Vector<PlayerRef> _players;
+	void	SetPlayerID(int nPlayerid)
+	{
+		nPlayerID = nPlayerid;
+	}
 
-	PlayerRef _currentPlayer;
-	weak_ptr<class Room> _room;
+	//Vector<PlayerRef> _players;
+
+private:
+	int		nPlayerID;
+	//PlayerRef _currentPlayer;
+	//weak_ptr<class Room> _room;
 };

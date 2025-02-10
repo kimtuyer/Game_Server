@@ -89,12 +89,15 @@ bool CSector::FindObject(int objectID)
 
 ObjectRef CSector::GetMonster(int objectID)
 {
+	int lock = lock::Monster;
+	READ_LOCK_IDX(lock);
+
 	if (m_nlistObject[Object::Monster].contains(objectID))
 	{
 		return (m_nlistObject[Object::Monster][objectID]);
 	}
 	else
-		nullptr;
+		return nullptr;
 }
 
 bool CSector::Insert(int nObjectType, ObjectRef& Object)
