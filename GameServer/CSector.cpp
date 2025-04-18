@@ -24,7 +24,10 @@ void CSector::Update()
 {
 #ifdef __DOP__
 #else
-	vector<CMonster*> m_vecMonsters;
+	static thread_local vector<CMonster*> m_vecMonsters;
+	if (m_vecMonsters.capacity() == 0)
+		m_vecMonsters.reserve(m_nlistObject[Object::Monster].size());
+	m_vecMonsters.clear();
 	{
 		int lock = lock::Monster;
 		READ_LOCK_IDX(lock);
