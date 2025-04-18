@@ -11,8 +11,27 @@ CSector::CSector(int nSectorID, int nZoneID, Protocol::D3DVECTOR vPos)
 {
 }
 
+CSector::CSector(const CSector& other)
+	: m_nSectorID(other.m_nSectorID), m_vStartpos(other.m_vStartpos), m_bActivate(true), m_nZoneID(other.m_nZoneID)
+{
+	if (this == &other) {
+		return;
+	}
+
+}
+
 void CSector::Update()
 {
+#ifdef __DOP__
+	vector<CMonster>vecMonsterlist;
+	{
+		int lock = lock::Monster;
+		READ_LOCK_IDX(lock);
+		vecMonsterlist = m_vecMonsters;
+	}
+#else
+
+
 	vector<CMonster*> vecMonsterlist;
 	{
 		int lock = lock::Monster;
@@ -27,9 +46,15 @@ void CSector::Update()
 		}
 	}
 
+#endif // __DOP__
 	for (auto& pMonster : vecMonsterlist)
 	{
+#ifdef __DOP__
+		pMonster.Update();
+#else
 		pMonster->Update();
+
+#endif	
 	}
 
 	int nowtime = GetTickCount64();
@@ -105,6 +130,16 @@ bool CSector::Insert(int nObjectType, ObjectRef& Object)
 	int lock = lock::Object;
 	WRITE_LOCK_IDX(lock);
 	m_nlistObject[nObjectType].insert({ Object->ObjectID(),Object });
+	
+	return true;
+}
+
+bool CSector::Insert_Monster(Sector::MonsterData& sData, bool bActivate)
+{
+	int lock = lock::Object;
+	WRITE_LOCK_IDX(lock);
+	m_vecMonsters.emplace_back(sData, true);
+
 	return true;
 }
 
@@ -114,6 +149,17 @@ bool CSector::Delete(int nObjectType, int objectID)
 	WRITE_LOCK_IDX(lock);
 	m_nlistObject[nObjectType].erase(objectID);
 	return true;
+}
+
+bool CSector::Delete_Monster(int nObjectID)
+{
+	int lock = lock::Object;
+	WRITE_LOCK_IDX(lock);
+
+	if(m_mapMonster.contains(nObjectID)==false)
+		return false;
+	m_vecMonsters[m_mapMonster[nObjectID]].SetActivate(false);
+
 }
 
 void CSector::SendObjectlist()

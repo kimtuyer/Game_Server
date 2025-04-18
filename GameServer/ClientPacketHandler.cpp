@@ -133,7 +133,14 @@ bool Handle_C_ENTER_ZONE(PacketSessionRef& session, Protocol::C_ENTER_ZONE& pkt)
 	{
 		/* 입장 존 최초 위치 받음.	*/
 		Protocol::D3DVECTOR* vPos = enterpkt.mutable_pos();
-		CSectorRef Sector = GZoneManager->GetZone(nZoneid)->GetSector(pkt.sectorid());
+#ifdef __DOP__
+		auto Sector = GZoneManager->GetZone(nZoneid)->GetSector(pkt.sectorid());
+		if (Sector == nullptr)
+			return false;
+#else
+		CSectorRef Sector = GZoneManager->GetZone(nZoneid)->GetSectorRef(pkt.sectorid());
+
+#endif // __DOP__
 		if (Sector == nullptr)
 		{
 

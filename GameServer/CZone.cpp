@@ -45,26 +45,47 @@ CZone::CZone(int nMaxUserCnt, int nZoneID, Protocol::D3DVECTOR vPos)
 			Protocol::D3DVECTOR startpos;
 			startpos.set_x(x);
 			startpos.set_y(y);
-
+#ifdef __DOP__
+			m_vecSector.emplace_back(nSectorid, m_nZoneID, startpos);
+			int index = (int)m_vecSector.size() - 1;
+			m_mapSector.insert({ nSectorid,index });
+#else
 			m_listSector.insert({ nSectorid,MakeShared<CSector>(nSectorid,m_nZoneID,startpos) });
+#endif // __DOP__
 
 			nSectorid++;
 		}
 
 	// 인접 섹터  리스트 구하기
+#ifdef __DOP__
+	for (auto& Sector : m_vecSector)
+#else
 	for (auto& [sectorID, Sector] : m_listSector)
+#endif	
 	{
+#ifdef __DOP__
+		float currnet_x = Sector.StartPos().x();
+		float currnet_y = Sector.StartPos().y();
+#else
 		float currnet_x = Sector->StartPos().x();
 		float currnet_y = Sector->StartPos().y();
+#endif	
 		int SectorID = 0;
-
+#ifdef __DOP__
+		CSectorRef pSector = MakeShared<CSector>(Sector);
+#endif	
 		auto Dir = [&]()
 			{
 				for (auto& [x, y] : directions)
 				{
 					float new_x = x + currnet_x;
 					float new_y = y + currnet_y;
+#ifdef __DOP__
+					Set_AdjSector(new_x, new_y, pSector);
+
+#else	
 					Set_AdjSector(new_x, new_y, Sector);
+#endif
 				}
 			};
 		Dir();
@@ -127,13 +148,31 @@ CZone::CZone(int nMaxUserCnt, int nZoneID, Protocol::D3DVECTOR vPos)
 		// 1~max 섹터id를 랜덤으로 불러와 해당 섹터의 좌표로 몬스터를 배치.
 		std::uniform_int_distribution<int> SectorList(1, Sector_Count);   // 0 ~ MAX_STEP
 		int sectorID = SectorList(gen);
+#ifdef __DOP__
+		auto Sector = GetSector(sectorID);//&m_vecSector[sectorID];
+		if (Sector == nullptr)
+			continue;
+#else
 		auto Sector = m_listSector[sectorID];
+#endif
+#ifdef __DOP__
+		Sector::MonsterData sData;
+		sData.nObjectID = startID;
+		sData.nSectorID = sectorID;
+		sData.nZoneID = m_nZoneID;
+		sData.vPos.x = Sector->StartPos().x();
+		sData.vPos.y = Sector->StartPos().y();
+		sData.vPos.z = Sector->StartPos().z();
 
+		Sector->Insert_Monster(sData, true);
+#else
 		MonsterRef Monster = MakeShared<CMonster>(startID, m_nZoneID, sectorID, Sector->StartPos(), true);
 		ObjectRef pObject = Monster;
 
 		m_nlistObject[Object::Monster].insert({ startID,Monster });
 		Sector->Insert(Object::Monster, pObject); //원래 ObjectRef 넣어야하는데..
+#endif // __DOP__
+
 	}
 	//몬스터 색터 id 랜덤으로 넣어줄려면  1~16번 섹터중 랜덤으로 가져와 그 섹터의 좌표를 가져와 삽입!
 }
@@ -239,15 +278,21 @@ void CZone::Update()
 ///////////////////////////////////////////////////////////////
 	int zone = m_nZoneID;
 #ifdef __SECTOR_UPDATE__
+#ifdef __DOP__
+	for (auto& Sector : m_vecSector)
+#else	
 	for (auto& [sectorID, Sector] : m_listSector)
+#endif	
 	{
-		//if (Object->GetActivate() == false)
-		//	continue;
-		//if (Sector->Empty())
-		//	continue;
+#ifdef __DOP__
+		Sector.Update();
+#else
 		if (Sector == nullptr)
 			continue;
 		Sector->Update();
+
+
+#endif	
 	}
 
 	//삽입 삭제 리스트 각 섹터에 위치한 플레이어들에게 전송
@@ -325,11 +370,15 @@ void CZone::Update_Partial(int beginSectorID, int endSectorID)
 	int zone = m_nZoneID;
 	for (int secID = beginSectorID; secID <= endSectorID; secID++)
 	{
+#ifdef __DOP__
+		auto sector = &m_vecSector[secID];
+
+#else
 		auto sector = m_listSector[secID];
 		if (sector == nullptr)
 			continue;
 		m_listSector[secID]->Update();
-
+#endif
 	}
 
 	Send_SectorInsertObject(beginSectorID, endSectorID);
@@ -359,8 +408,14 @@ void CZone::Send_SectorInsertObject(int beginSectorID, int endSectorID)
 	{
 		if (Util::SectorRange(beginSectorID, endSectorID,SectorID) == false)
 			continue;
-
+#ifdef __DOP__
+		auto Sector = GetSector(SectorID);
+		if (Sector == nullptr)
+			continue;
+#else
 		CSectorRef Sector = m_listSector[SectorID];
+#endif // __DOP__
+
 		if (Sector->Empty_Player())
 			continue;
 		
@@ -380,7 +435,19 @@ void CZone::Send_SectorInsertObject(int beginSectorID, int endSectorID)
 				ObjectRef Object = m_nlistObject[ObjectInfo.nObjectType][ObjectInfo.nObjectID];
 				if (Object == nullptr)
 					continue;
+#ifdef __DOP__
+				Sector::MonsterData sData;
+				{
+					sData.nObjectID = ObjectInfo.nObjectID;
+					sData.nSectorID = ObjectInfo.nSectorID;
+					sData.vPos = ObjectInfo.vPos;
+					sData.nZoneID = m_nZoneID;
+				}
+				Sector->Insert_Monster(sData, true);
+#else
 				Sector->Insert(ObjectInfo.nObjectType, Object);
+			
+#endif // __DOP__
 
 				float dist = Util::distance(ObjectInfo.vPos.x, ObjectInfo.vPos.y, Player->GetPos().x(), Player->GetPos().y());
 
@@ -436,8 +503,13 @@ void CZone::Send_SectorRemoveObject(int beginSectorID, int endSectorID)
 	{
 		if (Util::SectorRange(beginSectorID, endSectorID, SectorID) == false)
 			continue;
-
+#ifdef __DOP__
+		CSector* Sector = GetSector(SectorID);//m_listSector[SectorID];
+		if (Sector == nullptr)
+			continue;
+#else
 		CSectorRef Sector = m_listSector[SectorID];
+#endif // __DOP__
 
 		if (Sector->Empty_Player())
 			continue;
@@ -459,8 +531,11 @@ void CZone::Send_SectorRemoveObject(int beginSectorID, int endSectorID)
 				ObjectRef Object = m_nlistObject[ObjectInfo.nObjectType][ObjectInfo.nObjectID];
 				if (Object == nullptr)
 					continue;
+#ifdef __DOP__				
+				Sector->Delete_Monster(ObjectInfo.nObjectID);
+#else
 				Sector->Delete(ObjectInfo.nObjectType, Object->ObjectID());
-
+#endif
 				float dist = Util::distance(ObjectInfo.vPos.x, ObjectInfo.vPos.y, Player->GetPos().x(), Player->GetPos().y());
 
 				if (dist > BroadCast_Distance)
@@ -519,8 +594,13 @@ void CZone::Send_SectorInsertPlayer(int beginSectorID, int endSectorID)
 	{
 		if (Util::SectorRange(beginSectorID, endSectorID, SectorID) == false)
 			continue;
-
+#ifdef __DOP__
+		CSector* Sector = GetSector(SectorID);//m_listSector[SectorID];
+		if (Sector == nullptr)
+			continue;
+#else
 		CSectorRef Sector = m_listSector[SectorID];
+#endif	
 		if (Sector->Empty_Player())
 			continue;
 
@@ -608,9 +688,13 @@ void CZone::Send_SectorRemovePlayer(int beginSectorID, int endSectorID)
 	{
 		if (Util::SectorRange(beginSectorID, endSectorID, SectorID) == false)
 			continue;
-
+#ifdef __DOP__
+		CSector* Sector = GetSector(SectorID);//m_listSector[SectorID];
+		if (Sector == nullptr)
+			continue;
+#else
 		CSectorRef Sector = m_listSector[SectorID];
-
+#endif
 		if (Sector->Empty_Player())
 			continue;
 
@@ -742,11 +826,16 @@ bool CZone::Enter()
 
 bool CZone::UpdateSectorID(OUT int& nSectorID, Protocol::D3DVECTOR vPos)
 {
+#ifdef __DOP__
+	CSector* Sector = GetSector(nSectorID);//m_listSector[SectorID];
+	if (Sector == nullptr)
+		return false;;
+#else
 	if (m_listSector.contains(nSectorID) == false)
 		return false;
 
 	CSectorRef Sector = m_listSector[nSectorID];
-
+#endif
 	if (Sector->BelongtoSector(vPos))
 		return false;
 
@@ -957,19 +1046,31 @@ void CZone::BroadCast_Player(Protocol::S_MOVE_PLAYER& movepkt)
 	}
 }
 
-void CZone::Set_AdjSector(float x, float y, CSectorRef Sector)
+void CZone::Set_AdjSector(float x, float y, CSectorRef SectorRef)
 {
 	int nSectorID = 0;
 	auto SectorIDExit = [&](float x, float y) ->int
 		{
 			int SectorID = 0;
+#ifdef __DOP__			
+			for (auto&  Sector : m_vecSector)
+#else
 			for (auto& [sectorID, Sector] : m_listSector)
+#endif
 			{
+#ifdef __DOP__
+				float currnet_x = Sector.StartPos().x();
+				float currnet_y = Sector.StartPos().y();
+
+				if (x == currnet_x && currnet_y == y)
+					SectorID = Sector.GetSecID();
+#else
 				float currnet_x = Sector->StartPos().x();
 				float currnet_y = Sector->StartPos().y();
 
 				if (x == currnet_x && currnet_y == y)
 					SectorID = sectorID;
+#endif	
 			}
 
 			return SectorID;
@@ -977,7 +1078,7 @@ void CZone::Set_AdjSector(float x, float y, CSectorRef Sector)
 
 	nSectorID = SectorIDExit(x, y);
 	if (nSectorID != 0)
-		Sector->Insert_adjSector(nSectorID, x, y);
+		SectorRef->Insert_adjSector(nSectorID, x, y);
 }
 
 void CZone::Insert_ObjecttoSector(Sector::ObjectInfo object)
@@ -1024,7 +1125,13 @@ void CZone::Send_SectorInsertObject()
 
 	for (auto& [SectorID, sData] : InsertList)
 	{
+#ifdef __DOP__
+		CSector* Sector = GetSector(SectorID);//m_listSector[SectorID];
+		if (Sector == nullptr)
+			continue;
+#else
 		CSectorRef Sector = m_listSector[SectorID];
+#endif
 		if (Sector->Empty_Player())
 			continue;
 #ifdef __BROADCAST_DISTANCE__
@@ -1050,8 +1157,18 @@ void CZone::Send_SectorInsertObject()
 				ObjectRef Object = m_nlistObject[ObjectInfo.nObjectType][ObjectInfo.nObjectID];
 				if (Object == nullptr)
 					continue;
+#ifdef __DOP__
+				Sector::MonsterData sData;
+				{
+					sData.nObjectID = ObjectInfo.nObjectID;
+					sData.nSectorID = ObjectInfo.nSectorID;
+					sData.vPos = ObjectInfo.vPos;
+					sData.nZoneID = m_nZoneID;
+				}
+				Sector->Insert_Monster(sData, true);
+#else
 				Sector->Insert(ObjectInfo.nObjectType, Object);
-
+#endif
 				float dist = Util::distance(ObjectInfo.vPos.x, ObjectInfo.vPos.y, Player->GetPos().x(), Player->GetPos().y());
 
 				if (dist > BroadCast_Distance)
@@ -1143,8 +1260,13 @@ void CZone::Send_SectorRemoveObject()
 	//WRITE_LOCK;
 	for (auto& [SectorID, sData] : RemoveList)
 	{
+#ifdef __DOP__
+		CSector* Sector = GetSector(SectorID);//m_listSector[SectorID];
+		if (Sector == nullptr)
+			continue;
+#else
 		CSectorRef Sector = m_listSector[SectorID];
-
+#endif
 		if (Sector->Empty_Player())
 			continue;
 
@@ -1170,8 +1292,11 @@ void CZone::Send_SectorRemoveObject()
 				ObjectRef Object = m_nlistObject[ObjectInfo.nObjectType][ObjectInfo.nObjectID];
 				if (Object == nullptr)
 					continue;
+#ifdef __DOP__				
+				Sector->Delete_Monster(ObjectInfo.nObjectID);
+#else
 				Sector->Delete(ObjectInfo.nObjectType, Object->ObjectID());
-
+#endif
 				float dist = Util::distance(ObjectInfo.vPos.x, ObjectInfo.vPos.y, Player->GetPos().x(), Player->GetPos().y());
 
 				if (dist > BroadCast_Distance)
@@ -1263,7 +1388,13 @@ void CZone::Send_SectorInsertPlayer()
 
 	for (auto& [SectorID, sData] : InsertList)
 	{
+#ifdef __DOP__
+		CSector* Sector = GetSector(SectorID);//m_listSector[SectorID];
+		if (Sector == nullptr)
+			continue;
+#else
 		CSectorRef Sector = m_listSector[SectorID];
+#endif	
 		if (Sector->Empty_Player())
 			continue;
 
@@ -1351,8 +1482,13 @@ void CZone::Send_SectorRemovePlayer()
 	//WRITE_LOCK;
 	for (auto& [SectorID, sData] : RemoveList)
 	{
+#ifdef __DOP__
+		CSector* Sector = GetSector(SectorID);//m_listSector[SectorID];
+		if (Sector == nullptr)
+			continue;
+#else
 		CSectorRef Sector = m_listSector[SectorID];
-
+#endif
 		if (Sector->Empty_Player())
 			continue;
 
@@ -1432,4 +1568,12 @@ void CZone::Send_SectorRemovePlayer()
 			}
 		}
 	}
+}
+
+CSector* CZone::GetSector(int Index)
+{
+	if (Index < 0 || Index >= m_vecSector.size())
+		return nullptr;
+	return &m_vecSector[Index];
+	// TODO: 여기에 return 문을 삽입합니다.
 }

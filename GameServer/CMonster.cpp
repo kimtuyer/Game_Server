@@ -6,7 +6,7 @@
 #include "ConsoleMapViewer.h"
 #include "RandomMove.h"
 class CZone;
-CMonster::CMonster(int nObjectID, int nZoneID,int nSectorID,  Protocol::D3DVECTOR vStartPos,bool bActivate) : 
+CMonster::CMonster(int nObjectID, int nZoneID,int nSectorID,  Protocol::D3DVECTOR vStartPos,bool bActivate) :
  m_ndistribute(Object::Idle, Object::Move),gen(rd())
 {
 	m_bActivate = bActivate;
@@ -30,6 +30,65 @@ CMonster::CMonster(int nObjectID, int nZoneID,int nSectorID,  Protocol::D3DVECTO
 
 	//m_ndistribute(Object::Idle, Object::Move);;
 
+}
+
+CMonster::CMonster(Sector::MonsterData sData, bool bActivate):
+	m_ndistribute(Object::Idle, Object::Move), gen(rd()), pTarget(nullptr)
+{
+	m_bActivate = bActivate;
+
+	m_nObjectID = sData.nObjectID;
+	m_nZoneID = sData.nZoneID;
+	m_nSectorID = sData.nSectorID;
+	m_vPos.set_x(sData.vPos.x);
+	m_vPos.set_y(sData.vPos.y);
+	m_vPos.set_z(sData.vPos.z);
+
+
+	m_nObjectType = Object::Monster;
+	m_eState = Object::Idle;
+	m_nHP = 1;// Util::Random_HP();
+	m_nLevel = 5;// Util::Random_Level();
+	m_nExp = Util::Random_ExpGold(m_nLevel);
+	m_nGold = Util::Random_ExpGold(m_nLevel);
+	m_nAttack = 10;
+
+}
+
+CMonster::CMonster(const CMonster& other):
+m_ndistribute(Object::Idle, Object::Move), gen(rd()), pTarget(nullptr)
+
+{
+	m_bActivate = other.m_bActivate;
+
+
+	m_nObjectID = other.m_nObjectID;
+	m_nZoneID = other.m_nZoneID;
+	m_nSectorID = other.m_nSectorID;
+	m_vPos.set_x(other.m_vPos.x());
+	m_vPos.set_y(other.m_vPos.y());
+	m_vPos.set_z(other.m_vPos.z());
+
+
+	m_nObjectType = Object::Monster;
+	m_eState = Object::Idle;
+	m_nHP = 1;// Util::Random_HP();
+	m_nLevel = 5;// Util::Random_Level();
+	m_nExp = Util::Random_ExpGold(m_nLevel);
+	m_nGold = Util::Random_ExpGold(m_nLevel);
+	m_nAttack = 10;
+}
+
+CMonster& CMonster::operator=(const CMonster& other)
+{
+	if (this != &other) {
+
+		CObject::operator=(other);
+
+		// Copy members
+	}
+	return *this;
+	// TODO: 여기에 return 문을 삽입합니다.
 }
 
 void CMonster::Update()

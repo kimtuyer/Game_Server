@@ -83,7 +83,9 @@ void ProcessGlobalJob(ServerServiceRef& service, uint64 endtime,bool bIOCP)
 
 		ThreadManager::DoGlobalQueueWork();
 
-		std::this_thread::sleep_for(std::chrono::milliseconds(GetTickCount64()-endtime));
+		//std::this_thread::sleep_for(std::chrono::milliseconds(GetTickCount64()-endtime));
+		std::this_thread::sleep_for(std::chrono::milliseconds(1));
+
 	}
 }
 

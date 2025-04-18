@@ -8,6 +8,13 @@ CObject::CObject():m_nZoneID(0),m_bActivate(false),m_nGold(0),m_nExp(0),m_nLevel
 
 }
 
+CObject& CObject::operator=(const CObject& other)
+{
+	// TODO: 여기에 return 문을 삽입합니다.
+	return *this;
+
+}
+
 void CObject::Update()
 {
 }
@@ -47,7 +54,13 @@ bool CObject::Attacked(int nAttack, OUT int& nKillcount)
 		nKillcount++;
 
 		CZoneRef Zone = GZoneManager->GetZone(m_nZoneID);
-		CSectorRef Sector = Zone->GetSector(m_nSectorID);
+#ifdef __DOP__
+		auto Sector = Zone->GetSector(m_nSectorID);
+		if (Sector == nullptr)
+			return false;
+#else
+		CSectorRef Sector = Zone->GetSectorRef(m_nSectorID);
+#endif
 		Sector->Insert_DeadList(m_nObjectID);
 
 		/*

@@ -46,8 +46,13 @@ bool CPlayer::Attack(Protocol::C_ATTACK& pkt)
 	CZoneRef Zone = GZoneManager->GetZone(m_nZoneID);
 	if (Zone == nullptr)
 		ackpkt.set_success(false);
-
-	CSectorRef Sector = Zone->GetSector(m_nSectorID);
+#ifdef __DOP__
+	auto Sector = Zone->GetSector(m_nSectorID);
+	if (Sector == nullptr)
+		return false;
+#else
+	CSectorRef Sector = Zone->GetSectorRef(m_nSectorID);
+#endif	
 	ObjectRef Monster = Sector->GetMonster(pkt.targetid());
 	if (Monster == nullptr)
 		ackpkt.set_success(false);

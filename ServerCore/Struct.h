@@ -105,6 +105,17 @@ namespace Sector
 	};
 
 
+	struct MonsterData
+	{
+		int nSectorID = 0;
+		int nObjectID = 0;
+		int nObjectType = 0;
+		Postion vPos;
+		int nZoneID = 0;
+
+	};
+
+
 }
 
 namespace Item

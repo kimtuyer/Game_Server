@@ -79,13 +79,13 @@ public:
 	bool	UpdateSectorID(OUT int& nSectorID,Protocol::D3DVECTOR vPos);
 
 	int			GetInitSectorID();
-	CSectorRef	GetSector(int SectorID) {
-		
+#ifndef __DOP__
+	CSectorRef	GetSectorRef(int SectorID) {
 		if (m_listSector.contains(SectorID) == false)
 			return  nullptr;
-
 		return m_listSector[SectorID];
 	}
+#endif // __DOP__
 
 	ObjectList& PlayerList()
 	{
@@ -153,7 +153,7 @@ public:
 	//	
 	//}
 
-
+	CSector* GetSector(int Index);
 
 private:	//오브젝트 리스트도 맵 or set이 나은가?
 	
@@ -166,8 +166,13 @@ private:	//오브젝트 리스트도 맵 or set이 나은가?
 	int			m_nMaxUserCnt;
 	atomic<int>	m_nUserCnt;
 	atomic<int> m_nPacketCnt;
-
+#ifdef __DOP__
+	vector<CSector>m_vecSector;
+	map<SectorID, int>m_mapSector;
+#else
 	map<SectorID, CSectorRef> m_listSector;
+#endif // __DOP__
+
 
 	map<SectorID,vector<Sector::ObjectInfo>> m_InsertList;
 	map<SectorID, vector<Sector::ObjectInfo>> m_RemoveList;

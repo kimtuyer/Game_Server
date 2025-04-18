@@ -12,7 +12,10 @@ class CMonster : public CObject
 {
 public:
 	CMonster(int nObjectID,int nZoneID, int nSectorID,Protocol::D3DVECTOR vStartPos, bool bActivate);
+	CMonster(Sector::MonsterData, bool bActivate);
 
+	CMonster(const CMonster& other);
+	CMonster& operator=(const CMonster& other);
 	virtual void Update();
 	virtual void AI_Idle();
 	virtual void AI_Move();

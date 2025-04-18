@@ -9,6 +9,7 @@ class CSector : public JobQueue
 {
 public:
 	CSector(int nSectorID, int nZoneID, Protocol::D3DVECTOR vPos);
+	CSector(const CSector& other);
 
 	void Update();
 
@@ -19,8 +20,10 @@ public:
 
 
 	bool Insert(int nObjectType, ObjectRef& Object);
+	bool Insert_Monster(Sector::MonsterData& sData ,bool bActivate);
 
 	bool Delete(int nObjectType, int objectID);
+	bool Delete_Monster(int nObjectID);
 
 	void SendObjectlist();
 
@@ -79,7 +82,10 @@ public:
 
 	void Insert_DeadList(int ObjectID);
 
-
+	int GetSecID()
+	{
+		return m_nSectorID;
+	}
 	map<int, Protocol::D3DVECTOR> m_adjSectorList;
 private:
 	USE_MANY_LOCKS(lock::End);
@@ -96,6 +102,12 @@ private:
 	//map<ObjectID, ObjectRef > m_nlistObject;
 
 	map<ObjectType, map<ObjectID, ObjectRef>> m_nlistObject;
+#ifdef __DOP__
+	vector<CMonster>m_vecMonsters;
+	map<ObjectID, int>m_mapMonster;
+
+#endif // __DOP__
+	vector<CObject> m_vecObject;
 
 
 	//map<int, ObjectRef> m_listObject;
