@@ -71,16 +71,35 @@ m_ndistribute(Object::Idle, Object::Move), gen(rd()), pTarget(nullptr)
 
 
 	m_nObjectType = Object::Monster;
-	m_eState = Object::Idle;
-	m_nHP = 1;// Util::Random_HP();
-	m_nLevel = 5;// Util::Random_Level();
-	m_nExp = Util::Random_ExpGold(m_nLevel);
-	m_nGold = Util::Random_ExpGold(m_nLevel);
+	m_eState = other.m_eState;
+	m_nHP.store(other.m_nHP);// Util::Random_HP();
+	m_nLevel = other.m_nLevel;// Util::Random_Level();
+	m_nExp = other.m_nExp;
+	m_nGold = other.m_nGold;  //Util::Random_ExpGold(m_nLevel);
 	m_nAttack = 10;
 }
 
 CMonster& CMonster::operator=(const CMonster& other)
 {
+	m_bActivate = other.m_bActivate;
+
+
+	m_nObjectID = other.m_nObjectID;
+	m_nZoneID = other.m_nZoneID;
+	m_nSectorID = other.m_nSectorID;
+	m_vPos.set_x(other.m_vPos.x());
+	m_vPos.set_y(other.m_vPos.y());
+	m_vPos.set_z(other.m_vPos.z());
+
+
+	m_nObjectType = Object::Monster;
+	m_eState = other.m_eState;
+	m_nHP.store(other.m_nHP);// Util::Random_HP();
+	m_nLevel = other.m_nLevel;// Util::Random_Level();
+	m_nExp = other.m_nExp;
+	m_nGold = other.m_nGold;  //Util::Random_ExpGold(m_nLevel);
+	m_nAttack = 10;
+
 	if (this != &other) {
 
 		CObject::operator=(other);
@@ -149,10 +168,13 @@ void CMonster::AI_Idle()
 	CZoneRef pZone = GZoneManager->GetZone(m_nZoneID);
 	if (pZone == nullptr)
 		return;
+#ifdef __DOP__
 	auto Sector = pZone->GetSector(m_nSectorID);
 	if (Sector == nullptr)
 		return;
-
+#else
+	auto Sector = pZone->GetSectorRef(m_nSectorID);
+#endif
 	CObject* pEnemy=Sector->SearchEnemy(this);
 	if (pTarget == nullptr)
 	{

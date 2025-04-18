@@ -8,6 +8,17 @@ CObject::CObject():m_nZoneID(0),m_bActivate(false),m_nGold(0),m_nExp(0),m_nLevel
 
 }
 
+CObject::CObject(const CObject& other)
+{
+	m_bActivate = other.m_bActivate;
+	m_eState = other.m_eState;
+	m_nGold = other.m_nGold;
+	m_nExp = other.m_nExp;
+	m_nLevel = other.m_nLevel;
+	for(int i=0; i<4; i++)
+		m_nStateTime[i] = other.m_nStateTime[i];
+}
+
 CObject& CObject::operator=(const CObject& other)
 {
 	// TODO: 여기에 return 문을 삽입합니다.

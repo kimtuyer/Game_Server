@@ -3,6 +3,7 @@ class CObject : public JobQueue
 {
 public:
 	CObject();
+	CObject(const CObject& other);
 	CObject& operator=(const CObject& other);
 
 	virtual ~CObject()

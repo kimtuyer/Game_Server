@@ -234,7 +234,13 @@ void CZone::Remove(ObjectType eObjectType, int objectID)
 			auto iter = listObject.find(objectID);
 			if (iter != listObject.end())
 			{
+#ifdef __DOP__
 				auto Sector = GetSector((*iter).second->GetSectorID());
+
+#else
+
+				auto Sector = GetSectorRef((*iter).second->GetSectorID());
+#endif // __DOP__
 				if (Sector == nullptr)
 					return;
 				Sector->Delete(Object::Player, objectID);
@@ -1569,7 +1575,7 @@ void CZone::Send_SectorRemovePlayer()
 		}
 	}
 }
-
+#ifdef __DOP__
 CSector* CZone::GetSector(int Index)
 {
 	if (Index < 0 || Index >= m_vecSector.size())
@@ -1577,3 +1583,4 @@ CSector* CZone::GetSector(int Index)
 	return &m_vecSector[Index];
 	// TODO: 여기에 return 문을 삽입합니다.
 }
+#endif

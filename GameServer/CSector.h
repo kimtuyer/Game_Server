@@ -20,10 +20,11 @@ public:
 
 
 	bool Insert(int nObjectType, ObjectRef& Object);
+#ifdef __DOP__
 	bool Insert_Monster(Sector::MonsterData& sData ,bool bActivate);
-
-	bool Delete(int nObjectType, int objectID);
 	bool Delete_Monster(int nObjectID);
+#endif
+	bool Delete(int nObjectType, int objectID);
 
 	void SendObjectlist();
 

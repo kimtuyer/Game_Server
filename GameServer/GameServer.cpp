@@ -259,9 +259,10 @@ void DoZoneJob3(ServerServiceRef& service, int ZoneID,bool bIsZone)
 		uint64 nowtime = GetTickCount64();
 		uint64 elapsedtime = nowtime - lastUpdatetime;
 		if (elapsedtime >= Tick::AI_TICK) {
+			int id = 0;
 			for (auto Zone : Zones)
 			{
-				int id = Zone->ZoneID();
+				 id = Zone->ZoneID();
 
 				if(nbeginSecID==0 && nendSecID==0)
 					Zone->Update();
@@ -269,9 +270,13 @@ void DoZoneJob3(ServerServiceRef& service, int ZoneID,bool bIsZone)
 					Zone->Update_Partial(nbeginSecID,nendSecID);
 
 			}
-			lastUpdatetime = nowtime;
-		}
+			uint64 executetime = GetTickCount64()- nowtime;
 
+			lastUpdatetime = nowtime;
+			//GConsoleViewer->update_threadLatency(LThreadId, LEndTickCount, Zonelist);
+			if(executetime>50)
+			cout << id <<":" << executetime << endl;
+		}
 		uint64 nextUpdateTime = lastUpdatetime + Tick::AI_TICK;
 		uint64 timeUntilNextUpdate = nextUpdateTime - GetTickCount64();
 
@@ -332,9 +337,10 @@ void DoRenderingJob()
 		if (LRenderingTickCount < GetTickCount64())
 		{
 			LRenderingTickCount = GetTickCount64() + Tick::RENDERING_TICK;
+#ifdef __CONSOLE_UI__
 
 			GConsoleViewer->renderFrame();
-
+#endif
 			//락 프리 기법 렌더링
 			//GConsoleViewer->processUpdates();
 		}

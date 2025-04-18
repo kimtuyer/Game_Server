@@ -57,10 +57,10 @@ ConsoleMapViewer::ConsoleMapViewer()
 
 	// 초기 화면 설정
 	clearScreen();
-	//#ifdef __CONSOLE_UI__
+	#ifdef __CONSOLE_UI__
 	drawZoneBorders();
-	//#endif // __CONSOLE_UI__
 	drawZoneInfo();
+	#endif // __CONSOLE_UI__
 	//pendingUpdates.clear();
 	//currentDisplay.clear();
 }

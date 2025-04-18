@@ -152,9 +152,10 @@ public:
 	//
 	//	
 	//}
+#ifdef __DOP__
 
 	CSector* GetSector(int Index);
-
+#endif
 private:	//오브젝트 리스트도 맵 or set이 나은가?
 	
 	//오브젝트는 타입에 따라 리스트를 다르게 가져가는게 나은가

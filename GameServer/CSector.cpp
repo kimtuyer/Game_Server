@@ -23,23 +23,15 @@ CSector::CSector(const CSector& other)
 void CSector::Update()
 {
 #ifdef __DOP__
-	vector<CMonster>vecMonsterlist;
-	{
-		int lock = lock::Monster;
-		READ_LOCK_IDX(lock);
-		vecMonsterlist = m_vecMonsters;
-	}
 #else
-
-
-	vector<CMonster*> vecMonsterlist;
+	vector<CMonster*> m_vecMonsters;
 	{
 		int lock = lock::Monster;
 		READ_LOCK_IDX(lock);
 		for (auto& [objectid, Object] : m_nlistObject[Object::Monster])
 		{
 			CMonster* pMonster = static_cast<CMonster*>(Object.get());
-			vecMonsterlist.push_back(pMonster);
+			m_vecMonsters.push_back(pMonster);
 			// 섹터에 있는 몬스터 정보는 언제 지워야하나?
 			// Update 다 끝난후, 삽입,삭제리스트 처리할때 같이 지움.
 			 //m_nlistObject[Object::Monster].erase(objectid);
@@ -47,7 +39,7 @@ void CSector::Update()
 	}
 
 #endif // __DOP__
-	for (auto& pMonster : vecMonsterlist)
+	for (auto& pMonster : m_vecMonsters)
 	{
 #ifdef __DOP__
 		pMonster.Update();
@@ -56,7 +48,7 @@ void CSector::Update()
 
 #endif	
 	}
-
+	
 	int nowtime = GetTickCount64();
 	////매번 업데이트 돌때마다 보내주면 부하?
 	{
@@ -133,6 +125,7 @@ bool CSector::Insert(int nObjectType, ObjectRef& Object)
 	
 	return true;
 }
+#ifdef __DOP__
 
 bool CSector::Insert_Monster(Sector::MonsterData& sData, bool bActivate)
 {
@@ -142,7 +135,7 @@ bool CSector::Insert_Monster(Sector::MonsterData& sData, bool bActivate)
 
 	return true;
 }
-
+#endif
 bool CSector::Delete(int nObjectType, int objectID)
 {
 	int lock = lock::Object;
@@ -150,7 +143,7 @@ bool CSector::Delete(int nObjectType, int objectID)
 	m_nlistObject[nObjectType].erase(objectID);
 	return true;
 }
-
+#ifdef __DOP__
 bool CSector::Delete_Monster(int nObjectID)
 {
 	int lock = lock::Object;
@@ -161,7 +154,7 @@ bool CSector::Delete_Monster(int nObjectID)
 	m_vecMonsters[m_mapMonster[nObjectID]].SetActivate(false);
 
 }
-
+#endif
 void CSector::SendObjectlist()
 {
 }
