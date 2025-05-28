@@ -22,10 +22,12 @@ CZone::CZone(int nMaxUserCnt, int nZoneID, Protocol::D3DVECTOR vPos)
 	*/
 	//임시 활성화,몹 테스트
 	m_bActivate = true;
-
+#ifdef __DOP__
+	m_vecSector.resize(SECTORS_PER_SIDE * SECTORS_PER_SIDE);
+#endif
 	int nSectorid = 1;
-	for (int HEIGHT = 1; HEIGHT <= 4; HEIGHT++)	//콘솔 세로 1줄 개수
-		for (int WIDTH = 1; WIDTH <= 4; WIDTH++) //콘솔 가로 1줄 개수
+	for (int HEIGHT = 1; HEIGHT <= SECTORS_PER_SIDE; HEIGHT++)	//콘솔 세로 1줄 개수
+		for (int WIDTH = 1; WIDTH <= SECTORS_PER_SIDE; WIDTH++) //콘솔 가로 1줄 개수
 		{
 			int col = 0;
 
@@ -46,7 +48,11 @@ CZone::CZone(int nMaxUserCnt, int nZoneID, Protocol::D3DVECTOR vPos)
 			startpos.set_x(x);
 			startpos.set_y(y);
 #ifdef __DOP__
-			m_vecSector.emplace_back(nSectorid, m_nZoneID, startpos);
+			//m_vecSector.emplace_back(nSectorid, m_nZoneID, startpos);
+			m_vecSector[nSectorid-1].m_nSectorID = nSectorid;
+			m_vecSector[nSectorid-1].m_nZoneID = m_nZoneID;
+			m_vecSector[nSectorid-1].SetStartpos(startpos);
+
 			int index = (int)m_vecSector.size() - 1;
 			m_mapSector.insert({ nSectorid,index });
 #else
@@ -58,14 +64,14 @@ CZone::CZone(int nMaxUserCnt, int nZoneID, Protocol::D3DVECTOR vPos)
 
 	// 인접 섹터  리스트 구하기
 #ifdef __DOP__
-	for (auto& Sector : m_vecSector)
+	for (int i=0; i<m_vecSector.size(); i++)
 #else
 	for (auto& [sectorID, Sector] : m_listSector)
 #endif	
 	{
 #ifdef __DOP__
-		float currnet_x = Sector.StartPos().x();
-		float currnet_y = Sector.StartPos().y();
+		float currnet_x = m_vecSector[i].StartPos().x();
+		float currnet_y = m_vecSector[i].StartPos().y();
 #else
 		float currnet_x = Sector->StartPos().x();
 		float currnet_y = Sector->StartPos().y();
@@ -73,8 +79,12 @@ CZone::CZone(int nMaxUserCnt, int nZoneID, Protocol::D3DVECTOR vPos)
 		int SectorID = 0;
 #ifdef __DOP__
 		CSectorRef pSector = MakeShared<CSector>(Sector);
-#endif	
+#endif
+#ifdef __DOP__
+		auto Dir = [&](CSector& pSector)
+#else
 		auto Dir = [&]()
+#endif
 			{
 				for (auto& [x, y] : directions)
 				{
@@ -88,7 +98,12 @@ CZone::CZone(int nMaxUserCnt, int nZoneID, Protocol::D3DVECTOR vPos)
 #endif
 				}
 			};
+#ifdef __DOP__
+		Dir(m_vecSector[i]);
+#else
 		Dir();
+
+#endif
 	}
 	//	//위
 	//	x = currnet_x;
@@ -1052,7 +1067,11 @@ void CZone::BroadCast_Player(Protocol::S_MOVE_PLAYER& movepkt)
 	}
 }
 
+#ifdef __DOP__			
+void CZone::Set_AdjSector(float x, float y, CSector& SectorRef)
+#else
 void CZone::Set_AdjSector(float x, float y, CSectorRef SectorRef)
+#endif
 {
 	int nSectorID = 0;
 	auto SectorIDExit = [&](float x, float y) ->int
@@ -1084,7 +1103,12 @@ void CZone::Set_AdjSector(float x, float y, CSectorRef SectorRef)
 
 	nSectorID = SectorIDExit(x, y);
 	if (nSectorID != 0)
+#ifdef __DOP__
+		SectorRef.Insert_adjSector(nSectorID, x, y);
+#else
 		SectorRef->Insert_adjSector(nSectorID, x, y);
+
+#endif
 }
 
 void CZone::Insert_ObjecttoSector(Sector::ObjectInfo object)

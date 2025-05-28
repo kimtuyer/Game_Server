@@ -130,9 +130,11 @@ public:
 		return m_vStartpos;
 	}
 
-
-	void Set_AdjSector(float x, float y , CSectorRef);
-
+#ifdef __DOP__			
+	void Set_AdjSector(float x, float y , CSector&);
+#else
+	void Set_AdjSector(float x, float y, CSectorRef);
+#endif
 
 
 	void Insert_ObjecttoSector(Sector::ObjectInfo object);

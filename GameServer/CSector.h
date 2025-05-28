@@ -8,6 +8,9 @@ class ClientPacketHandler;
 class CSector : public JobQueue
 {
 public:
+#ifdef __DOP__
+	CSector();
+#endif
 	CSector(int nSectorID, int nZoneID, Protocol::D3DVECTOR vPos);
 	CSector(const CSector& other);
 
@@ -88,14 +91,14 @@ public:
 		return m_nSectorID;
 	}
 	map<int, Protocol::D3DVECTOR> m_adjSectorList;
+	int m_nZoneID;
+	int	m_nSectorID;
+	Protocol::D3DVECTOR m_vStartpos;
 private:
 	USE_MANY_LOCKS(lock::End);
 	
 	int64 m_lBroadTime = 0;
-	int m_nZoneID;
-	int	m_nSectorID;
 	bool m_bActivate;
-	Protocol::D3DVECTOR m_vStartpos;
 
 
 	map<ObjectID, int64>		m_DeadMonsterList;
