@@ -6,6 +6,11 @@
 
 #include "ClientPacketHandler.h"
 using namespace LOCK;
+#ifdef __DOP__
+CSector::CSector()
+{
+}
+#endif
 CSector::CSector(int nSectorID, int nZoneID, Protocol::D3DVECTOR vPos)
 	: m_nSectorID(nSectorID), m_vStartpos(vPos), m_bActivate(true), m_nZoneID(nZoneID)
 {

@@ -85,12 +85,12 @@ public:
 
 
 	void drawSectorBorders(int startX, int startY) {
-		int sectorWidth = (ZONE_WIDTH) / 4;
-		int sectorHeight = (ZONE_HEIGHT) / 4;
+		int sectorWidth = (ZONE_WIDTH) / SECTORS_PER_SIDE;
+		int sectorHeight = (ZONE_HEIGHT) / SECTORS_PER_SIDE;
 
 		// 섹터 세로 구분선
 		for (int i = 1; i < SECTORS_PER_SIDE; i++) {
-			int x = startX + i * sectorWidth;
+			int x = startX + i * Sector_WIDTH;
 			for (int y = startY + 1; y < startY + ZONE_HEIGHT; y++) {
 				gotoxy(x, y);
 				std::cout << ":";
@@ -99,23 +99,23 @@ public:
 
 		// 섹터 가로 구분선
 		for (int i = 1; i < SECTORS_PER_SIDE; i++) {
-			int y = startY + i * sectorHeight;
+			float y = startY + i * Sector_HEIGHT;
 			for (int x = startX + 1; x < startX + ZONE_WIDTH; x++) {
 				gotoxy(x, y);
 				std::cout << ".";
 			}
 		}
 
-		// 섹터 번호 표시
-		for (int i = 0; i < SECTORS_PER_SIDE; i++) {
-			for (int j = 0; j < SECTORS_PER_SIDE; j++) {
-				int x = startX + j * sectorWidth + sectorWidth / 2;
-				int y = startY + i * sectorHeight + sectorHeight / 2;
-				gotoxy(x, y);
-				int sectorNum = i * SECTORS_PER_SIDE + j;
-				std::cout << sectorNum;
-			}
-		}
+		//// 섹터 번호 표시
+		//for (int i = 0; i < SECTORS_PER_SIDE; i++) {
+		//	for (int j = 0; j < SECTORS_PER_SIDE; j++) {
+		//		int x = startX + j * sectorWidth + sectorWidth / 2;
+		//		int y = startY + i * sectorHeight + sectorHeight / 2;
+		//		gotoxy(x, y);
+		//		int sectorNum = i * SECTORS_PER_SIDE + j;
+		//		std::cout << sectorNum;
+		//	}
+		//}
 	}
 
 	void drawZoneBorders() {
