@@ -54,13 +54,12 @@ void GameSession::OnRecvPacket(BYTE* buffer, int32 len)
 		/*
 			해당 Zone 큐에 넣고 나옴.
 		*/
-		
-		//zoneQueues[Zoneid]->jobs.push(PacketInfo(session, buffer, len));
-
+#ifdef __ZONE_THREAD_VER1__
+		zoneQueues[Zoneid]->jobs.push(PacketInfo(session, buffer, len));
+#endif
 	}
 		ClientPacketHandler::HandlePacket(session, buffer, len);
-
-#endif // __ZONE_THREAD_VER3__
+#else
 #ifdef __ZONE_THREAD_VER1__
 	if (header->id != PKT_C_LOGIN)
 	{
@@ -82,6 +81,7 @@ void GameSession::OnRecvPacket(BYTE* buffer, int32 len)
 #ifdef __ZONE_THREAD_VER2__
 	ClientPacketHandler::HandlePacket(session, buffer, len);
 #endif
+#endif // __ZONE_THREAD_VER3__
 	// TODO : packetId 대역 체크
 }
 

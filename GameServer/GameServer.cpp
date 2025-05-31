@@ -146,9 +146,9 @@ void DoZoneJob(ServerServiceRef& service, int ZoneID)
 					ClientPacketHandler::HandlePacket(job.m_session, job.m_buffer, job.m_len);
 				else
 				{
-					ThreadManager::DistributeReservedJobs();
-
-					ThreadManager::DoGlobalQueueWork();
+					//ThreadManager::DistributeReservedJobs();
+					//
+					//ThreadManager::DoGlobalQueueWork();
 
 					std::this_thread::sleep_for(std::chrono::milliseconds(1));
 				}
@@ -158,9 +158,9 @@ void DoZoneJob(ServerServiceRef& service, int ZoneID)
 					LPacketCount++;
 				else
 				{
-					ThreadManager::DistributeReservedJobs();
-
-					ThreadManager::DoGlobalQueueWork();
+					//ThreadManager::DistributeReservedJobs();
+					//
+					//ThreadManager::DoGlobalQueueWork();
 
 					std::this_thread::sleep_for(std::chrono::milliseconds(1));
 				}
@@ -173,15 +173,18 @@ void DoZoneJob(ServerServiceRef& service, int ZoneID)
 	}
 }
 
+#ifdef __ZONE_THREAD_VER3__
 
 void DoZoneJob3(ServerServiceRef& service, int ZoneID,bool bIsZone)
 {
-	threadRebalance.insert({LThreadId, false});
-	if (bIsZone)
-	{
-		zoneQueues[ZoneID] = MakeShared<ZoneQueue>();
-		auto& ZoneQueue = zoneQueues[ZoneID];
-	}
+	threadRebalance.insert({LThreadId, bIsZone });
+	zoneQueues[ZoneID] = MakeShared<ZoneQueue>();
+	auto& ZoneQueue = zoneQueues[ZoneID];
+	//if (bIsZone)
+	//{
+	//	zoneQueues[ZoneID] = MakeShared<ZoneQueue>();
+	//	auto& ZoneQueue = zoneQueues[ZoneID];
+	//}
 	vector<CZoneRef> Zones;
 	vector<pair<int, int>> Zonelist;
 	uint64 lastUpdatetime = 0;
@@ -274,8 +277,8 @@ void DoZoneJob3(ServerServiceRef& service, int ZoneID,bool bIsZone)
 
 			lastUpdatetime = nowtime;
 			//GConsoleViewer->update_threadLatency(LThreadId, LEndTickCount, Zonelist);
-			if(executetime>50)
-			cout << id <<":" << executetime << endl;
+			//if(executetime>50)
+			//cout << id <<":" << executetime << endl;
 		}
 		uint64 nextUpdateTime = lastUpdatetime + Tick::AI_TICK;
 		uint64 timeUntilNextUpdate = nextUpdateTime - GetTickCount64();
@@ -285,44 +288,52 @@ void DoZoneJob3(ServerServiceRef& service, int ZoneID,bool bIsZone)
 			uint64 endTime = timeUntilNextUpdate + GetTickCount64();
 
 			while (GetTickCount64() < endTime)
-			{				
-				if (Zones.empty())
-				{
-					ProcessGlobalJob(service, endTime,true);
-				}
-				else
-				{
-					ProcessGlobalJob(service, endTime,false);
-
+			{
 #ifdef __ZONE_THREAD_VER1__
+				if (bIsZone)
+				{
 					PacketInfo job;
 					if (ZoneQueue->jobs.try_pop(job))
 						ClientPacketHandler::HandlePacket(job.m_session, job.m_buffer, job.m_len);
-					if (GetTickCount64() < endTime)
+					else //(GetTickCount64() < endTime)
 					{
-					
+
 						ThreadManager::DistributeReservedJobs();
-					
+						//
 						ThreadManager::DoGlobalQueueWork();
-					
+
 						std::this_thread::sleep_for(std::chrono::milliseconds(1));
-					
+
 					}
-#endif // __ZONE_THREAD_VER1__
+				}
+				else
+				{
+					ThreadManager::DistributeReservedJobs();
+					//
+					ThreadManager::DoGlobalQueueWork();
+
+					std::this_thread::sleep_for(std::chrono::milliseconds(1));
 				}
 
+
+#else
+				ThreadManager::DistributeReservedJobs();
+				//
+				ThreadManager::DoGlobalQueueWork();
+
+				std::this_thread::sleep_for(std::chrono::milliseconds(1));
+
+#endif // __ZONE_THREAD_VER1__
 			}
+
+		
+			//LEndTickCount = ::GetTickCount64()- nowtime; //+ Tick::WORKER_TICK;
+			//GConsoleViewer->update_threadLatency(LThreadId, LEndTickCount,Zonelist);
 		}
-
-		LEndTickCount = ::GetTickCount64()- nowtime; //+ Tick::WORKER_TICK;
-		//GConsoleViewer->update_threadLatency(LThreadId, LEndTickCount,Zonelist);
-
 	}
 
-
-
-
 }
+#endif
 void DoRenderingJob()
 {
 	while (true)
@@ -381,29 +392,45 @@ int main()
 	//#endif
 	int zoneID = 1;
 #ifdef __ZONE_THREAD_VER3__
-	for (int32 i = 0; i < Thread::IOCP_THREADS; i++)
+	for (int32 i = 0; i < nThreadCnt; i++)
 	{
-			GThreadManager->Launch([&service]()
-				{
-					DoIOCPJob(service);
-				});
-
-	}
-
-	for (int32 i = 0; i < nThreadCnt-Thread::IOCP_THREADS; i++)
-	{
-		
-		GThreadManager->Launch([&service,&zoneID]()
+		GThreadManager->Launch([&service, i, &zoneID]()
 			{
-				if(zoneID <= g_nZoneCount)
+				if (i < Thread::IOCP_THREADS)
+					DoIOCPJob(service);
+				else if (i < g_nZoneCount + Thread::IOCP_THREADS)
+				{
+
 					DoZoneJob3(service, zoneID++,true);
-				else
-					DoZoneJob3(service, zoneID++, false);
+				}
 
 			});
-
 		Thread::ZONE_THREADS++;
+
 	}
+	//for (int32 i = 0; i < Thread::IOCP_THREADS; i++)
+	//{
+	//		GThreadManager->Launch([&service]()
+	//			{
+	//				DoIOCPJob(service);
+	//			});
+	//
+	//}
+	//
+	//for (int32 i = 0; i < nThreadCnt-Thread::IOCP_THREADS; i++)
+	//{
+	//	
+	//	GThreadManager->Launch([&service,&zoneID]()
+	//		{
+	//			if(zoneID <= g_nZoneCount)
+	//				DoZoneJob3(service, zoneID++,true);
+	//			//else
+	//			//	DoZoneJob3(service, zoneID++, false);
+	//
+	//		});
+	//
+	//	Thread::ZONE_THREADS++;
+	//}
 
 
 

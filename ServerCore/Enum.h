@@ -20,14 +20,14 @@ static 	int	g_nConnectedUser = 0;
 static	int	g_nThreadCnt = 0;
 namespace Thread {
 
-	static const int IOCP_THREADS = 6;//16  cpu코어 개수 따라 맞춰서 설정
+	static const int IOCP_THREADS = 16;//6  cpu코어 개수 따라 맞춰서 설정
 	static	int	ZONE_THREADS = 0;
 
 }
 
 namespace Zone
 {
-	static const	int	g_nZoneCount = 15;
+	static const	int	g_nZoneCount = 20;
 	static	const	int g_nZoneUserMax = 250; //5000 테스트시 존당 최소 250이상 설정필요
 	static const	int MonsterMaxCount = 200;
 
@@ -36,7 +36,7 @@ namespace Zone
 	static const int ZONE_WIDTH = 30;  // 각 존의 가로 크기
 	static const int ZONE_HEIGHT = 16; // 각 존의 세로 크기
 	static const int ZONES_PER_ROW = 5;
-	static const int ZONES_PER_COL = 3;
+	static const int ZONES_PER_COL = g_nZoneCount/5;  //3
 	static const int SECTORS_PER_SIDE = 4;
 
 
