@@ -351,7 +351,7 @@ bool Handle_C_CHAT(PacketSessionRef& session, Protocol::C_CHAT& pkt)
 	//Room->DoTimer(3000, CM, sendBuffer);
 	//GRoom->DoTimer(3000 ,&Room::Broadcast, sendBuffer);
 
-	GRoom->DoAsync(&Room::Broadcast, sendBuffer);
+	//GRoom->DoAsync(&Room::Broadcast, sendBuffer);
 
 	return true;
 }

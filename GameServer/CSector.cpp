@@ -112,6 +112,48 @@ bool CSector::FindObject(int objectID)
 	return false;
 }
 
+ObjectRef CSector::Object(int objectID, int ObjectType)
+{
+	if (ObjectType <  Object::Player || ObjectType > Object::Monster)
+		return nullptr;
+
+	if (ObjectType == Object::Player)
+	{
+#ifdef __ZONE_THREAD_VER1__
+		// lock free
+#else
+		int lock = lock::Player;
+
+#endif // __ZONE_THREAD_VER1__
+
+		if (m_nlistObject[Object::Player].contains(objectID))
+		{
+			return (m_nlistObject[Object::Player][objectID]);
+		}
+		else
+			return nullptr;
+	}
+
+	else if (ObjectType == Object::Monster)
+	{
+#ifdef __ZONE_THREAD_VER1__
+		// lock free
+#else
+		int lock = lock::Monster;
+
+#endif // __ZONE_THREAD_VER1__
+
+		if (m_nlistObject[Object::Monster].contains(objectID))
+		{
+			return (m_nlistObject[Object::Monster][objectID]);
+		}
+		else
+			return nullptr;
+	}
+
+	return nullptr;
+}
+
 ObjectRef CSector::GetMonster(int objectID)
 {
 	int lock = lock::Monster;

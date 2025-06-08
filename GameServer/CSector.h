@@ -19,6 +19,8 @@ public:
 	bool BelongtoSector(Protocol::D3DVECTOR vPos);
 
 	bool FindObject(int objectID);
+	ObjectRef Object(int objectID,int ObjectType);
+
 	ObjectRef GetMonster(int objectID);
 
 

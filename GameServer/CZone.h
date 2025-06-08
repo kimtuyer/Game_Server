@@ -118,6 +118,7 @@ public:
 
 	void BroadCast_Player(Protocol::S_MOVE_PLAYER& movepkt);
 
+	void BroadCast(vector<CPlayer*> list, SendBufferRef sendBuffer);
 
 
 	void	SetStartpos(Protocol::D3DVECTOR vPos)

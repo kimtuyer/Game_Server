@@ -53,25 +53,45 @@ bool CPlayer::Attack(Protocol::C_ATTACK& pkt)
 #else
 	CSectorRef Sector = Zone->GetSectorRef(m_nSectorID);
 #endif	
-	ObjectRef Monster = Sector->GetMonster(pkt.targetid());
-	if (Monster == nullptr)
+
+	ObjectRef pObject;
+	switch (pkt.objecttype())
+	{
+	case Object::Player:
+		pObject = Sector->Object(pkt.targetid(), Object::Player);
+		if (pObject == nullptr)
+			ackpkt.set_success(false);
+		break;
+	case Object::Monster:
+		pObject = Sector->GetMonster(pkt.targetid());
+		if (pObject == nullptr)
+			ackpkt.set_success(false);
+		break;
+	default:
 		ackpkt.set_success(false);
-	else
+		break;
+	}
+	if(pkt.objecttype()== Object::Monster)
+
+	//ObjectRef Monster = Sector->GetMonster(pkt.targetid());
+	//if (Monster == nullptr)
+	//	ackpkt.set_success(false);
+	//else
 	{
 		/**/
-		float dist = Util::distance(m_vPos.x(), m_vPos.y(), Monster->GetPos().x(), Monster->GetPos().y());
+		float dist = Util::distance(m_vPos.x(), m_vPos.y(), pObject->GetPos().x(), pObject->GetPos().y());
 
 		if (dist > Zone::BroadCast_Distance)
 			ackpkt.set_success(false);
 
-		if (Monster->Attacked(m_nAttack, nKill) == false)
+		if (pObject->Attacked(m_nAttack, nKill) == false)
 			ackpkt.set_success(false);
 
 		if (nKill > 0)
 		{
 			//static_cast<CMonster*>(Monster.get())->GetGold();
-			int nGainGold=(Monster.get())->GetGold();
-			int nGainExp =(Monster.get())->GetGold();
+			int nGainGold=(pObject.get())->GetGold();
+			int nGainExp =(pObject.get())->GetGold();
 
 			m_nGold += nGainGold;
 			m_nExp += nGainExp;

@@ -4,6 +4,7 @@
 #include "CMonster.h"
 #include "GameSession.h"
 #include "ClientPacketHandler.h"
+#include "CSector.h"
 using namespace Zone;
 CZone::CZone(int nMaxUserCnt, int nZoneID, Protocol::D3DVECTOR vPos)
 	:m_bActivate(false), m_nMaxUserCnt(nMaxUserCnt), m_nZoneID(nZoneID)
@@ -1067,6 +1068,18 @@ void CZone::BroadCast_Player(Protocol::S_MOVE_PLAYER& movepkt)
 	}
 }
 
+void CZone::BroadCast(vector<CPlayer*> list, SendBufferRef sendBuffer)
+{
+	for (auto player : list)
+	{
+		if (player->GetActivate() == false)
+			continue;
+
+		player->ownerSession.lock()->Send(sendBuffer);
+	}
+
+}
+
 #ifdef __DOP__			
 void CZone::Set_AdjSector(float x, float y, CSector& SectorRef)
 #else
@@ -1435,19 +1448,23 @@ void CZone::Send_SectorInsertPlayer()
 		//	};
 
 		auto Playerlist = Sector->PlayerList();
+
+		int nSendCnt = 0;
+		int nPlayerCnt = Playerlist.size();
+		vector<CPlayer*> BroadCastlist;
 		for (auto& [playerid, Player] : Playerlist)
 		{
 			int64 nowtime = GetTickCount64();
 			Protocol::S_PLAYER_LIST objpkt;
 			objpkt.set_sendtime(nowtime);
 
-			int nCnt = BroadCast_Cnt;
+			//int nCnt = BroadCast_Cnt;
 
 			bool bSend = false;
 			for (auto& ObjectInfo : sData)
 			{
-				if (nCnt <= 0)
-					break;
+				//if (nCnt <= 0)
+				//	break;
 				ObjectRef Object = m_nlistObject[ObjectInfo.nObjectType][ObjectInfo.nObjectID];
 				if (Object == nullptr)
 					continue;
@@ -1461,7 +1478,7 @@ void CZone::Send_SectorInsertPlayer()
 				}
 
 				bSend = true;
-				nCnt--;
+				//nCnt--;
 
 				Protocol::Object_Pos objectPos;
 				objectPos.set_id(ObjectInfo.nObjectID);
@@ -1488,14 +1505,26 @@ void CZone::Send_SectorInsertPlayer()
 			CPlayer* pPlayer = static_cast<CPlayer*>(Player.get());
 			if (pPlayer->ownerSession.expired() == false)
 			{
-				pPlayer->ownerSession.lock()->Send(sendBuffer);
+				if (nPlayerCnt >= BroadCast_Cnt)
+					BroadCastlist.push_back(pPlayer);
+				else
+					pPlayer->ownerSession.lock()->Send(sendBuffer);
 			}
 			else
 			{
 				pPlayer->SetActivate(false);
 				///세션 소멸, 해당 플레이어 객체도
 			}
+			nSendCnt++;
+
+			if (nSendCnt == nPlayerCnt)
+			{
+				if (BroadCastlist.empty() == false)
+					DoTimer(0,&CZone::BroadCast, BroadCastlist,sendBuffer);
+			}
 		}
+	
+
 	}
 }
 
@@ -1530,19 +1559,22 @@ void CZone::Send_SectorRemovePlayer()
 
 		
 		auto Playerlist = Sector->PlayerList();
+		int nSendCnt = 0;
+		int nPlayerCnt = Playerlist.size();
+		vector<CPlayer*> BroadCastlist;
 		for (auto& [playerid, Player] : Playerlist)
 		{
 			int64 nowtime = GetTickCount64();
 
 			Protocol::S_PLAYER_REMOVE_ACK objpkt;
 			objpkt.set_sendtime(nowtime);
-			int nCnt = BroadCast_Cnt;
+			//int nCnt = BroadCast_Cnt;
 
 			bool bSend = false;
 			for (auto& ObjectInfo : sData)
 			{
-				if (nCnt <= 0)
-					break;
+				//if (nCnt <= 0)
+				//	break;
 
 				ObjectRef Object = m_nlistObject[ObjectInfo.nObjectType][ObjectInfo.nObjectID];
 				if (Object == nullptr)
@@ -1569,7 +1601,7 @@ void CZone::Send_SectorRemovePlayer()
 
 				objpkt.add_pos()->CopyFrom(objectPos);
 
-				nCnt--;
+				//nCnt--;
 			}
 			if (bSend == false)
 				continue;
@@ -1589,12 +1621,22 @@ void CZone::Send_SectorRemovePlayer()
 			CPlayer* pPlayer = static_cast<CPlayer*>(Player.get());
 			if (pPlayer->ownerSession.expired() == false)
 			{
-				pPlayer->ownerSession.lock()->Send(sendBuffer);
+				if (nPlayerCnt >= BroadCast_Cnt)
+					BroadCastlist.push_back(pPlayer);
+				else
+					pPlayer->ownerSession.lock()->Send(sendBuffer);
 			}
 			else
 			{
 				pPlayer->SetActivate(false);
 				///세션 소멸, 해당 플레이어 객체도
+			}
+			nSendCnt++;
+
+			if (nSendCnt == nPlayerCnt)
+			{
+				if (BroadCastlist.empty() == false)
+					DoTimer(0, &CZone::BroadCast, BroadCastlist, sendBuffer);
 			}
 		}
 	}

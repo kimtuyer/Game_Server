@@ -72,20 +72,24 @@ void DoWorkerJob(ServerServiceRef& service)
 	}
 }
 
-void ProcessGlobalJob(ServerServiceRef& service, uint64 endtime,bool bIOCP)
+void BroadCastJob(ServerServiceRef& service,bool bIOCP=false)
 {
-	if (bIOCP == true)
-		service->GetIocpCore()->Dispatch(1);
 
-	if (GetTickCount64() < endtime)
+	while (true)
 	{
-		ThreadManager::DistributeReservedJobs();
+		if (bIOCP == true)
+			service->GetIocpCore()->Dispatch(1);
 
-		ThreadManager::DoGlobalQueueWork();
+		//if (GetTickCount64() < endtime)
+		{
+			ThreadManager::DistributeReservedJobs();
 
-		//std::this_thread::sleep_for(std::chrono::milliseconds(GetTickCount64()-endtime));
-		std::this_thread::sleep_for(std::chrono::milliseconds(1));
+			ThreadManager::DoGlobalQueueWork();
 
+			//std::this_thread::sleep_for(std::chrono::milliseconds(GetTickCount64()-endtime));
+			std::this_thread::sleep_for(std::chrono::milliseconds(1));
+
+		}
 	}
 }
 
@@ -146,9 +150,9 @@ void DoZoneJob(ServerServiceRef& service, int ZoneID)
 					ClientPacketHandler::HandlePacket(job.m_session, job.m_buffer, job.m_len);
 				else
 				{
-					//ThreadManager::DistributeReservedJobs();
+					ThreadManager::DistributeReservedJobs();
 					//
-					//ThreadManager::DoGlobalQueueWork();
+					ThreadManager::DoGlobalQueueWork();
 
 					std::this_thread::sleep_for(std::chrono::milliseconds(1));
 				}
@@ -435,18 +439,21 @@ int main()
 
 
 #else
+	int nIOCPThreadCnt = nThreadCnt / 3; //전체 스레드수의 30%  IOCP스레드 배정
 	for (int32 i = 0; i < nThreadCnt; i++)
 	{
-		GThreadManager->Launch([&service, i, &zoneID]()
+		GThreadManager->Launch([&service, i, &zoneID, nIOCPThreadCnt]()
 			{
 #ifdef __ZONE_THREAD__
-				if (i < Thread::IOCP_THREADS)
+				if (i < nIOCPThreadCnt)
 					DoIOCPJob(service);
-				else if (i < g_nZoneCount + Thread::IOCP_THREADS)
+				else if (i < g_nZoneCount + nIOCPThreadCnt)
 				{
 
 					DoZoneJob(service, zoneID++);
 				}
+				else
+					BroadCastJob(service);
 #else
 				DoWorkerJob(service);
 #endif // __ZONE_THREAD__

@@ -16,12 +16,13 @@ enum : uint16
 	PKT_S_MOVE_PLAYER = 1007,
 	PKT_C_ATTACK = 1008,
 	PKT_S_ATTACK_ACK = 1009,
-	PKT_S_OBJ_LIST = 1010,
-	PKT_S_OBJ_REMOVE_ACK = 1011,
-	PKT_S_PLAYER_LIST = 1012,
-	PKT_S_PLAYER_REMOVE_ACK = 1013,
-	PKT_C_CHAT = 1014,
-	PKT_S_CHAT = 1015,
+	PKT_S_ATTACK_REACT_ACK = 1010,
+	PKT_S_OBJ_LIST = 1011,
+	PKT_S_OBJ_REMOVE_ACK = 1012,
+	PKT_S_PLAYER_LIST = 1013,
+	PKT_S_PLAYER_REMOVE_ACK = 1014,
+	PKT_C_CHAT = 1015,
+	PKT_S_CHAT = 1016,
 };
 
 // Custom Handlers
@@ -57,6 +58,7 @@ static SendBufferRef MakeSendBuffer(Protocol::S_MOVE_ACK&pkt, uint16 zoneID) { r
 static SendBufferRef MakeSendBuffer(Protocol::S_MOVE_MONSTER&pkt, uint16 zoneID) { return MakeSendBuffer(pkt, PKT_S_MOVE_MONSTER, zoneID); }
 static SendBufferRef MakeSendBuffer(Protocol::S_MOVE_PLAYER&pkt, uint16 zoneID) { return MakeSendBuffer(pkt, PKT_S_MOVE_PLAYER, zoneID); }
 static SendBufferRef MakeSendBuffer(Protocol::S_ATTACK_ACK&pkt, uint16 zoneID) { return MakeSendBuffer(pkt, PKT_S_ATTACK_ACK, zoneID); }
+static SendBufferRef MakeSendBuffer(Protocol::S_ATTACK_REACT_ACK&pkt, uint16 zoneID) { return MakeSendBuffer(pkt, PKT_S_ATTACK_REACT_ACK, zoneID); }
 static SendBufferRef MakeSendBuffer(Protocol::S_OBJ_LIST&pkt, uint16 zoneID) { return MakeSendBuffer(pkt, PKT_S_OBJ_LIST, zoneID); }
 static SendBufferRef MakeSendBuffer(Protocol::S_OBJ_REMOVE_ACK&pkt, uint16 zoneID) { return MakeSendBuffer(pkt, PKT_S_OBJ_REMOVE_ACK, zoneID); }
 static SendBufferRef MakeSendBuffer(Protocol::S_PLAYER_LIST&pkt, uint16 zoneID) { return MakeSendBuffer(pkt, PKT_S_PLAYER_LIST, zoneID); }

@@ -255,3 +255,11 @@ bool Handle_S_PLAYER_LIST(PacketSessionRef& session, Protocol::S_PLAYER_LIST& pk
 	// TODO
 	return true;
 }
+
+bool Handle_S_ATTACK_REACT_ACK(PacketSessionRef& session, Protocol::S_ATTACK_REACT_ACK& pkt)
+{
+	RTT(GetTickCount64(), pkt.sendtime(), "S_ATTACK_REACT_ACK");
+
+	// TODO
+	return true;
+}
