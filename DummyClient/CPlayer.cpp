@@ -93,6 +93,7 @@ void CClientPlayer::AI_Idle()
 			pkt.set_sendtime(GetTickCount64());
 			pkt.set_skillid(1);
 			pkt.set_targetid(m_targetInfo.id());
+			pkt.set_objecttype(Object::Monster);
 		}
 		auto sendBuffer = ServerPacketHandler::MakeSendBuffer(pkt, m_nZoneID);
 		ownerSession->Send(sendBuffer);

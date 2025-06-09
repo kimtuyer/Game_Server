@@ -80,11 +80,20 @@ void BroadCastJob(ServerServiceRef& service,bool bIOCP=false)
 		if (bIOCP == true)
 			service->GetIocpCore()->Dispatch(1);
 
+		if (LSecondTickCount < GetTickCount64())
+		{
+			LSecondTickCount = GetTickCount64() + Tick::SECOND_TICK;
+			
+			g_nJobCount.fetch_add(LJobCount);	
+			LJobCount = 0;
+		}
+
 		//if (GetTickCount64() < endtime)
 		{
 			ThreadManager::DistributeReservedJobs();
 
-			ThreadManager::DoGlobalQueueWork();
+			if (ThreadManager::DoGlobalQueueWork())
+				LJobCount++;
 
 			//std::this_thread::sleep_for(std::chrono::milliseconds(GetTickCount64()-endtime));
 			std::this_thread::sleep_for(std::chrono::milliseconds(1));

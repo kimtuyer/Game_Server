@@ -3,6 +3,8 @@
 //shared_ptr<ConsoleMapViewer> GConsoleViewer = make_shared<ConsoleMapViewer>();
 atomic<int>	g_nPacketCount = 0;
 atomic<int>	g_nDBPacketCount = 0;
+atomic<int>	g_nJobCount = 0;
+
 
 void ConsoleMapViewer::displayPacketCnt()
 {
@@ -17,6 +19,9 @@ void ConsoleMapViewer::displayPacketCnt()
 		//gotoxy(totalWidth * 11, 20);
 		cout << "초당 패킷 처리량:" << g_nPacketCount << endl;
 
+		cout << "초당 브로드캐스팅 처리량:" << g_nJobCount << endl;
+
+		g_nJobCount.store(0);
 		g_nPacketCount.store(0);
 	}
 
@@ -102,6 +107,10 @@ void ConsoleMapViewer::drawZoneInfo()
 		gotoxy(startX + 22, startY + 2);
 		cout << "  초당 패킷 처리량:" << g_nPacketCount << " " << endl;
 
+		gotoxy(startX + 22, startY + 3);
+		cout << "  초당 브로드캐스팅 처리량:" << g_nJobCount << " " << endl;
+
+		g_nJobCount.store(0);
 		g_nPacketCount.store(0);
 	}
 

@@ -52,7 +52,7 @@ void ThreadManager::DestroyTLS()
 
 }
 
-void ThreadManager::DoGlobalQueueWork()
+bool ThreadManager::DoGlobalQueueWork()
 {
 	while (true)
 	{
@@ -62,9 +62,13 @@ void ThreadManager::DoGlobalQueueWork()
 
 		JobQueueRef jobQueue = GGlobalQueue->Pop();
 		if (jobQueue == nullptr)
+		{
+			return false;
 			break;
+		}
 
 		jobQueue->Execute();
+		return true;
 	}
 }
 

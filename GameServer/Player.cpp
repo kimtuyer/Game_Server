@@ -55,6 +55,7 @@ bool CPlayer::Attack(Protocol::C_ATTACK& pkt)
 #endif	
 
 	ObjectRef pObject;
+	bool bRet = true;
 	switch (pkt.objecttype())
 	{
 	case Object::Player:
@@ -65,77 +66,87 @@ bool CPlayer::Attack(Protocol::C_ATTACK& pkt)
 	case Object::Monster:
 		pObject = Sector->GetMonster(pkt.targetid());
 		if (pObject == nullptr)
+		{
 			ackpkt.set_success(false);
+			bRet = false;
+		}
 		break;
 	default:
+	{
+		bRet = false;
 		ackpkt.set_success(false);
 		break;
+
 	}
-	if(pkt.objecttype()== Object::Monster)
-
-	//ObjectRef Monster = Sector->GetMonster(pkt.targetid());
-	//if (Monster == nullptr)
-	//	ackpkt.set_success(false);
-	//else
+	}
+	if (bRet == true)
 	{
-		/**/
-		float dist = Util::distance(m_vPos.x(), m_vPos.y(), pObject->GetPos().x(), pObject->GetPos().y());
+		if (pkt.objecttype() == Object::Monster)
 
-		if (dist > Zone::BroadCast_Distance)
-			ackpkt.set_success(false);
-
-		if (pObject->Attacked(m_nAttack, nKill) == false)
-			ackpkt.set_success(false);
-
-		if (nKill > 0)
+			//ObjectRef Monster = Sector->GetMonster(pkt.targetid());
+			//if (Monster == nullptr)
+			//	ackpkt.set_success(false);
+			//else
 		{
-			//static_cast<CMonster*>(Monster.get())->GetGold();
-			int nGainGold=(pObject.get())->GetGold();
-			int nGainExp =(pObject.get())->GetGold();
+			/**/
+			float dist = Util::distance(m_vPos.x(), m_vPos.y(), pObject->GetPos().x(), pObject->GetPos().y());
 
-			m_nGold += nGainGold;
-			m_nExp += nGainExp;
+			if (dist > Zone::BroadCast_Distance)
+				ackpkt.set_success(false);
 
-			m_nKillcount++;
-#ifdef  __COUCHBASE_DB__
-			CouchbaseClient* pDBConnect = g_CouchbaseManager->GetConnection(LThreadId);
-			document* doc=new document;
-			doc->threadID = LThreadId;
-			doc->cas = nCas;
-			doc->key = to_string(playerId);
+			if (pObject->Attacked(m_nAttack, nKill) == false)
+				ackpkt.set_success(false);
 
-			if (LevelUp(m_nLevel, m_nExp))
+			if (nKill > 0)
 			{
-				m_nLevel++;
-				doc->type = DB::PLAYER_LEVEL_UPDATE;
-				json j = { {"playerid",playerId } ,{"Level",m_nLevel},{"Exp",m_nExp},{"Gold",m_nGold},{"Kill",m_nKillcount} };
-				doc->value = j.dump();
-				pDBConnect->upsert(doc);
+				//static_cast<CMonster*>(Monster.get())->GetGold();
+				int nGainGold = (pObject.get())->GetGold();
+				int nGainExp = (pObject.get())->GetGold();
 
+				m_nGold += nGainGold;
+				m_nExp += nGainExp;
+
+				m_nKillcount++;
+#ifdef  __COUCHBASE_DB__
+				CouchbaseClient* pDBConnect = g_CouchbaseManager->GetConnection(LThreadId);
+				document* doc = new document;
+				doc->threadID = LThreadId;
+				doc->cas = nCas;
+				doc->key = to_string(playerId);
+
+				if (LevelUp(m_nLevel, m_nExp))
+				{
+					m_nLevel++;
+					doc->type = DB::PLAYER_LEVEL_UPDATE;
+					json j = { {"playerid",playerId } ,{"Level",m_nLevel},{"Exp",m_nExp},{"Gold",m_nGold},{"Kill",m_nKillcount} };
+					doc->value = j.dump();
+					pDBConnect->upsert(doc);
+
+
+				}
+				else
+				{
+					doc->type = DB::PLAYER_EXP_MONEY_UPDATE;
+					json j = { {"playerid",playerId } ,{"Level",m_nLevel} ,{"Exp",m_nExp},{"Gold",m_nGold},{"Kill",m_nKillcount} };
+					doc->value = j.dump();
+					//"SELECT EXISTS(SELECT 1 FROM `default` USE KEYS [\"" + doc.key + "\"]);";
+				//std::string query = "SELECT EXISTS(SELECT 1 FROM `default` USE KEYS [\"" + key_to_check + "\"]);";
+					pDBConnect->upsert(doc);
+				}
+#endif
+				/*
+
+
+				*/
+
+				ackpkt.set_targetalive(false);
 
 			}
 			else
-			{
-				doc->type = DB::PLAYER_EXP_MONEY_UPDATE;
-				json j = { {"playerid",playerId } ,{"Level",m_nLevel} ,{"Exp",m_nExp},{"Gold",m_nGold},{"Kill",m_nKillcount} };
-				doc->value = j.dump();
-				//"SELECT EXISTS(SELECT 1 FROM `default` USE KEYS [\"" + doc.key + "\"]);";
-			//std::string query = "SELECT EXISTS(SELECT 1 FROM `default` USE KEYS [\"" + key_to_check + "\"]);";
-				pDBConnect->upsert(doc);
-			}
-#endif
-			/*
-			
-			
-			*/
+				ackpkt.set_targetalive(true);
 
-			ackpkt.set_targetalive(false);
-
+			ackpkt.set_success(true);
 		}
-		else
-			ackpkt.set_targetalive(true);
-
-		ackpkt.set_success(true);
 	}
 #ifdef __ZONE_THREAD__
 	auto sendBuffer = ClientPacketHandler::MakeSendBuffer(ackpkt, m_nZoneID);

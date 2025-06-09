@@ -48,7 +48,7 @@ namespace Zone
 	static const int  Sector_PER_ROW = 4;
 	static const int  Sector_PER_COL = 4;
 
-	static const int  BroadCast_Cnt = 20; //7
+	static const int  BroadCast_Cnt = 20; //7  //20 기본값 ->존큐버전 5000성공
 	static const float  BroadCast_Distance = 3.5;
 
 

@@ -5,6 +5,7 @@ using namespace Concurrency;
 using namespace Zone;
 extern atomic<int>	g_nPacketCount;
 extern atomic<int>	g_nDBPacketCount;
+extern atomic<int>	g_nJobCount;
 
 class ConsoleMapViewer
 {
