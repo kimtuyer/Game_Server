@@ -289,6 +289,37 @@ void CZone::Remove(ObjectType eObjectType, int objectID)
 	*/
 }
 
+ObjectRef CZone::Object(ObjectType type, int objectID)
+{
+	int lock = 0;
+	switch (type)
+	{
+		case Object::Player:
+		{
+			 lock = lock::Player;			
+		}
+		break;
+		case Object::Monster:
+		{
+			 lock = lock::Monster;		
+		}
+		break;
+		default:
+		return nullptr;
+		break;
+	}
+
+	{
+		READ_LOCK_IDX(lock);
+
+		auto pObjectRef = m_nlistObject[type].find(objectID);
+		if (pObjectRef == m_nlistObject[type].end())
+			return nullptr;
+		return ((*pObjectRef).second);
+	}
+
+}
+
 void CZone::Update()
 {
 	//임시로 주석,몹 테스트

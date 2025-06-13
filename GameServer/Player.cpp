@@ -51,12 +51,19 @@ bool CPlayer::Attack(Protocol::C_ATTACK& pkt)
 	if (Sector == nullptr)
 		return false;
 #else
-	CSectorRef Sector = Zone->GetSectorRef(m_nSectorID);
-#endif	
-
-	ObjectRef pObject;
 	bool bRet = true;
-	switch (pkt.objecttype())
+	ObjectRef ObjectSP = Zone->Object(pkt.objecttype(), pkt.targetid());
+	if (ObjectSP.get() == nullptr)
+	{
+		ackpkt.set_success(false);
+		return false;
+	}
+	else	
+		bRet = true;
+
+	//CSectorRef Sector = Zone->GetSectorRef(m_nSectorID);
+#endif	
+	/*switch (pkt.objecttype())
 	{
 	case Object::Player:
 		pObject = Sector->Object(pkt.targetid(), Object::Player);
@@ -78,7 +85,7 @@ bool CPlayer::Attack(Protocol::C_ATTACK& pkt)
 		break;
 
 	}
-	}
+	}*/
 	if (bRet == true)
 	{
 		if (pkt.objecttype() == Object::Monster)
@@ -89,19 +96,19 @@ bool CPlayer::Attack(Protocol::C_ATTACK& pkt)
 			//else
 		{
 			/**/
-			float dist = Util::distance(m_vPos.x(), m_vPos.y(), pObject->GetPos().x(), pObject->GetPos().y());
+			float dist = Util::distance(m_vPos.x(), m_vPos.y(), ObjectSP->GetPos().x(), ObjectSP->GetPos().y());
 
 			if (dist > Zone::BroadCast_Distance)
 				ackpkt.set_success(false);
 
-			if (pObject->Attacked(m_nAttack, nKill) == false)
+			if (ObjectSP->Attacked(m_nAttack, nKill) == false)
 				ackpkt.set_success(false);
 
 			if (nKill > 0)
 			{
 				//static_cast<CMonster*>(Monster.get())->GetGold();
-				int nGainGold = (pObject.get())->GetGold();
-				int nGainExp = (pObject.get())->GetGold();
+				int nGainGold = (ObjectSP)->GetGold();
+				int nGainExp = (ObjectSP)->GetGold();
 
 				m_nGold += nGainGold;
 				m_nExp += nGainExp;

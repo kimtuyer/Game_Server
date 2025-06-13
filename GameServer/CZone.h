@@ -28,6 +28,8 @@ public:
 	//오브젝트 리스트 객체 삭제
 	void Remove(ObjectType, int objectID);
 
+	ObjectRef Object(ObjectType, int objectID);
+
 	//리스트 순회, 객체 타이머 
 	void Update();
 	void Update_Player();
