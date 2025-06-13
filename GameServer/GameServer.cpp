@@ -167,13 +167,13 @@ void DoZoneJob(ServerServiceRef& service, int ZoneID)
 				}
 #endif // __ZONE_THREAD_VER1__
 #ifdef __ZONE_THREAD_VER2__
-				if (service->GetIocpCore()->Dispatch(10) == true)
-					LPacketCount++;
-				else
+				//if (service->GetIocpCore()->Dispatch(10) == true)
+				//	LPacketCount++;
+				//else
 				{
-					//ThreadManager::DistributeReservedJobs();
-					//
-					//ThreadManager::DoGlobalQueueWork();
+					ThreadManager::DistributeReservedJobs();
+					
+					ThreadManager::DoGlobalQueueWork();
 
 					std::this_thread::sleep_for(std::chrono::milliseconds(1));
 				}
