@@ -461,9 +461,12 @@ int main()
 
 					DoZoneJob(service, zoneID++);
 				}
+#ifdef __BROADCAST_LOADBALANCE__
 				else
 					BroadCastJob(service);
+#endif
 #else
+				else
 				DoWorkerJob(service);
 #endif // __ZONE_THREAD__
 			});

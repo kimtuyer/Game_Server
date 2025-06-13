@@ -1489,13 +1489,18 @@ void CZone::Send_SectorInsertPlayer()
 			Protocol::S_PLAYER_LIST objpkt;
 			objpkt.set_sendtime(nowtime);
 
-			//int nCnt = BroadCast_Cnt;
-
+#ifdef __BROADCAST_LOADBALANCE__
+#else
+			int nCnt = BroadCast_Cnt;
+#endif
 			bool bSend = false;
 			for (auto& ObjectInfo : sData)
 			{
-				//if (nCnt <= 0)
-				//	break;
+#ifdef __BROADCAST_LOADBALANCE__
+#else
+				if (nCnt <= 0)
+					break;
+#endif
 				ObjectRef Object = m_nlistObject[ObjectInfo.nObjectType][ObjectInfo.nObjectID];
 				if (Object == nullptr)
 					continue;
@@ -1536,10 +1541,16 @@ void CZone::Send_SectorInsertPlayer()
 			CPlayer* pPlayer = static_cast<CPlayer*>(Player.get());
 			if (pPlayer->ownerSession.expired() == false)
 			{
+
+#ifdef __BROADCAST_LOADBALANCE__
 				if (nPlayerCnt >= BroadCast_Cnt)
 					BroadCastlist.push_back(pPlayer);
 				else
 					pPlayer->ownerSession.lock()->Send(sendBuffer);
+#else
+				pPlayer->ownerSession.lock()->Send(sendBuffer);
+
+#endif		
 			}
 			else
 			{
@@ -1548,11 +1559,13 @@ void CZone::Send_SectorInsertPlayer()
 			}
 			nSendCnt++;
 
+#ifdef __BROADCAST_LOADBALANCE__
 			if (nSendCnt == nPlayerCnt)
 			{
 				if (BroadCastlist.empty() == false)
 					DoTimer(0,&CZone::BroadCast, BroadCastlist,sendBuffer);
 			}
+#endif
 		}
 	
 
@@ -1599,14 +1612,19 @@ void CZone::Send_SectorRemovePlayer()
 
 			Protocol::S_PLAYER_REMOVE_ACK objpkt;
 			objpkt.set_sendtime(nowtime);
-			//int nCnt = BroadCast_Cnt;
-
+#ifdef __BROADCAST_LOADBALANCE__
+#else
+			int nCnt = BroadCast_Cnt;
+#endif
 			bool bSend = false;
 			for (auto& ObjectInfo : sData)
 			{
-				//if (nCnt <= 0)
-				//	break;
 
+#ifdef __BROADCAST_LOADBALANCE__
+#else
+				if (nCnt <= 0)
+				break;
+#endif
 				ObjectRef Object = m_nlistObject[ObjectInfo.nObjectType][ObjectInfo.nObjectID];
 				if (Object == nullptr)
 					continue;
@@ -1632,7 +1650,10 @@ void CZone::Send_SectorRemovePlayer()
 
 				objpkt.add_pos()->CopyFrom(objectPos);
 
-				//nCnt--;
+#ifdef __BROADCAST_LOADBALANCE__
+#else
+				nCnt--;
+#endif
 			}
 			if (bSend == false)
 				continue;
@@ -1652,10 +1673,15 @@ void CZone::Send_SectorRemovePlayer()
 			CPlayer* pPlayer = static_cast<CPlayer*>(Player.get());
 			if (pPlayer->ownerSession.expired() == false)
 			{
+#ifdef __BROADCAST_LOADBALANCE__
 				if (nPlayerCnt >= BroadCast_Cnt)
 					BroadCastlist.push_back(pPlayer);
 				else
 					pPlayer->ownerSession.lock()->Send(sendBuffer);
+#else
+				pPlayer->ownerSession.lock()->Send(sendBuffer);
+
+#endif // __BROADCAST_LOADBALANCE__
 			}
 			else
 			{
@@ -1664,11 +1690,13 @@ void CZone::Send_SectorRemovePlayer()
 			}
 			nSendCnt++;
 
+#ifdef __BROADCAST_LOADBALANCE__
 			if (nSendCnt == nPlayerCnt)
 			{
 				if (BroadCastlist.empty() == false)
 					DoTimer(0, &CZone::BroadCast, BroadCastlist, sendBuffer);
 			}
+#endif
 		}
 	}
 }
