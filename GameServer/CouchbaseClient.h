@@ -80,9 +80,9 @@ public:
 
 
 		return connections[threadId-1].get();
-	}
+	}	
 private:
-	std::vector<std::unique_ptr<CouchbaseClient>> connections;
+	std::vector<std::shared_ptr<CouchbaseClient>> connections;
 
 };
 extern shared_ptr<CouchbaseManager> g_CouchbaseManager;

@@ -67,7 +67,7 @@ bool ThreadManager::DoGlobalQueueWork()
 			break;
 		}
 
-		jobQueue->Execute();
+		jobQueue->Execute(JobType::GLOBAL_JOB);
 		return true;
 	}
 }
@@ -77,5 +77,30 @@ void ThreadManager::DistributeReservedJobs()
 	const uint64 now = ::GetTickCount64();
 
 	GJobTimer->Distribute(now);
+}
+bool ThreadManager::DoDBQueueWork()
+{
+	while (true)
+	{
+		/*uint64 now = ::GetTickCount64();
+		if (now > LEndTickCount)
+			break;*/
+
+		JobQueueRef jobQueue = GDBQueue->Pop();
+		if (jobQueue == nullptr)
+		{
+			return false;
+			break;
+		}
+
+		jobQueue->Execute(JobType::DB_JOB);
+		return true;
+	}
+}
+void ThreadManager::DistributeDBJobs()
+{
+	const uint64 now = ::GetTickCount64();
+	
+	GDBJobTimer->Distribute(now);
 }
 /*												*/

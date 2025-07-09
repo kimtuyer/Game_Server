@@ -7,6 +7,8 @@
 #define __CONSOLE_UI__
 #define __BROADCAST_DISTANCE__ //거리에 따라 브로드캐스팅범위 조절후 2~300ms -> 150ms이내로 응답시간 감소
 #define __COUCHBASE_DB__
+#define __COUCHBASE_DB_ASYNC__
+
 #define	__ZONE_THREAD__
 #define __ZONE_THREAD_VER1__	//I/o ,존 스레드 분리, 존 마다 concurrent_queue 사용
 //#define __ZONE_THREAD_VER2__	//존 마다 큐 사용X, 각자 할당한 존 업데이트 후,남은시간에 I/O 입출력 같이 처리.

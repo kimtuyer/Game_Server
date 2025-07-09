@@ -24,6 +24,10 @@ public:
 	static void DistributeReservedJobs();
 
 
+	static bool DoDBQueueWork();
+	static void DistributeDBJobs();
+
+
 	static void  DistributeBroadJobs();
 	static void DoBroadQueueWork();
 

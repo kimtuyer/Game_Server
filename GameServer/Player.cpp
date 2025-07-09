@@ -127,7 +127,13 @@ bool CPlayer::Attack(Protocol::C_ATTACK& pkt)
 					doc->type = DB::PLAYER_LEVEL_UPDATE;
 					json j = { {"playerid",playerId } ,{"Level",m_nLevel},{"Exp",m_nExp},{"Gold",m_nGold},{"Kill",m_nKillcount} };
 					doc->value = j.dump();
+
+#ifdef __COUCHBASE_DB_ASYNC__
+					pDBConnect->DoAsyncDB(&CouchbaseClient::upsert, doc);
+#else
 					pDBConnect->upsert(doc);
+#endif // __COUCHBASE_DB_ASYNC__
+
 
 
 				}
@@ -138,7 +144,13 @@ bool CPlayer::Attack(Protocol::C_ATTACK& pkt)
 					doc->value = j.dump();
 					//"SELECT EXISTS(SELECT 1 FROM `default` USE KEYS [\"" + doc.key + "\"]);";
 				//std::string query = "SELECT EXISTS(SELECT 1 FROM `default` USE KEYS [\"" + key_to_check + "\"]);";
+#ifdef __COUCHBASE_DB_ASYNC__
+					pDBConnect->DoAsyncDB(&CouchbaseClient::upsert, doc);
+#else
 					pDBConnect->upsert(doc);
+#endif // __COUCHBASE_DB_ASYNC__
+
+
 				}
 #endif
 				/*

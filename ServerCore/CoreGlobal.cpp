@@ -14,8 +14,9 @@ ThreadManager*		GThreadManager = nullptr;
 Memory*				GMemory = nullptr;
 SendBufferManager*	GSendBufferManager = nullptr;
 GlobalQueue*		GGlobalQueue = nullptr;
+GlobalQueue*		GDBQueue = nullptr;
 JobTimer*			GJobTimer = nullptr;
-JobTimer*			GLogicTimer = nullptr;
+JobTimer*			GDBJobTimer = nullptr;
 //JobTimer*			GBroadCastTimer = nullptr;
 //GlobalQueue*		GBroadQueue = nullptr;
 RandomMove* GRandomMove = nullptr;
@@ -33,6 +34,8 @@ public:
 		GSendBufferManager = new SendBufferManager();
 		GGlobalQueue = new GlobalQueue();
 		GJobTimer = new JobTimer();
+		GDBJobTimer = new JobTimer();
+		GDBQueue = new GlobalQueue();
 
 		//GBroadQueue = new GlobalQueue();
 		//GBroadCastTimer = new JobTimer();

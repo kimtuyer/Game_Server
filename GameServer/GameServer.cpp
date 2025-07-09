@@ -42,6 +42,21 @@ void DoMainJob()
 		//LEndTickCount = ::GetTickCount64() + Tick::WORKER_TICK;
 	}
 }
+void DoDBJob()
+{
+	bool bFlag = false;
+	while (true)
+	{	
+		// 예약된 일감 처리
+		ThreadManager::DistributeDBJobs();
+
+		//DB job 처리
+		ThreadManager::DoDBQueueWork();
+
+		std::this_thread::sleep_for(std::chrono::milliseconds(1));
+
+	}
+}
 void DoWorkerJob(ServerServiceRef& service)
 {
 	bool bFlag = false;
@@ -449,9 +464,11 @@ int main()
 
 #else
 	int nIOCPThreadCnt = nThreadCnt / 3; //전체 스레드수의 30%  IOCP스레드 배정
+	int nBroadThreadCnt = 8;
+	int nDBThreadCnt = 4;
 	for (int32 i = 0; i < nThreadCnt; i++)
 	{
-		GThreadManager->Launch([&service, i, &zoneID, nIOCPThreadCnt]()
+		GThreadManager->Launch([&service, i, &zoneID, nIOCPThreadCnt, nBroadThreadCnt, nDBThreadCnt]()
 			{
 #ifdef __ZONE_THREAD__
 				if (i < nIOCPThreadCnt)
@@ -461,10 +478,20 @@ int main()
 
 					DoZoneJob(service, zoneID++);
 				}
+
+#ifdef __COUCHBASE_DB_ASYNC__
+#ifdef __BROADCAST_LOADBALANCE__
+				else if (i < g_nZoneCount + nIOCPThreadCnt+nBroadThreadCnt)
+					BroadCastJob(service);
+				else
+					DoDBJob();
+#endif
+#else
 #ifdef __BROADCAST_LOADBALANCE__
 				else
 					BroadCastJob(service);
 #endif
+#endif //__COUCHBASE_DB_ASYNC__
 #else
 				else
 				DoWorkerJob(service);
@@ -475,9 +502,12 @@ int main()
 	}
 
 #endif // __ZONE_THREAD_VER3__
-
-
-
+#ifdef __COUCHBASE_DB_ASYNC__
+	GThreadManager->Launch([]()
+	{
+			DoDBJob();
+	});
+#endif // __COUCHBASE_DB_ASYNC__
 	GThreadManager->Launch([]()
 		{
 			DoRenderingJob();

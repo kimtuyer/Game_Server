@@ -17,12 +17,24 @@ void JobQueue::Push(JobRef job, bool pushOnly)
 		// 이미 실행중인 JobQueue가 없으면 실행
 		if (LCurrentJobQueue == nullptr && pushOnly == false)
 		{
-			Execute();
+			Execute(JobType::GLOBAL_JOB);
 		}
 		else
 		{
 			// 여유 있는 다른 쓰레드가 실행하도록 GlobalQueue에 넘긴다
 			GGlobalQueue->Push(shared_from_this());
+		}
+	}
+}
+
+void JobQueue::PushDB(JobRef job)
+{
+	const int32 prevCount = _jobCount.fetch_add(1);
+	_jobs.Push(job); // WRITE_LOCK
+	if (prevCount == 0)
+	{
+		{
+			GDBQueue->Push(shared_from_this());
 		}
 	}
 }
@@ -82,7 +94,7 @@ void JobQueue::Push(JobRef job, bool pushOnly)
 //}
 
 // 1) 일감이 너~무 몰리면?
-void JobQueue::Execute()
+void JobQueue::Execute(int JobType = JobType::GLOBAL_JOB)
 {
 	LCurrentJobQueue = this;
 
@@ -105,10 +117,13 @@ void JobQueue::Execute()
 		const uint64 now = ::GetTickCount64();
 		if (now >= LEndTickCount)
 		{
-			LCurrentJobQueue = nullptr;
-			// 여유 있는 다른 쓰레드가 실행하도록 GlobalQueue에 넘긴다
-			GGlobalQueue->Push(shared_from_this());
+			if (JobType == JobType::GLOBAL_JOB)
+			{
+				LCurrentJobQueue = nullptr;
+				// 여유 있는 다른 쓰레드가 실행하도록 GlobalQueue에 넘긴다
+				GGlobalQueue->Push(shared_from_this());
+			}
 			break;
-		}			
+		}
 	}
 }

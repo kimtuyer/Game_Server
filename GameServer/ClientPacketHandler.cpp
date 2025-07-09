@@ -54,10 +54,11 @@ bool Handle_C_LOGIN(PacketSessionRef& session, Protocol::C_LOGIN& pkt)
 		gameSession->SetPlayerID(key);
 		GPlayerManager->Insert(key, gameSession);
 
-#endif  __COUCHBASE_DB__
-		
-#ifdef  __COUCHBASE_DB__
+		//pDBConnect->DoAsyncDB(&CouchbaseClient::QueryExecute, doc.value, doc);
 		pDBConnect->QueryExecute(doc.value, doc);
+
+
+
 #endif
 		
 	}
