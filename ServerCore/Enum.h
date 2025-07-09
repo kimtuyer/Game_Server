@@ -14,7 +14,20 @@ namespace Tick
 
 	};
 }
-static const	int	g_nServerMaxUser = 5000;
+
+namespace JobType
+{
+	enum
+	{
+		GLOBAL_JOB=1,
+		DB_JOB=2,
+
+	};
+
+
+}
+
+static const	int	g_nServerMaxUser = 10000;
 static const	int	g_nClientMaxCount = 1000;
 static 	int	g_nConnectedUser = 0;
 static	int	g_nThreadCnt = 0;
@@ -28,7 +41,7 @@ namespace Thread {
 namespace Zone
 {
 	static const	int	g_nZoneCount = 20;
-	static	const	int g_nZoneUserMax = 250; //5000 테스트시 존당 최소 250이상 설정필요
+	static	const	int g_nZoneUserMax = 500; //5000 테스트시 존당 최소 250이상 설정필요
 	static const	int MonsterMaxCount = 200;
 
 	//class CZone_Manager;
