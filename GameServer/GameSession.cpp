@@ -55,7 +55,7 @@ void GameSession::OnRecvPacket(BYTE* buffer, int32 len)
 			해당 Zone 큐에 넣고 나옴.
 		*/
 #ifdef __ZONE_THREAD_VER1__
-		zoneQueues[Zoneid]->jobs.push(PacketInfo(session, buffer, len));
+		ZonePacketQueues[Zoneid]->jobs.push(PacketInfo(session, buffer, len));
 #endif
 	}
 		ClientPacketHandler::HandlePacket(session, buffer, len);
@@ -71,7 +71,7 @@ void GameSession::OnRecvPacket(BYTE* buffer, int32 len)
 		/*
 			해당 Zone 큐에 넣고 나옴.
 		*/
-		zoneQueues[Zoneid]->jobs.push(PacketInfo(session, buffer, len));
+		ZonePacketQueues[Zoneid]->jobs.push(PacketInfo(session, buffer, len));
 
 	}
 	else
