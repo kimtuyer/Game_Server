@@ -1,5 +1,5 @@
 #pragma once
-
+#include "Dev_define.h"
 namespace Tick
 {
 	enum
@@ -26,8 +26,11 @@ namespace JobType
 
 
 }
-
+#ifdef __10000_USER_ZONE__
 static const	int	g_nServerMaxUser = 10000;
+#else
+static const	int	g_nServerMaxUser = 5000;
+#endif
 static const	int	g_nClientMaxCount = 1000;
 static 	int	g_nConnectedUser = 0;
 static	int	g_nThreadCnt = 0;
@@ -41,7 +44,12 @@ namespace Thread {
 namespace Zone
 {
 	static const	int	g_nZoneCount = 20;
+#ifdef __10000_USER_ZONE__
 	static	const	int g_nZoneUserMax = 500; //5000 테스트시 존당 최소 250이상 설정필요
+#else
+	static	const	int g_nZoneUserMax = 250; //5000 테스트시 존당 최소 250이상 설정필요
+#endif // __10000_USER_ZONE__
+
 	static const	int MonsterMaxCount = 200;
 
 	//class CZone_Manager;

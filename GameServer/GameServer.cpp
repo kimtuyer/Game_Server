@@ -502,12 +502,6 @@ int main()
 	}
 
 #endif // __ZONE_THREAD_VER3__
-#ifdef __COUCHBASE_DB_ASYNC__
-	GThreadManager->Launch([]()
-	{
-			DoDBJob();
-	});
-#endif // __COUCHBASE_DB_ASYNC__
 	GThreadManager->Launch([]()
 		{
 			DoRenderingJob();

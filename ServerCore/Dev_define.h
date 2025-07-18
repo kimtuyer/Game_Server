@@ -16,3 +16,4 @@
 #define __BROADCAST_LOADBALANCE__
 //#define __DOP__	//데이터중심 설계
 #define	__5000_USER_ZONE__
+#define	__10000_USER_ZONE__
