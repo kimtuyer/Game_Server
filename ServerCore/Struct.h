@@ -23,12 +23,23 @@ struct PacketInfo
 	BYTE* m_buffer=nullptr;
 	int32 m_len=0;
 };
-struct ZoneQueue {
+struct ZonePacketQueue {
 	concurrency::concurrent_queue<PacketInfo> jobs;
 	mutex zoneMutex;
 	// 존 관련 데이터
 	//vector<User*> users;
 	// ... 기타 존 데이터
+};
+
+struct 
+
+
+struct ZoneMessageQueue {
+	concurrency::concurrent_queue<PacketInfo> jobs;
+
+
+
+
 };
 
 struct PlayerInfo {

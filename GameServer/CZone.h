@@ -177,6 +177,10 @@ private:	//오브젝트 리스트도 맵 or set이 나은가?
 	map<SectorID, int>m_mapSector;
 #else
 	map<SectorID, CSectorRef> m_listSector;
+
+	map<SectorID, vector<Sector::ObjectInfo>> m_listBorderSector;
+	//map<SectorID, CSectorRef> m_listBorderSector;
+
 #endif // __DOP__
 
 

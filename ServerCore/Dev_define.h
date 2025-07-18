@@ -14,6 +14,7 @@
 //#define __ZONE_THREAD_VER2__	//존 마다 큐 사용X, 각자 할당한 존 업데이트 후,남은시간에 I/O 입출력 같이 처리.
 //#define __ZONE_THREAD_VER3__	//존 마다 큐 사용X, 각자 할당한 존 업데이트 후,남은시간에 I/O 입출력 같이 처리.
 #define __BROADCAST_LOADBALANCE__
+#define __SEAMLESS__
 //#define __DOP__	//데이터중심 설계
 #define	__5000_USER_ZONE__
 #define	__10000_USER_ZONE__

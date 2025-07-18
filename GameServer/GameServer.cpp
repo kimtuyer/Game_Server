@@ -22,7 +22,7 @@
 //atomic<int>	g_nPacketCount = 0;
 
 //class CZone_Manager;
-array<shared_ptr<ZoneQueue>, Zone::g_nZoneCount + 1> zoneQueues = {};
+array<shared_ptr<ZonePacketQueue>, Zone::g_nZoneCount + 1> ZonePacketQueues = {};
 map<int, bool>	threadRebalance;
 void DoMainJob()
 {
@@ -144,8 +144,8 @@ void DoZoneJob(ServerServiceRef& service, int ZoneID)
 	if (Zone == nullptr)
 		return;
 #ifdef __ZONE_THREAD_VER1__
-	zoneQueues[ZoneID] = MakeShared<ZoneQueue>();
-	auto& ZoneQueue = zoneQueues[ZoneID];
+	ZonePacketQueues[ZoneID] = MakeShared<ZonePacketQueue>();
+	auto& ZonePacketQueue = ZonePacketQueues[ZoneID];
 	//queue<PacketInfo> localqueue;
 #endif	
 	uint64 lastUpdatetime = 0;
@@ -170,7 +170,7 @@ void DoZoneJob(ServerServiceRef& service, int ZoneID)
 			{
 #ifdef __ZONE_THREAD_VER1__
 				PacketInfo job;
-				if (ZoneQueue->jobs.try_pop(job))
+				if (ZonePacketQueue->jobs.try_pop(job))
 					ClientPacketHandler::HandlePacket(job.m_session, job.m_buffer, job.m_len);
 				else
 				{
@@ -206,12 +206,12 @@ void DoZoneJob(ServerServiceRef& service, int ZoneID)
 void DoZoneJob3(ServerServiceRef& service, int ZoneID,bool bIsZone)
 {
 	threadRebalance.insert({LThreadId, bIsZone });
-	zoneQueues[ZoneID] = MakeShared<ZoneQueue>();
-	auto& ZoneQueue = zoneQueues[ZoneID];
+	ZonePacketQueues[ZoneID] = MakeShared<ZonePacketQueue>();
+	auto& ZonePacketQueue = ZonePacketQueues[ZoneID];
 	//if (bIsZone)
 	//{
-	//	zoneQueues[ZoneID] = MakeShared<ZoneQueue>();
-	//	auto& ZoneQueue = zoneQueues[ZoneID];
+	//	ZonePacketQueues[ZoneID] = MakeShared<ZonePacketQueue>();
+	//	auto& ZonePacketQueue = ZonePacketQueues[ZoneID];
 	//}
 	vector<CZoneRef> Zones;
 	vector<pair<int, int>> Zonelist;
@@ -321,7 +321,7 @@ void DoZoneJob3(ServerServiceRef& service, int ZoneID,bool bIsZone)
 				if (bIsZone)
 				{
 					PacketInfo job;
-					if (ZoneQueue->jobs.try_pop(job))
+					if (ZonePacketQueue->jobs.try_pop(job))
 						ClientPacketHandler::HandlePacket(job.m_session, job.m_buffer, job.m_len);
 					else //(GetTickCount64() < endTime)
 					{
