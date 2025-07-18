@@ -109,15 +109,15 @@ public:
 		}
 
 		//// 섹터 번호 표시
-		//for (int i = 0; i < SECTORS_PER_SIDE; i++) {
-		//	for (int j = 0; j < SECTORS_PER_SIDE; j++) {
-		//		int x = startX + j * sectorWidth + sectorWidth / 2;
-		//		int y = startY + i * sectorHeight + sectorHeight / 2;
-		//		gotoxy(x, y);
-		//		int sectorNum = i * SECTORS_PER_SIDE + j;
-		//		std::cout << sectorNum;
-		//	}
-		//}
+		for (int i = 0; i < SECTORS_PER_SIDE; i++) {
+			for (int j = 0; j < SECTORS_PER_SIDE; j++) {
+				int x = startX + j * sectorWidth + sectorWidth / 2;
+				int y = startY + i * sectorHeight + sectorHeight / 2;
+				gotoxy(x, y);
+				int sectornum = i * SECTORS_PER_SIDE + j;
+				std::cout << sectornum;
+			}
+		}
 	}
 
 	void drawZoneBorders() {

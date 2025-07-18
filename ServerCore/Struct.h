@@ -31,7 +31,12 @@ struct ZonePacketQueue {
 	// ... 기타 존 데이터
 };
 
-struct 
+struct ZoneJob
+{
+	int nJobType = Zone::ZoneJob::None;
+	
+
+};
 
 
 struct ZoneMessageQueue {
@@ -112,7 +117,13 @@ namespace Sector
 		int nObjectID=0;
 		int nObjectType=0;
 		Postion vPos;
-
+		int nHP = 0;
+		bool bActivate = true;
+		int m_nStateTime[Object::End];
+		int nAttack = 0;
+		int nZoneID = 0;
+		int nGold = 0;
+		int nExp = 0;
 	};
 
 
@@ -123,9 +134,19 @@ namespace Sector
 		int nObjectType = 0;
 		Postion vPos;
 		int nZoneID = 0;
+		int nHP = 0;
+		int nAttack = 0;
+
 
 	};
 
+	struct ObjectAttinfo
+	{
+		ObjectInfo info;
+		
+
+
+	};
 
 }
 

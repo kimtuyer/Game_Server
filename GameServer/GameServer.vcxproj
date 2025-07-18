@@ -181,6 +181,7 @@
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="CBattle.cpp" />
     <ClCompile Include="CItem.cpp" />
     <ClCompile Include="CMonster.cpp" />
     <ClCompile Include="CObject.cpp" />
@@ -223,6 +224,7 @@
     <ClCompile Include="ZoneWorkerThread.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CBattle.h" />
     <ClInclude Include="CItem.h" />
     <ClInclude Include="CMonster.h" />
     <ClInclude Include="CObject.h" />

@@ -6,7 +6,7 @@
 #include "ClientPacketHandler.h"
 #include "CMonster.h"
 #include "CouchbaseClient.h"
-
+#include "CBattle.h"
 CPlayer::CPlayer(GameSessionRef& gamesession) :m_nKillcount(0), nLevel(0), bLogin(false), ownerSession(gamesession)
 {
 
@@ -52,6 +52,19 @@ bool CPlayer::Attack(Protocol::C_ATTACK& pkt)
 		return false;
 #else
 	bool bRet = true;
+#ifdef __SEAMLESS__
+	bool bSameZone = (m_nZoneID== pkt.targetzoneid() ? true :false) ;
+	Sector::ObjectInfo targetInfo;
+	auto TargetZone = GZoneManager->GetZone(pkt.targetzoneid());
+	if (TargetZone == nullptr)
+	{
+			ackpkt.set_success(false);
+			bRet = false;
+	}
+	else
+		targetInfo= TargetZone->GetObjectInfo(pkt.targetsecid(), pkt.targetid());
+	
+#else
 	ObjectRef ObjectSP = Zone->Object(pkt.objecttype(), pkt.targetid());
 	if (ObjectSP.get() == nullptr)
 	{
@@ -60,6 +73,7 @@ bool CPlayer::Attack(Protocol::C_ATTACK& pkt)
 	}
 	else	
 		bRet = true;
+#endif // __SEAMLESS__
 
 	//CSectorRef Sector = Zone->GetSectorRef(m_nSectorID);
 #endif	
@@ -88,7 +102,7 @@ bool CPlayer::Attack(Protocol::C_ATTACK& pkt)
 	}*/
 	if (bRet == true)
 	{
-		if (pkt.objecttype() == Object::Monster)
+		//if (pkt.objecttype() == Object::Monster)
 
 			//ObjectRef Monster = Sector->GetMonster(pkt.targetid());
 			//if (Monster == nullptr)
@@ -96,6 +110,30 @@ bool CPlayer::Attack(Protocol::C_ATTACK& pkt)
 			//else
 		{
 			/**/
+
+#ifdef __SEAMLESS__
+			float dist = Util::distance(m_vPos.x(), m_vPos.y(), targetInfo.vPos.x, targetInfo.vPos.y);
+
+			if (dist > Zone::BroadCast_Distance)
+				ackpkt.set_success(false);
+			
+			CBattle Logic;
+			if(Logic.Attack(m_nAttack, nKill, targetInfo)==false)
+				ackpkt.set_success(false);
+			else
+			{
+				//타겟이 다른 존 일경우, 해당 존으로 상태정보 알림!
+				if (bSameZone == false)
+				{
+					DoLogicJob(pkt.targetzoneid(), &CZone::Update_ObjectInfo, targetInfo);
+
+				}
+				else
+					Zone->Update_ObjectInfo(targetInfo);
+
+			}
+#else
+
 			float dist = Util::distance(m_vPos.x(), m_vPos.y(), ObjectSP->GetPos().x(), ObjectSP->GetPos().y());
 
 			if (dist > Zone::BroadCast_Distance)
@@ -103,13 +141,18 @@ bool CPlayer::Attack(Protocol::C_ATTACK& pkt)
 
 			if (ObjectSP->Attacked(m_nAttack, nKill) == false)
 				ackpkt.set_success(false);
+#endif	//__SEAMLESS__
 
 			if (nKill > 0)
 			{
 				//static_cast<CMonster*>(Monster.get())->GetGold();
+#ifdef __SEAMLESS__
+				int nGainGold = targetInfo.nGold;
+				int nGainExp = targetInfo.nExp;
+#else
 				int nGainGold = (ObjectSP)->GetGold();
 				int nGainExp = (ObjectSP)->GetGold();
-
+#endif
 				m_nGold += nGainGold;
 				m_nExp += nGainExp;
 

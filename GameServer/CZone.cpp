@@ -5,7 +5,10 @@
 #include "GameSession.h"
 #include "ClientPacketHandler.h"
 #include "CSector.h"
+#include "CZone_Manager.h"
+
 using namespace Zone;
+static int g_nSectorID = 1;
 CZone::CZone(int nMaxUserCnt, int nZoneID, Protocol::D3DVECTOR vPos)
 	:m_bActivate(false), m_nMaxUserCnt(nMaxUserCnt), m_nZoneID(nZoneID)
 	, m_vStartpos(vPos)
@@ -26,7 +29,7 @@ CZone::CZone(int nMaxUserCnt, int nZoneID, Protocol::D3DVECTOR vPos)
 #ifdef __DOP__
 	m_vecSector.resize(SECTORS_PER_SIDE * SECTORS_PER_SIDE);
 #endif
-	int nSectorid = 1;
+	//int nSectorid = 1;
 	for (int HEIGHT = 1; HEIGHT <= SECTORS_PER_SIDE; HEIGHT++)	//콘솔 세로 1줄 개수
 		for (int WIDTH = 1; WIDTH <= SECTORS_PER_SIDE; WIDTH++) //콘솔 가로 1줄 개수
 		{
@@ -57,55 +60,58 @@ CZone::CZone(int nMaxUserCnt, int nZoneID, Protocol::D3DVECTOR vPos)
 			int index = (int)m_vecSector.size() - 1;
 			m_mapSector.insert({ nSectorid,index });
 #else
-			m_listSector.insert({ nSectorid,MakeShared<CSector>(nSectorid,m_nZoneID,startpos) });
+			m_listSector.insert({ g_nSectorID,MakeShared<CSector>(g_nSectorID,m_nZoneID,startpos) });
 #endif // __DOP__
 
-			nSectorid++;
+			g_nSectorID++;
 		}
 
-	// 인접 섹터  리스트 구하기
-#ifdef __DOP__
-	for (int i=0; i<m_vecSector.size(); i++)
-#else
-	for (auto& [sectorID, Sector] : m_listSector)
-#endif	
-	{
-#ifdef __DOP__
-		float currnet_x = m_vecSector[i].StartPos().x();
-		float currnet_y = m_vecSector[i].StartPos().y();
-#else
-		float currnet_x = Sector->StartPos().x();
-		float currnet_y = Sector->StartPos().y();
-#endif	
-		int SectorID = 0;
-#ifdef __DOP__
-		CSectorRef pSector = MakeShared<CSector>(Sector);
-#endif
-#ifdef __DOP__
-		auto Dir = [&](CSector& pSector)
-#else
-		auto Dir = [&]()
-#endif
-			{
-				for (auto& [x, y] : directions)
-				{
-					float new_x = x + currnet_x;
-					float new_y = y + currnet_y;
-#ifdef __DOP__
-					Set_AdjSector(new_x, new_y, pSector);
+	//인접한 존 리스트 생성
+	Set_Neighbor_list();
+//	// 인접 섹터  리스트 구하기
+//#ifdef __DOP__
+//	for (int i=0; i<m_vecSector.size(); i++)
+//#else
+//	for (auto& [sectorID, Sector] : m_listSector)
+//#endif	
+//	{
+//#ifdef __DOP__
+//		float currnet_x = m_vecSector[i].StartPos().x();
+//		float currnet_y = m_vecSector[i].StartPos().y();
+//#else
+//		float currnet_x = Sector->StartPos().x();
+//		float currnet_y = Sector->StartPos().y();
+//#endif	
+//		int SectorID = 0;
+//#ifdef __DOP__
+//		CSectorRef pSector = MakeShared<CSector>(Sector);
+//#endif
+//#ifdef __DOP__
+//		auto Dir = [&](CSector& pSector)
+//#else
+//		auto Dir = [&]()
+//#endif
+//			{
+//				for (auto& [x, y] : directions)
+//				{
+//					float new_x = x + currnet_x;
+//					float new_y = y + currnet_y;
+//#ifdef __DOP__
+//					Set_AdjSector(new_x, new_y, pSector);
+//
+//#else	
+//					Set_AdjSector(new_x, new_y, Sector);
+//#endif
+//				}
+//			};
+//#ifdef __DOP__
+//		Dir(m_vecSector[i]);
+//#else
+//		Dir();
+//
+//#endif
+//	}
 
-#else	
-					Set_AdjSector(new_x, new_y, Sector);
-#endif
-				}
-			};
-#ifdef __DOP__
-		Dir(m_vecSector[i]);
-#else
-		Dir();
-
-#endif
-	}
 	//	//위
 	//	x = currnet_x;
 	//	y = currnet_y - Zone::Sector_HEIGHT;
@@ -162,7 +168,7 @@ CZone::CZone(int nMaxUserCnt, int nZoneID, Protocol::D3DVECTOR vPos)
 	for (; startID < EndMaxID; startID++)
 	{
 		// 1~max 섹터id를 랜덤으로 불러와 해당 섹터의 좌표로 몬스터를 배치.
-		std::uniform_int_distribution<int> SectorList(1, Sector_Count);   // 0 ~ MAX_STEP
+		std::uniform_int_distribution<int> SectorList(g_nSectorID- Sector_Count, g_nSectorID-1);   // 0 ~ MAX_STEP
 		int sectorID = SectorList(gen);
 #ifdef __DOP__
 		auto Sector = GetSector(sectorID);//&m_vecSector[sectorID];
@@ -196,6 +202,54 @@ CZone::CZone(int nMaxUserCnt, int nZoneID, Protocol::D3DVECTOR vPos)
 CZone::~CZone()
 {
 	m_nlistObject.clear(); //shared_ptr도 바로 클리어 호출해도 되나?
+}
+
+void CZone::SetAdjSector()
+{
+
+	// 인접 섹터  리스트 구하기
+#ifdef __DOP__
+	for (int i = 0; i < m_vecSector.size(); i++)
+#else
+	for (auto& [sectorID, Sector] : m_listSector)
+#endif	
+	{
+#ifdef __DOP__
+		float currnet_x = m_vecSector[i].StartPos().x();
+		float currnet_y = m_vecSector[i].StartPos().y();
+#else
+		float currnet_x = Sector->StartPos().x();
+		float currnet_y = Sector->StartPos().y();
+#endif	
+		int SectorID = sectorID;
+#ifdef __DOP__
+		CSectorRef pSector = MakeShared<CSector>(Sector);
+#endif
+#ifdef __DOP__
+		auto Dir = [&](CSector& pSector)
+#else
+		auto Dir = [&]()
+#endif
+			{
+				for (auto& [x, y] : directions)
+				{
+					float new_x = x + currnet_x;
+					float new_y = y + currnet_y;
+#ifdef __DOP__
+					Set_AdjSector(new_x, new_y, pSector);
+
+#else	
+					_Set_AdjSector(new_x, new_y, Sector);
+#endif
+				}
+			};
+#ifdef __DOP__
+		Dir(m_vecSector[i]);
+#else
+		Dir();
+
+#endif
+	}
 }
 
 bool CZone::_Enter(ObjectType eObjectType, PlayerRef& object)
@@ -344,34 +398,41 @@ void CZone::Update()
 			continue;
 		Sector->Update();
 
+#ifdef __SEAMLESS__
+		auto adjsectorlist = Sector->GetAdjSectorlist();
+		//해당 섹터 정보 필요한 존은?
+		for (auto [SecID,Data] : adjsectorlist)
+		{
+			int nZoneID = Data.first;
+			//같은 존의 섹터는 continue;
+			if (nZoneID == m_nZoneID)
+				continue;
+
+			//이웃 존에게 필요한 내 섹터 객체정보 넘겨주기
+			/*
+				
+			*/		
+			//이때 업데이트필요한 유저만 식별 가능?
+			auto Playerlist= Sector->PlayerInfoList();
+			DoLogicJob(nZoneID,&CZone::Update_AdjSector,sectorID, nZoneID, Playerlist);	
+
+			auto Monsetlist = Sector->MonsterInfoList();
+			DoLogicJob(nZoneID, &CZone::Update_AdjSector, sectorID, nZoneID, Monsetlist);
+
+		}
+#endif // __SEAMLESS__
+		
 
 #endif	
 	}
 
 #ifdef __SEAMLESS__
+	//다른 존에서 넘겨준 이웃한 섹터의 오브젝트 리스트 들어있음.
 	/*
-	
-	 내 섹터정보 필요한 존이 누구인지, 몇번 섹터정보가 필요한지 여부
-	 알아야함.
-
-	 1.내 섹터 정보 필요한 이웃 존에게 해당 섹터내 오브젝트 정보
-	 각 존의 메시지 큐로 전송
-	
-	 2. 내 존메시지큐 로  새로운 컨테이너 구성
-
-	
-	 3. 이전에 가진 컨테이너와 비교하면서 Remove, Insert 객체 리스트 구성
-
-	 
-		
+		이 섹터들과 이웃한 섹터에 위치한 유저들에게 알려줘야함!
 	*/
-	
-
-
+	Send_AdjSector_ObjList();
 #endif // __SEAMLESS__
-
-
-
 
 	//삽입 삭제 리스트 각 섹터에 위치한 플레이어들에게 전송
 	Send_SectorInsertObject();
@@ -384,6 +445,40 @@ void CZone::Update()
 	Send_SectorRemovePlayer();
 #endif
 	//Send_MonsterUpdateList();
+
+#ifdef __SEAMLESS__
+/*
+
+ 내 섹터정보 필요한 존이 누구인지, 몇번 섹터정보가 필요한지 여부
+ 알아야함.
+
+ 1.내 섹터 정보 필요한 이웃 존에게 해당 섹터내 오브젝트 정보
+ 각 존의 메시지 큐로 전송
+
+ 2. 내 존메시지큐 로  새로운 컨테이너 구성
+
+
+ 3. 이전에 가진 컨테이너와 비교하면서 Remove, Insert 객체 리스트 구성
+
+*/
+
+	for (auto nZone : m_setAdjZone)
+	{
+		/*
+			이웃 존에게 필요한 내 섹터정보 알림.
+			1번존과 이웃한 2번존이 필요한 내 섹터정보?
+
+		
+		*/
+
+		
+		DoLogicJob(nZone, &CZone::AddPacketCount);
+
+	}
+
+
+#endif // __SEAMLESS__
+
 
 #endif
 	///////////////////////////////////////////////////////////////////////////
@@ -428,6 +523,47 @@ void CZone::Update()
 #else
 	DoTimer(Tick::AI_TICK, &CZone::Update);
 #endif // __ZONE_THREAD__
+
+}
+
+void CZone::Update_AdjSector(int nSectorID, int nZone, map<ObjectID, Sector::ObjectInfo>adjSectorInfoList)
+{
+	/*
+		이웃한 다른 섹터의 정보를 받아 새로 업뎃해야함.	
+	*/
+	auto Objlist = AdjObjectList[nSectorID];
+	map<ObjectID, Sector::ObjectInfo> RemoveList;
+	for (auto [ObjectID, Objinfo] : Objlist)
+	{
+		if (adjSectorInfoList.contains(ObjectID) == false)
+		{
+			RemoveList.insert({ ObjectID,Objinfo });
+
+			//경계 오브젝트리스트 에서도 삭제!
+			AdjObjectList[nSectorID].erase(ObjectID);
+		}
+	
+
+	}
+	//새로 들어온 몹 추가 및 갱신
+	for (auto [ObjectID, Objinfo] : adjSectorInfoList)
+	{
+		if (AdjObjectList[nSectorID].contains(ObjectID))
+		{
+			AdjObjectList[nSectorID][ObjectID] = Objinfo;
+		}
+		else
+			AdjObjectList[nSectorID].insert({ ObjectID,Objinfo });
+	}
+
+
+	//이전에 갖고있던 경계 섹터의 몹정보가 없을 경우, 삭제리스트 넣어 갱신!
+	Remove_AdjObjectList.insert({ nSectorID,RemoveList });
+
+	//AdjObjectList.clear();
+	//AdjObjectList.insert({ nSectorID,adjSectorInfoList });
+
+
 
 }
 
@@ -913,7 +1049,7 @@ bool CZone::UpdateSectorID(OUT int& nSectorID, Protocol::D3DVECTOR vPos)
 		return false;
 
 	CSectorRef Sector = m_listSector[nSectorID];
-#endif
+#endif //__DOP__
 	if (Sector->BelongtoSector(vPos))
 		return false;
 
@@ -926,17 +1062,17 @@ bool CZone::UpdateSectorID(OUT int& nSectorID, Protocol::D3DVECTOR vPos)
 		현재 있는 섹터 기준으로 둘러싼 8분위 섹터만 구해 그중 속하는지 확인
 	*/
 	//for(int i=)
-	map<int, Protocol::D3DVECTOR> Adjlist = Sector->m_adjSectorList;
-	for (auto& [SectorID, vPos] : Adjlist)
+	auto Adjlist = Sector->GetAdjSectorlist();
+	for (auto& [SectorID, Data] : Adjlist)
 	{
-		float Max_x = vPos.x() + Zone::Sector_WIDTH / 2;
-		float Min_x = vPos.x() - Zone::Sector_WIDTH / 2;
+		float Max_x = Data.second.x() + Zone::Sector_WIDTH / 2;
+		float Min_x = Data.second.x() - Zone::Sector_WIDTH / 2;
 
-		float Max_y = vPos.y() + Zone::Sector_HEIGHT / 2;
-		float Min_y = vPos.y() - Zone::Sector_HEIGHT / 2;
+		float Max_y = Data.second.y() + Zone::Sector_HEIGHT / 2;
+		float Min_y = Data.second.y() - Zone::Sector_HEIGHT / 2;
 
-		if ((Min_x <= vPos.x() && vPos.x() <= Max_x) &&
-			Min_y <= vPos.y() && vPos.y() <= Max_y)
+		if ((Min_x <= Data.second.x() && Data.second.x() <= Max_x) &&
+			Min_y <= Data.second.y() && Data.second.y() <= Max_y)
 		{
 			nSectorID = SectorID;
 			return true;
@@ -1139,13 +1275,13 @@ void CZone::BroadCast(vector<CPlayer*> list, SendBufferRef sendBuffer)
 #ifdef __DOP__			
 void CZone::Set_AdjSector(float x, float y, CSector& SectorRef)
 #else
-void CZone::Set_AdjSector(float x, float y, CSectorRef SectorRef)
+void CZone::_Set_AdjSector(float x, float y, CSectorRef SectorRef)
 #endif
 {
-	int nSectorID = 0;
-	auto SectorIDExit = [&](float x, float y) ->int
+	//int nSectorID = 0;
+	auto SectorIDExit = [&](float x, float y,OUT int zoneID) ->int
 		{
-			int SectorID = 0;
+			int nSectorID = 0;
 #ifdef __DOP__			
 			for (auto&  Sector : m_vecSector)
 #else
@@ -1159,23 +1295,61 @@ void CZone::Set_AdjSector(float x, float y, CSectorRef SectorRef)
 				if (x == currnet_x && currnet_y == y)
 					SectorID = Sector.GetSecID();
 #else
+				int mmSecid = SectorRef->GetSecID();
+				if (SectorRef->GetSecID() == sectorID)
+					continue;
+
 				float currnet_x = Sector->StartPos().x();
 				float currnet_y = Sector->StartPos().y();
 
 				if (x == currnet_x && currnet_y == y)
-					SectorID = sectorID;
+				{
+					nSectorID = sectorID;
+					return nSectorID;
+
+				}
+
+
 #endif	
 			}
+		
+			//이웃한 존의 섹터리스트
+			for (auto& ZoneID : m_setAdjZone)
+			{
+				map<SectorID, CSectorRef> m_AdjSectorlist;
+				auto ZoneRef = GZoneManager->GetZone(ZoneID);
+				if (ZoneRef == nullptr)
+					continue;
 
-			return SectorID;
+				m_AdjSectorlist = ZoneRef->GetSectorList();
+
+				for (auto& [sectorID, Sector] : m_AdjSectorlist)
+				{
+					float currnet_x = Sector->StartPos().x();
+					float currnet_y = Sector->StartPos().y();
+
+					if (x == currnet_x && currnet_y == y)
+					{
+						zoneID = ZoneID;
+						nSectorID = sectorID;
+						return nSectorID;
+					}
+
+
+				}
+			}
+
+
+			return nSectorID;
 		};
 
-	nSectorID = SectorIDExit(x, y);
+	int nZoneID = m_nZoneID;
+	int nSectorID = SectorIDExit(x, y, nZoneID);
 	if (nSectorID != 0)
 #ifdef __DOP__
 		SectorRef.Insert_adjSector(nSectorID, x, y);
 #else
-		SectorRef->Insert_adjSector(nSectorID, x, y);
+		SectorRef->Insert_adjSector(nSectorID, x, y, nZoneID);
 
 #endif
 }
@@ -1283,6 +1457,9 @@ void CZone::Send_SectorInsertObject()
 				Protocol::D3DVECTOR* vPos = objectPos.mutable_vpos();
 				vPos->set_x(ObjectInfo.vPos.x);
 				vPos->set_y(ObjectInfo.vPos.y);
+
+				objectPos.set_secid(ObjectInfo.nSectorID);
+				objectPos.set_zoneid(ObjectInfo.nZoneID);
 
 				objpkt.add_pos()->CopyFrom(objectPos);
 			}
@@ -1477,6 +1654,8 @@ void CZone::Send_SectorInsertPlayer()
 {
 	//섹터리스트 복사해와서 lock 줄여야하나?
 	map<SectorID, vector<Sector::ObjectInfo>> InsertList;
+	map<SectorID, vector<Sector::ObjectInfo>> AdjZone_InsertList;
+
 	{
 		//swap후 원본 컨테이너는 clear상태, 이후에 들어온 데이터는 다음tick에 처리!
 		int lock = lock::Player;
@@ -1493,6 +1672,39 @@ void CZone::Send_SectorInsertPlayer()
 			continue;
 #else
 		CSectorRef Sector = m_listSector[SectorID];
+
+#ifdef __SEAMLESS__
+		//이웃한 섹터일 경우,현재 존에서 유저 삭제후,
+		//해당 존 큐로 유저 삽입 job 푸쉬
+		if (Sector == nullptr)
+		{
+			bool bInSector = false;
+			int nZoneID = 0;
+			for (auto ZoneInex : m_setAdjZone)
+			{
+				auto ZoneSP = GZoneManager->GetZone(ZoneInex);
+				if (ZoneSP->IsSector(SectorID))
+				{
+					bInSector = true;
+					nZoneID = ZoneInex;
+					break;
+				}
+			}
+			if (bInSector == false)
+				continue;
+
+			if (m_setAdjZone.contains(SectorID) == false)
+				continue; //에러 출력!
+
+			AdjZone_InsertList[SectorID] = sData;
+			//해당 존 큐로 푸쉬!
+			DoLogicJob(nZoneID,&CZone::SectorInsertPlayerJob, AdjZone_InsertList);
+				
+			continue;
+		}
+#endif // __SEAMLESS__
+
+
 #endif	
 		if (Sector->Empty_Player())
 			continue;
@@ -1600,6 +1812,8 @@ void CZone::Send_SectorInsertPlayer()
 void CZone::Send_SectorRemovePlayer()
 {
 	map<SectorID, vector<Sector::ObjectInfo>> RemoveList;
+	map<SectorID, vector<Sector::ObjectInfo>> AdjZone_RemoveList;
+
 	{
 		//swap후 원본 컨테이너는 clear상태, 이후에 들어온 데이터는 다음tick에 처리!
 		int lock = lock::Player;
@@ -1617,6 +1831,37 @@ void CZone::Send_SectorRemovePlayer()
 #else
 		CSectorRef Sector = m_listSector[SectorID];
 #endif
+#ifdef __SEAMLESS__
+		//이웃한 섹터일 경우,현재 존에서 유저 삭제후,
+		//해당 존 큐로 유저 삽입 job 푸쉬
+		if (Sector == nullptr)
+		{
+			bool bInSector = false;
+			int nZoneID = 0;
+			for (auto ZoneInex : m_setAdjZone)
+			{
+				auto ZoneSP = GZoneManager->GetZone(ZoneInex);
+				if (ZoneSP->IsSector(SectorID))
+				{
+					bInSector = true;
+					nZoneID = ZoneInex;
+				}
+			}
+			if (bInSector == false)
+				continue;
+
+			if (m_setAdjZone.contains(SectorID) == false)
+				continue; //에러 출력!
+
+			AdjZone_RemoveList[SectorID] = sData;
+			//해당 존 큐로 푸쉬!
+			DoLogicJob(nZoneID, &CZone::SectorInsertPlayerJob, AdjZone_RemoveList);
+
+			continue;
+		}
+#endif // __SEAMLESS__
+
+
 		if (Sector->Empty_Player())
 			continue;
 
@@ -1725,6 +1970,354 @@ void CZone::Send_SectorRemovePlayer()
 		}
 	}
 }
+void CZone::Send_AdjSector_ObjList()
+{
+	/*
+		아래 섹터와 이웃한 내 색터 구하기
+		그 섹터 위치한 유저들에게 아래 정보 전하기!
+	*/
+	for (auto& [nSecID, ObjList] : AdjObjectList)
+	{
+		
+		for (auto& [nMySecID, Sector] : m_listSector)
+		{
+			auto AdjSeclist= Sector->GetAdjSectorlist();
+			if (AdjSeclist.contains(nSecID) == false)
+				continue;
+
+			//이웃한 내 섹터 찾음!
+			
+			auto Playerlist = Sector->PlayerList();
+
+			int nSendCnt = 0;
+			int nPlayerCnt = Playerlist.size();
+			vector<CPlayer*> BroadCastlist;
+			for (auto& [playerid, Player] : Playerlist)
+			{
+				int64 nowtime = GetTickCount64();
+				Protocol::S_ALL_OBJ_LIST objpkt;
+				objpkt.set_sendtime(nowtime);
+
+#ifdef __BROADCAST_LOADBALANCE__
+#else
+				int nCnt = BroadCast_Cnt;
+#endif
+				bool bSend = false;
+				for (auto& [ObjID,ObjectInfo] : ObjList)
+				{
+#ifdef __BROADCAST_LOADBALANCE__
+#else
+					if (nCnt <= 0)
+						break;
+#endif
+					ObjectRef Object = m_nlistObject[ObjectInfo.nObjectType][ObjectInfo.nObjectID];
+					if (Object == nullptr)
+						continue;
+					Sector->Insert(ObjectInfo.nObjectType, Object);
+
+					float dist = Util::distance(ObjectInfo.vPos.x, ObjectInfo.vPos.y, Player->GetPos().x(), Player->GetPos().y());
+
+					if (dist > BroadCast_Distance)
+					{
+						continue;
+					}
+
+					bSend = true;
+					//nCnt--;
+
+					Protocol::Object_Pos objectPos;
+					objectPos.set_id(ObjectInfo.nObjectID);
+					Protocol::D3DVECTOR* vPos = objectPos.mutable_vpos();
+					vPos->set_x(ObjectInfo.vPos.x);
+					vPos->set_y(ObjectInfo.vPos.y);
+
+					objpkt.add_pos()->CopyFrom(objectPos);
+				}
+				if (bSend == false)
+					continue;
+				int size = objpkt.ByteSizeLong();
+				if (size >= 6000)
+				{
+					string data;
+					objpkt.SerializeToString(&data);
+					int length = data.length();
+				}
+#ifdef __ZONE_THREAD__
+				auto sendBuffer = ClientPacketHandler::MakeSendBuffer(objpkt, m_nZoneID);
+#else
+				auto sendBuffer = ClientPacketHandler::MakeSendBuffer(objpkt, m_nZoneID);
+#endif // __ZONE_THREAD__	
+				CPlayer* pPlayer = static_cast<CPlayer*>(Player.get());
+				if (pPlayer->ownerSession.expired() == false)
+				{
+
+#ifdef __BROADCAST_LOADBALANCE__
+					if (nPlayerCnt >= BroadCast_Cnt)
+						BroadCastlist.push_back(pPlayer);
+					else
+						pPlayer->ownerSession.lock()->Send(sendBuffer);
+#else
+					pPlayer->ownerSession.lock()->Send(sendBuffer);
+
+#endif		
+				}
+				else
+				{
+					pPlayer->SetActivate(false);
+					///세션 소멸, 해당 플레이어 객체도
+				}
+				nSendCnt++;
+
+#ifdef __BROADCAST_LOADBALANCE__
+				if (nSendCnt == nPlayerCnt)
+				{
+					if (BroadCastlist.empty() == false)
+						DoTimer(0, &CZone::BroadCast, BroadCastlist, sendBuffer);
+				}
+#endif
+			}
+
+		}
+
+
+	}
+}
+void CZone::Send_AdjSector_InsertObj()
+{
+}
+void CZone::Send_AdjSector_RemoveObj()
+{
+}
+void CZone::SectorInsertPlayerJob(map<SectorID, vector<Sector::ObjectInfo>>Insertlist)
+{
+	for (auto& [SectorID, sData] : Insertlist)
+	{
+		CSectorRef Sector = m_listSector[SectorID];
+		if (Sector == nullptr)
+		{
+			continue;
+		}
+
+
+		auto Playerlist = Sector->PlayerList();
+		int nSendCnt = 0;
+		int nPlayerCnt = Playerlist.size();
+		vector<CPlayer*> BroadCastlist;
+		for (auto& [playerid, Player] : Playerlist)
+		{
+			int64 nowtime = GetTickCount64();
+			Protocol::S_PLAYER_LIST objpkt;
+			objpkt.set_sendtime(nowtime);
+
+#ifdef __BROADCAST_LOADBALANCE__
+#else
+			int nCnt = BroadCast_Cnt;
+#endif
+			bool bSend = false;
+			for (auto& ObjectInfo : sData)
+			{
+#ifdef __BROADCAST_LOADBALANCE__
+#else
+				if (nCnt <= 0)
+					break;
+#endif
+				ObjectRef Object = m_nlistObject[ObjectInfo.nObjectType][ObjectInfo.nObjectID];
+				if (Object == nullptr)
+					continue;
+				Sector->Insert(ObjectInfo.nObjectType, Object);
+
+				float dist = Util::distance(ObjectInfo.vPos.x, ObjectInfo.vPos.y, Player->GetPos().x(), Player->GetPos().y());
+
+				if (dist > BroadCast_Distance)
+				{
+					continue;
+				}
+
+				bSend = true;
+				//nCnt--;
+
+				Protocol::Object_Pos objectPos;
+				objectPos.set_id(ObjectInfo.nObjectID);
+				Protocol::D3DVECTOR* vPos = objectPos.mutable_vpos();
+				vPos->set_x(ObjectInfo.vPos.x);
+				vPos->set_y(ObjectInfo.vPos.y);
+
+				objpkt.add_pos()->CopyFrom(objectPos);
+			}
+			if (bSend == false)
+				continue;
+			int size = objpkt.ByteSizeLong();
+			if (size >= 6000)
+			{
+				string data;
+				objpkt.SerializeToString(&data);
+				int length = data.length();
+			}
+#ifdef __ZONE_THREAD__
+			auto sendBuffer = ClientPacketHandler::MakeSendBuffer(objpkt, m_nZoneID);
+#else
+			auto sendBuffer = ClientPacketHandler::MakeSendBuffer(objpkt, m_nZoneID);
+#endif // __ZONE_THREAD__	
+			CPlayer* pPlayer = static_cast<CPlayer*>(Player.get());
+			if (pPlayer->ownerSession.expired() == false)
+			{
+
+#ifdef __BROADCAST_LOADBALANCE__
+				if (nPlayerCnt >= BroadCast_Cnt)
+					BroadCastlist.push_back(pPlayer);
+				else
+					pPlayer->ownerSession.lock()->Send(sendBuffer);
+#else
+				pPlayer->ownerSession.lock()->Send(sendBuffer);
+
+#endif		
+			}
+			else
+			{
+				pPlayer->SetActivate(false);
+				///세션 소멸, 해당 플레이어 객체도
+			}
+			nSendCnt++;
+
+#ifdef __BROADCAST_LOADBALANCE__
+			if (nSendCnt == nPlayerCnt)
+			{
+				if (BroadCastlist.empty() == false)
+					DoTimer(0, &CZone::BroadCast, BroadCastlist, sendBuffer);
+			}
+#endif
+		}
+
+	}
+
+
+}
+void CZone::SectorRemovePlayerJob(map<SectorID, vector<Sector::ObjectInfo>>RemoveList)
+{
+	for (auto& [SectorID, sData] : RemoveList)
+	{
+		CSectorRef Sector = m_listSector[SectorID];
+		if (Sector == nullptr)
+			continue;
+
+		auto Playerlist = Sector->PlayerList();
+		int nSendCnt = 0;
+		int nPlayerCnt = Playerlist.size();
+		vector<CPlayer*> BroadCastlist;
+		for (auto& [playerid, Player] : Playerlist)
+		{
+			int64 nowtime = GetTickCount64();
+
+			Protocol::S_PLAYER_REMOVE_ACK objpkt;
+			objpkt.set_sendtime(nowtime);
+#ifdef __BROADCAST_LOADBALANCE__
+#else
+			int nCnt = BroadCast_Cnt;
+#endif
+			bool bSend = false;
+			for (auto& ObjectInfo : sData)
+			{
+
+#ifdef __BROADCAST_LOADBALANCE__
+#else
+				if (nCnt <= 0)
+					break;
+#endif
+				ObjectRef Object = m_nlistObject[ObjectInfo.nObjectType][ObjectInfo.nObjectID];
+				if (Object == nullptr)
+					continue;
+				Sector->Delete(ObjectInfo.nObjectType, Object->ObjectID());
+
+				float dist = Util::distance(ObjectInfo.vPos.x, ObjectInfo.vPos.y, Player->GetPos().x(), Player->GetPos().y());
+
+				if (ObjectInfo.nObjectID == playerid)
+					continue;
+
+				if (dist > BroadCast_Distance)
+				{
+					continue;
+				}
+
+				bSend = true;
+
+				Protocol::Object_Pos objectPos;
+				objectPos.set_id(ObjectInfo.nObjectID);
+				Protocol::D3DVECTOR* vPos = objectPos.mutable_vpos();
+				vPos->set_x(ObjectInfo.vPos.x);
+				vPos->set_y(ObjectInfo.vPos.y);
+
+				objpkt.add_pos()->CopyFrom(objectPos);
+
+#ifdef __BROADCAST_LOADBALANCE__
+#else
+				nCnt--;
+#endif
+			}
+			if (bSend == false)
+				continue;
+			int size = objpkt.ByteSizeLong();
+			if (size >= 6000)
+			{
+				string data;
+				objpkt.SerializeToString(&data);
+				int length = data.length();
+
+			}
+#ifdef __ZONE_THREAD__
+			auto sendBuffer = ClientPacketHandler::MakeSendBuffer(objpkt, m_nZoneID);
+#else
+			auto sendBuffer = ClientPacketHandler::MakeSendBuffer(objpkt, m_nZoneID);
+#endif // __ZONE_THREAD__	
+			CPlayer* pPlayer = static_cast<CPlayer*>(Player.get());
+			if (pPlayer->ownerSession.expired() == false)
+			{
+#ifdef __BROADCAST_LOADBALANCE__
+				if (nPlayerCnt >= BroadCast_Cnt)
+					BroadCastlist.push_back(pPlayer);
+				else
+					pPlayer->ownerSession.lock()->Send(sendBuffer);
+#else
+				pPlayer->ownerSession.lock()->Send(sendBuffer);
+
+#endif // __BROADCAST_LOADBALANCE__
+			}
+			else
+			{
+				pPlayer->SetActivate(false);
+				///세션 소멸, 해당 플레이어 객체도
+			}
+			nSendCnt++;
+
+#ifdef __BROADCAST_LOADBALANCE__
+			if (nSendCnt == nPlayerCnt)
+			{
+				if (BroadCastlist.empty() == false)
+					DoTimer(0, &CZone::BroadCast, BroadCastlist, sendBuffer);
+			}
+#endif
+		}
+
+
+
+	}
+
+
+}
+Sector::ObjectInfo CZone::GetObjectInfo(int nSectorID, int nObjectID)
+{
+	Sector::ObjectInfo info;
+	if (AdjObjectList.contains(nSectorID))
+	{
+		if (AdjObjectList[nSectorID].contains(nObjectID))
+			info = AdjObjectList[nSectorID][nObjectID];
+	}
+	return info;
+}
+void CZone::Update_ObjectInfo(Sector::ObjectInfo info)
+{
+	m_nlistObject[info.nObjectType][info.nObjectID]->Update(info);
+
+}
 #ifdef __DOP__
 CSector* CZone::GetSector(int Index)
 {
@@ -1734,3 +2327,62 @@ CSector* CZone::GetSector(int Index)
 	// TODO: 여기에 return 문을 삽입합니다.
 }
 #endif
+std::pair<int, int> CZone::get_coords(int zone_id)
+{
+	// 존 ID는 1부터 시작하므로, 0-based index로 변환
+	int index = zone_id - 1;
+	int row = index / ZONES_PER_ROW;
+	int col = index % ZONES_PER_ROW;
+	return { row, col };
+}
+
+int CZone::get_zone_id(int row, int col)
+{
+
+	// 좌표가 유효한지 먼저 확인
+	if (row < 0 || row >= ZONES_PER_COL || col < 0 || col >= ZONES_PER_ROW) {
+		return -1; // 유효하지 않은 좌표
+	}
+	return row * ZONES_PER_ROW + col + 1; // 1-based ID로 변환
+}
+
+void CZone::Set_Neighbor_list()
+{
+	// 8방향 벡터 (상, 하, 좌, 우, 좌상, 우상, 좌하, 우하)
+	const int dr[] = { -1, 1, 0, 0, -1, -1, 1, 1 };
+	const int dc[] = { 0, 0, -1, 1, -1, 1, -1, 1 };
+
+	for (int current_zone = m_nZoneID; current_zone <= g_nZoneCount; ++current_zone) {
+		std::vector<int> neighbors;
+		std::pair<int, int> coords = get_coords(current_zone);
+		int row = coords.first;
+		int col = coords.second;
+
+		// 8방향으로 이웃 존 탐색
+		for (int i = 0; i < 8; ++i) {
+			int new_row = row + dr[i];
+			int new_col = col + dc[i];
+
+			int neighbor_id = get_zone_id(new_row, new_col);
+
+			// 유효한 이웃 존인 경우
+			if (neighbor_id != -1) {
+				neighbors.push_back(neighbor_id);
+			}
+		}
+
+		// 이웃 리스트를 오름차순으로 정렬
+		std::sort(neighbors.begin(), neighbors.end());
+
+		// 맵에 현재 존과 이웃 리스트를 저장
+		for (auto zoneid : neighbors)
+		{
+			m_setAdjZone.insert(zoneid);
+		}
+
+		return;
+		//m_adjZonelist[current_zone] = neighbors;
+	}
+
+
+}

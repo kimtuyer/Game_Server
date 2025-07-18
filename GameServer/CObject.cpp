@@ -46,6 +46,26 @@ void CObject::AI_Attack()
 {
 }
 
+void CObject::Update(Sector::ObjectInfo info)
+{
+	m_bActivate = info.bActivate;
+	if (m_bActivate == false)
+		m_bAlive = false;
+
+	m_nHP = info.nHP;
+	m_nZoneID = info.nZoneID;
+	m_nSectorID = info.nSectorID;
+
+	for (int i = 0; i < 4; i++)
+		m_nStateTime[i] = info.m_nStateTime[i];
+
+	m_vPos.set_x(info.vPos.x);
+	m_vPos.set_y(info.vPos.y);
+	m_vPos.set_z(info.vPos.z);
+
+
+}
+
 bool CObject::Attacked(int nAttack, OUT int& nKillcount)
 {
 	WRITE_LOCK;

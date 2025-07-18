@@ -34,6 +34,13 @@ public:
 		PushDB(ObjectPool<Job>::MakeShared(owner, memFunc, std::forward<Args>(args)...));
 	}
 
+	template<typename T, typename Ret, typename... Args>
+	void DoLogicJob(int nZone,Ret(T::* memFunc)(Args...), Args... args)
+	{
+		shared_ptr<T> owner = static_pointer_cast<T>(shared_from_this());
+		PushLogicJob(nZone,ObjectPool<Job>::MakeShared(owner, memFunc, std::forward<Args>(args)...));
+	}
+
 	void DoTimer(uint64 tickAfter, CallbackType&& callback)
 	{
 		JobRef job = ObjectPool<Job>::MakeShared(std::move(callback));
@@ -72,6 +79,8 @@ public:
 	void					Push(JobRef job, bool pushOnly = false);
 
 	void					PushDB(JobRef job);
+
+	void					PushLogicJob(int ZoneID,JobRef job);
 
 
 

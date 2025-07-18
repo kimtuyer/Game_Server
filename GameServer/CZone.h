@@ -7,6 +7,7 @@ class CObject;
 using ObjectType = int;
 using ObjectID = int;
 using SectorID = int;
+using Zone_ID = int;
 typedef  map<ObjectID, ObjectRef> ObjectList;
 
 class CZone : public JobQueue
@@ -17,6 +18,7 @@ public:
 	CZone(int nMaxUserCnt, int m_nZoneID, Protocol::D3DVECTOR vPos);
 	~CZone();
 
+	void SetAdjSector();
 
 	int		ZoneID()
 	{
@@ -32,6 +34,7 @@ public:
 
 	//리스트 순회, 객체 타이머 
 	void Update();
+	void Update_AdjSector(int nSectorID,int nZone, map<ObjectID, Sector::ObjectInfo>);
 	void Update_Player();
 	
 	void Update_Partial(int beginSectorID, int endSectorID);
@@ -88,6 +91,20 @@ public:
 		return m_listSector[SectorID];
 	}
 #endif // __DOP__
+	bool	IsSector(int sectorID)
+	{
+		if (m_listSector.contains(sectorID) == false)
+			return  false;
+		return true;
+	}
+
+
+	const map<SectorID, CSectorRef> GetSectorList()
+	{
+		return m_listSector;
+	}
+
+
 
 	ObjectList& PlayerList()
 	{
@@ -136,7 +153,8 @@ public:
 #ifdef __DOP__			
 	void Set_AdjSector(float x, float y , CSector&);
 #else
-	void Set_AdjSector(float x, float y, CSectorRef);
+	void _Set_AdjSector(float x, float y, CSectorRef);
+
 #endif
 
 
@@ -152,6 +170,19 @@ public:
 	void Send_SectorInsertPlayer();
 	void Send_SectorRemovePlayer();
 
+
+	void Send_AdjSector_ObjList();
+	void Send_AdjSector_InsertObj();
+	void Send_AdjSector_RemoveObj();
+
+
+	void SectorInsertPlayerJob(map<SectorID, vector<Sector::ObjectInfo>>);
+	void SectorRemovePlayerJob(map<SectorID, vector<Sector::ObjectInfo>>);
+
+	Sector::ObjectInfo GetObjectInfo(int nSectorID,int ObjectID);
+
+	void Update_ObjectInfo(Sector::ObjectInfo);
+	
 	//CSectorRef GetSectorID(int nSectorID)
 	//{
 	//
@@ -177,6 +208,15 @@ private:	//오브젝트 리스트도 맵 or set이 나은가?
 	map<SectorID, int>m_mapSector;
 #else
 	map<SectorID, CSectorRef> m_listSector;
+	//set<Zone_ID> m_setAdjZone;
+#ifdef __SEAMLESS__
+	std::set<Zone_ID> m_setAdjZone;
+	std::map<SectorID, map<ObjectID, Sector::ObjectInfo>>AdjObjectList;
+
+	std::map<SectorID, map<ObjectID, Sector::ObjectInfo>>Remove_AdjObjectList;
+
+#endif // __SEAMLESS__
+
 
 	map<SectorID, vector<Sector::ObjectInfo>> m_listBorderSector;
 	//map<SectorID, CSectorRef> m_listBorderSector;
@@ -203,11 +243,19 @@ private:	//오브젝트 리스트도 맵 or set이 나은가?
 	bool m_bActivate;
 
 	//8방향 좌표 리스트
-	vector<pair<int, int>> directions = {
+	vector<pair<float, float>> directions = {
 		   {0, -Zone::Sector_HEIGHT}, {0, Zone::Sector_HEIGHT }, {-Zone::Sector_WIDTH, 0}, {Zone::Sector_WIDTH, 0},
 		   {-Zone::Sector_WIDTH, -Zone::Sector_HEIGHT}, {Zone::Sector_WIDTH, -Zone::Sector_HEIGHT}, {-Zone::Sector_WIDTH, Zone::Sector_HEIGHT},
 		{Zone::Sector_WIDTH, Zone::Sector_HEIGHT}
 	};
 
+	// 1차원 존 ID를 2차원 그리드 좌표 (0-based)로 변환하는 함수
+	std::pair<int, int> get_coords(int zone_id);
+
+	// 2차원 그리드 좌표 (0-based)를 1차원 존 ID로 변환하는 함수
+	int get_zone_id(int row, int col);
+
+	// 모든 존의 이웃 리스트를 생성하는 함수
+	void Set_Neighbor_list();
 };
 

@@ -28,8 +28,7 @@ public:
 	static void DistributeDBJobs();
 
 
-	static void  DistributeBroadJobs();
-	static void DoBroadQueueWork();
+	static bool DoZoneQueueWork(int nZoneID);
 
 
 	//array<unique_ptr<ZoneQueue>, Zone::g_nZoneCount+1> zoneQueues;

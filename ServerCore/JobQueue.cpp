@@ -39,6 +39,18 @@ void JobQueue::PushDB(JobRef job)
 	}
 }
 
+void JobQueue::PushLogicJob(int ZoneID,JobRef job)
+{
+	const int32 prevCount = _jobCount.fetch_add(1);
+	_jobs.Push(job); // WRITE_LOCK
+	if (prevCount == 0)
+	{
+		{
+			GZoneLogicQueue[ZoneID]->Push(shared_from_this());
+		}
+	}
+}
+
 //void JobQueue::BroadJobPush(JobRef job, bool pushOnly)
 //{
 //	const int32 prevCount = _jobCount.fetch_add(1);

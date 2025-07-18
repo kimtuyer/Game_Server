@@ -18,11 +18,14 @@
 #include <fstream>
 #include "CouchbaseClient.h"
 #include "CZone.h"
+#include "CBattle.h"
 //#include "tao/json.hpp"
 //atomic<int>	g_nPacketCount = 0;
 
 //class CZone_Manager;
 array<shared_ptr<ZonePacketQueue>, Zone::g_nZoneCount + 1> ZonePacketQueues = {};
+//array<shared_ptr<ZoneMessageQueue>, Zone::g_nZoneCount + 1> ZonePacketQueues = {};
+
 map<int, bool>	threadRebalance;
 void DoMainJob()
 {
@@ -166,18 +169,16 @@ void DoZoneJob(ServerServiceRef& service, int ZoneID)
 		if (timeUntilNextUpdate > 0) {
 			uint64 endTime = timeUntilNextUpdate + GetTickCount64();
 
+			LEndTickCount = endTime;
 			while (GetTickCount64() < endTime)
 			{
 #ifdef __ZONE_THREAD_VER1__
 				PacketInfo job;
 				if (ZonePacketQueue->jobs.try_pop(job))
 					ClientPacketHandler::HandlePacket(job.m_session, job.m_buffer, job.m_len);
-				else
 				{
-					ThreadManager::DistributeReservedJobs();
-					//
-					ThreadManager::DoGlobalQueueWork();
-
+					
+					ThreadManager::DoZoneQueueWork(ZoneID);
 					std::this_thread::sleep_for(std::chrono::milliseconds(1));
 				}
 #endif // __ZONE_THREAD_VER1__

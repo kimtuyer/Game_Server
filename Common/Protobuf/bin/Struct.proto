@@ -22,5 +22,9 @@ message Object_Pos
 {
 	uint64 id = 1;
 	D3DVECTOR vPos=2;
+	uint32	zoneID=3;
+	uint32	secID=4;
+
+
 	// Ω∫≈» ¡§∫∏...
 }

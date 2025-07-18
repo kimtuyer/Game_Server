@@ -248,6 +248,30 @@ bool Handle_S_PLAYER_REMOVE_ACK(PacketSessionRef& session, Protocol::S_PLAYER_RE
 	return true;
 }
 
+bool Handle_S_ALL_OBJ_LIST(PacketSessionRef& session, Protocol::S_ALL_OBJ_LIST& pkt)
+{
+	RTT(GetTickCount64(), pkt.sendtime(), "Handle_S_ALL_OBJ_LIST");
+
+
+	ClientSessionRef gameSession = static_pointer_cast<ClientSession>(session);
+
+
+	int size = pkt.pos_size();
+	for (int i = 0; i < size; i++)
+	{
+		//Sector::ObjectInfo info;
+		Protocol::Object_Pos object = pkt.pos(i);
+		gameSession->_currentPlayer->Insert_Target(object);
+	}
+	gameSession->_currentPlayer->SetSearchOn(true); //주변 오브젝트 탐색가능
+	/*
+
+
+	*/
+	// TODO
+	return true;
+}
+
 bool Handle_S_PLAYER_LIST(PacketSessionRef& session, Protocol::S_PLAYER_LIST& pkt)
 {
 	RTT(GetTickCount64(), pkt.sendtime(), "S_PLAYER_LIST");

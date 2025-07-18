@@ -28,6 +28,9 @@
     <Filter Include="Job">
       <UniqueIdentifier>{c54c61ba-a069-4962-9519-37573e12746f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Logic">
+      <UniqueIdentifier>{5803587f-a39d-41aa-9233-9c111da8d0ef}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameServer.cpp">
@@ -86,6 +89,9 @@
       <Filter>DB</Filter>
     </ClCompile>
     <ClCompile Include="ZoneWorkerThread.cpp" />
+    <ClCompile Include="CBattle.cpp">
+      <Filter>Logic</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -141,6 +147,9 @@
       <Filter>DB</Filter>
     </ClInclude>
     <ClInclude Include="ZoneWorkerThread.h" />
+    <ClInclude Include="CBattle.h">
+      <Filter>Logic</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Common\Protobuf\bin\Enum.proto">

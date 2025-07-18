@@ -2,6 +2,8 @@
 using ObjectType = int;
 using ObjectID = int;
 typedef  map<ObjectID, ObjectRef> ObjectList;
+typedef  map<ObjectID, Sector::ObjectInfo> ObjectInfoList;
+
 using namespace LOCK;
 
 class ClientPacketHandler;
@@ -60,6 +62,12 @@ public:
 	}
 
 	ObjectList& PlayerList();
+	ObjectInfoList PlayerInfoList();
+
+	ObjectInfoList MonsterInfoList();
+
+
+
 	bool	Empty_Player()
 	{
 		int lock = lock::Player;
@@ -81,7 +89,7 @@ public:
 
 	CObject* SearchEnemy(CObject* pMonster);
 
-	void Insert_adjSector(int sectorID, float x, float y);
+	void Insert_adjSector(int sectorID, float x, float y, int zoneID);
 
 	void Insert_ObjecttoSector(Sector::ObjectInfo object);
 	void Remove_ObjecttoSector(Sector::ObjectInfo object);
@@ -92,7 +100,12 @@ public:
 	{
 		return m_nSectorID;
 	}
-	map<int, Protocol::D3DVECTOR> m_adjSectorList;
+
+	map<int, pair<int,Protocol::D3DVECTOR>> GetAdjSectorlist()
+	{
+		return m_adjSectorList;
+	}
+
 	int m_nZoneID;
 	int	m_nSectorID;
 	Protocol::D3DVECTOR m_vStartpos;
@@ -108,6 +121,7 @@ private:
 	//map<ObjectID, ObjectRef > m_nlistObject;
 
 	map<ObjectType, map<ObjectID, ObjectRef>> m_nlistObject;
+	map<int, pair<int /*ZoneID*/, Protocol::D3DVECTOR>> m_adjSectorList;
 #ifdef __DOP__
 	vector<CMonster>m_vecMonsters;
 	map<ObjectID, int>m_mapMonster;

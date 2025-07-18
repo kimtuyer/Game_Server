@@ -21,8 +21,9 @@ enum : uint16
 	PKT_S_OBJ_REMOVE_ACK = 1012,
 	PKT_S_PLAYER_LIST = 1013,
 	PKT_S_PLAYER_REMOVE_ACK = 1014,
-	PKT_C_CHAT = 1015,
-	PKT_S_CHAT = 1016,
+	PKT_S_ALL_OBJ_LIST = 1015,
+	PKT_C_CHAT = 1016,
+	PKT_S_CHAT = 1017,
 };
 
 // Custom Handlers
@@ -38,6 +39,7 @@ bool Handle_S_OBJ_LIST(PacketSessionRef& session, Protocol::S_OBJ_LIST& pkt);
 bool Handle_S_OBJ_REMOVE_ACK(PacketSessionRef& session, Protocol::S_OBJ_REMOVE_ACK& pkt);
 bool Handle_S_PLAYER_LIST(PacketSessionRef& session, Protocol::S_PLAYER_LIST& pkt);
 bool Handle_S_PLAYER_REMOVE_ACK(PacketSessionRef& session, Protocol::S_PLAYER_REMOVE_ACK& pkt);
+bool Handle_S_ALL_OBJ_LIST(PacketSessionRef& session, Protocol::S_ALL_OBJ_LIST& pkt);
 bool Handle_S_CHAT(PacketSessionRef& session, Protocol::S_CHAT& pkt);
 
 class ServerPacketHandler
@@ -58,6 +60,7 @@ public:
 		GPacketHandler[PKT_S_OBJ_REMOVE_ACK] = [](PacketSessionRef& session, BYTE* buffer, int32 len) { return HandlePacket<Protocol::S_OBJ_REMOVE_ACK>(Handle_S_OBJ_REMOVE_ACK, session, buffer, len); };
 		GPacketHandler[PKT_S_PLAYER_LIST] = [](PacketSessionRef& session, BYTE* buffer, int32 len) { return HandlePacket<Protocol::S_PLAYER_LIST>(Handle_S_PLAYER_LIST, session, buffer, len); };
 		GPacketHandler[PKT_S_PLAYER_REMOVE_ACK] = [](PacketSessionRef& session, BYTE* buffer, int32 len) { return HandlePacket<Protocol::S_PLAYER_REMOVE_ACK>(Handle_S_PLAYER_REMOVE_ACK, session, buffer, len); };
+		GPacketHandler[PKT_S_ALL_OBJ_LIST] = [](PacketSessionRef& session, BYTE* buffer, int32 len) { return HandlePacket<Protocol::S_ALL_OBJ_LIST>(Handle_S_ALL_OBJ_LIST, session, buffer, len); };
 		GPacketHandler[PKT_S_CHAT] = [](PacketSessionRef& session, BYTE* buffer, int32 len) { return HandlePacket<Protocol::S_CHAT>(Handle_S_CHAT, session, buffer, len); };
 	}
 

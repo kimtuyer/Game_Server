@@ -17,6 +17,8 @@ public:
 	virtual void AI_Move();
 	virtual void AI_Attack();
 
+	void	Update(Sector::ObjectInfo info);
+
 	float	GetSearchRange()
 	{
 		return m_fSearchRange;
@@ -137,6 +139,22 @@ public:
 	
 	int m_nStateTime[Object::End];
 	Object::eObject_State	m_eState;
+
+	Sector::ObjectInfo GetObjectInfo()
+	{
+		Sector::ObjectInfo info;
+		info.nAttack = m_nAttack;
+		info.nHP = m_nHP;
+		info.nObjectID = m_nObjectID;
+		info.nObjectType = m_nObjectType;
+		info.nSectorID = m_nSectorID;
+		info.vPos.x = m_vPos.x();
+		info.vPos.y = m_vPos.y();
+		info.vPos.z = m_vPos.z();
+
+			
+		return info;
+	}
 
 protected:
 	//USE_LOCK;

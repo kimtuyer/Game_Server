@@ -242,6 +242,8 @@ void CMonster::AI_Move()
 			info.vPos.y = m_vPos.y();
 			info.nObjectType = ObjectType();
 
+			info.nZoneID = m_nZoneID;
+
 			Zone->Insert_ObjecttoSector(info);
 		}
 

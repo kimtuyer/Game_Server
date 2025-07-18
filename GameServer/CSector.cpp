@@ -339,6 +339,47 @@ ObjectList& CSector::PlayerList()
 	// TODO: 여기에 return 문을 삽입합니다.
 }
 
+ObjectInfoList CSector::PlayerInfoList()
+{
+	ObjectInfoList list;
+	{
+		int lock = lock::Player;
+		READ_LOCK_IDX(lock);
+		{
+			for (auto& sData : m_nlistObject[Object::Player])
+			{
+				Sector::ObjectInfo info;
+				info = sData.second->GetObjectInfo();
+				list.insert({ info.nObjectID, info });
+			}
+		}
+	}
+
+	return list;
+	
+
+	// TODO: 여기에 return 문을 삽입합니다.
+}
+
+ObjectInfoList CSector::MonsterInfoList()
+{
+	ObjectInfoList list;
+	{
+		int lock = lock::Monster;
+		READ_LOCK_IDX(lock);
+		{
+			for (auto& sData : m_nlistObject[Object::Monster])
+			{
+				Sector::ObjectInfo info;
+				info = sData.second->GetObjectInfo();
+				list.insert({ info.nObjectID, info });
+			}
+		}
+	}
+
+	return list;
+}
+
 CObject* CSector::SearchEnemy(CObject* pMonster)
 {
 	ObjectList Playerlist = PlayerList();
@@ -367,13 +408,14 @@ CObject* CSector::SearchEnemy(CObject* pMonster)
 	return nullptr;
 }
 
-void CSector::Insert_adjSector(int sectorID, float x, float y)
+void CSector::Insert_adjSector(int sectorID, float x, float y, int zoneID)
 {
 	Protocol::D3DVECTOR vPos;
 	vPos.set_x(x);
 	vPos.set_y(y);
 
-	m_adjSectorList.insert({ sectorID,vPos });
+	std::pair<int, Protocol::D3DVECTOR> Value = { zoneID,vPos };
+	m_adjSectorList.insert({ sectorID, Value });
 }
 
 void CSector::Insert_DeadList(int ObjectID)

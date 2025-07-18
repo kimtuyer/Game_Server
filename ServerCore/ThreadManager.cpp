@@ -103,4 +103,23 @@ void ThreadManager::DistributeDBJobs()
 	
 	GDBJobTimer->Distribute(now);
 }
+bool ThreadManager::DoZoneQueueWork(int nZoneID)
+{
+	while (true)
+	{
+		uint64 now = ::GetTickCount64();
+		if (now > LEndTickCount)
+			break;
+
+		JobQueueRef jobQueue = GZoneLogicQueue[nZoneID]->Pop();
+		if (jobQueue == nullptr)
+		{
+			return false;
+			break;
+		}
+
+		jobQueue->Execute(JobType::Zone_Job);
+		return true;
+	}
+}
 /*												*/

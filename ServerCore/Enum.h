@@ -21,6 +21,7 @@ namespace JobType
 	{
 		GLOBAL_JOB=1,
 		DB_JOB=2,
+		Zone_Job=3,
 
 	};
 
@@ -63,7 +64,7 @@ namespace Zone
 
 
 	static const int  Sector_Count = 16;
-	static const float  Sector_WIDTH = ZONE_WIDTH/4;  // 각 섹터의 가로 크기
+	static const float  Sector_WIDTH = (float)ZONE_WIDTH/4;  // 각 섹터의 가로 크기
 	static const float  Sector_HEIGHT = (float)ZONE_HEIGHT/4; // 각 섹터의 세로 크기
 
 	static const int  Sector_PER_ROW = 4;
@@ -73,6 +74,14 @@ namespace Zone
 	static const float  BroadCast_Distance = 3.5;
 
 
+	enum ZoneJob
+	{
+		None=0,
+		Insert=1,
+		Delete=2,
+		Update=3,
+
+	};
 
 
 
