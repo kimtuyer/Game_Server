@@ -62,7 +62,15 @@ bool CPlayer::Attack(Protocol::C_ATTACK& pkt)
 			bRet = false;
 	}
 	else
-		targetInfo= TargetZone->GetObjectInfo(pkt.targetsecid(), pkt.targetid());
+	{
+		targetInfo= TargetZone->GetMyObjectInfo(pkt.targetsecid(), pkt.objecttype(), pkt.targetid());
+		if (targetInfo.nObjectID == 0)
+		{
+			int secid = pkt.targetsecid();
+			int id = pkt.targetid();
+			cout << "" << endl;
+		}
+	}
 	
 #else
 	ObjectRef ObjectSP = Zone->Object(pkt.objecttype(), pkt.targetid());
@@ -125,7 +133,7 @@ bool CPlayer::Attack(Protocol::C_ATTACK& pkt)
 				//타겟이 다른 존 일경우, 해당 존으로 상태정보 알림!
 				if (bSameZone == false)
 				{
-					DoLogicJob(pkt.targetzoneid(), &CZone::Update_ObjectInfo, targetInfo);
+					TargetZone->DoLogicJob(TargetZone->ZoneID(), &CZone::Update_ObjectInfo, targetInfo);
 
 				}
 				else

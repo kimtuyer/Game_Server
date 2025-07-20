@@ -120,6 +120,8 @@ bool Handle_S_MOVE_ACK(PacketSessionRef& session, Protocol::S_MOVE_ACK& pkt)
 	ClientSessionRef gameSession = static_pointer_cast<ClientSession>(session);
 
 	gameSession->_currentPlayer->SetSectorID(pkt.sectorid());
+	gameSession->_currentPlayer->SetZoneid(pkt.zoneid());
+
 
 	//섹터 이동후, 기존 섹터에 존재하던 targetlist는 초기화.
 	gameSession->_currentPlayer->Clear_TargetList();
@@ -168,6 +170,8 @@ bool Handle_S_OBJ_LIST(PacketSessionRef& session, Protocol::S_OBJ_LIST& pkt)
 	{
 		//Sector::ObjectInfo info;
 		Protocol::Object_Pos object = pkt.pos(i);
+		if (object.objecttype() == 0)
+			//cout << "S_OBJ_LIST 타입 없" << endl;
 		gameSession->_currentPlayer->Insert_Target(object);
 	}
 	gameSession->_currentPlayer->SetSearchOn(true); //주변 오브젝트 탐색가능
@@ -252,17 +256,26 @@ bool Handle_S_ALL_OBJ_LIST(PacketSessionRef& session, Protocol::S_ALL_OBJ_LIST& 
 {
 	RTT(GetTickCount64(), pkt.sendtime(), "Handle_S_ALL_OBJ_LIST");
 
+	//cout << "Handle_S_ALL_OBJ_LIST" << endl;
+
+
+	//다른 존과 이웃한 경계 섹터에 위치한 유저들에게 다른 존 경계섹터 정보 동기화
 
 	ClientSessionRef gameSession = static_pointer_cast<ClientSession>(session);
 
+	vector< Protocol::Object_Pos> vecObjectlist;
 
 	int size = pkt.pos_size();
 	for (int i = 0; i < size; i++)
 	{
 		//Sector::ObjectInfo info;
 		Protocol::Object_Pos object = pkt.pos(i);
-		gameSession->_currentPlayer->Insert_Target(object);
+		if (object.objecttype() == 0)
+			//cout << "Handle_S_ALL_OBJ_LIST 타입 없" << endl;
+		vecObjectlist.emplace_back(object);
 	}
+	gameSession->_currentPlayer->Update_TargetList(vecObjectlist);
+
 	gameSession->_currentPlayer->SetSearchOn(true); //주변 오브젝트 탐색가능
 	/*
 

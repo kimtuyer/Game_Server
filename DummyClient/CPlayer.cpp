@@ -71,6 +71,9 @@ void CClientPlayer::AI_Idle()
 	//move_ack를 받고 타겟리스트를 지웠을경우, 그 다음 obj_list를 받을때까진 타겟검색을 할수없다!
 	for (auto [ObjectID, ObjectInfo] : m_listTarget)
 	{
+		if (ObjectInfo.objecttype() == Object::Player)
+			continue;
+
 		float dist = Util::distance(ObjectInfo.vpos().x(), ObjectInfo.vpos().y(), m_vPos.x(), m_vPos.y());
 
 		if (dist > Zone::BroadCast_Distance)
@@ -93,7 +96,9 @@ void CClientPlayer::AI_Idle()
 			pkt.set_sendtime(GetTickCount64());
 			pkt.set_skillid(1);
 			pkt.set_targetid(m_targetInfo.id());
-			pkt.set_objecttype(Object::Monster);
+			if (m_targetInfo.objecttype() == 0)
+				//cout << "" << endl;
+			pkt.set_objecttype(m_targetInfo.objecttype());
 
 			pkt.set_targetsecid(m_targetInfo.secid());
 			pkt.set_targetzoneid(m_targetInfo.zoneid());
@@ -127,11 +132,17 @@ void CClientPlayer::AI_Move()
 	//float x =  m_vPos.x() + Zone::ZONE_WIDTH / Zone::ZONE_WIDTH * (Tick::SECOND_TICK * 0.001);
 	//m_vPos.set_x(x);
 	//float y = m_vPos.y() + Zone::ZONE_WIDTH / second * (Tick::AI_TICK * 0.001);
-	auto vNextPos = GRandomMove->getNextPosition(m_nZoneID, m_vPos.x(), m_vPos.y());
+	auto vNextPos = GRandomMove->getNextPosition(m_nZoneID, m_vPos.x(), m_vPos.y(),Object::Player);
+
+	if (vNextPos.first == m_vPos.x() && vNextPos.second == m_vPos.y())
+	{
+		//cout << "" << endl;
+	}
+
 	m_vPos.set_x(vNextPos.first);
 	m_vPos.set_y(vNextPos.second);
 
-	Protocol::C_MOVE pkt;
+	Protocol::C_MOVE pkt;   
 	{
 		pkt.set_sendtime(GetTickCount64());
 		pkt.set_playerid(m_nObjectID);
@@ -187,8 +198,18 @@ void CClientPlayer::Insert_Target(Protocol::Object_Pos info)
 	m_listTarget.insert({ info.id(),info });
 }
 
-void CClientPlayer::Insert_TargetList(vector<Sector::ObjectInfo> list)
+void CClientPlayer::Update_TargetList(vector<Protocol::Object_Pos> list)
 {
+	WRITE_LOCK;
+
+	for (auto& Obj : list)
+	{
+		int nObjectID = Obj.id();
+		if (m_listTarget.contains(nObjectID))
+			m_listTarget[nObjectID] = Obj;
+		else
+			m_listTarget.insert({ nObjectID ,Obj });
+	}
 }
 
 void CClientPlayer::Delete_Target(Protocol::Object_Pos info)

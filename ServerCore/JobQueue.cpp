@@ -106,7 +106,7 @@ void JobQueue::PushLogicJob(int ZoneID,JobRef job)
 //}
 
 // 1) 일감이 너~무 몰리면?
-void JobQueue::Execute(int JobType = JobType::GLOBAL_JOB)
+void JobQueue::Execute(int JobType)
 {
 	LCurrentJobQueue = this;
 

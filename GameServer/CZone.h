@@ -27,6 +27,9 @@ public:
 	//오브젝트 리스트에 객체 삽입
 	bool _Enter(ObjectType, PlayerRef&);
 
+	//오브젝트 리스트에 객체 삽입
+	bool _EnterMonster(ObjectType, ObjectRef);
+
 	//오브젝트 리스트 객체 삭제
 	void Remove(ObjectType, int objectID);
 
@@ -81,7 +84,7 @@ public:
 	bool	Enter();
 
 	
-	bool	UpdateSectorID(OUT int& nSectorID,Protocol::D3DVECTOR vPos);
+	bool	UpdateSectorID(OUT int& nSectorID,OUT int& nMoveZone,int nObjectType,Protocol::D3DVECTOR vPos);
 
 	int			GetInitSectorID();
 #ifndef __DOP__
@@ -179,7 +182,8 @@ public:
 	void SectorInsertPlayerJob(map<SectorID, vector<Sector::ObjectInfo>>);
 	void SectorRemovePlayerJob(map<SectorID, vector<Sector::ObjectInfo>>);
 
-	Sector::ObjectInfo GetObjectInfo(int nSectorID,int ObjectID);
+	Sector::ObjectInfo GetAdjObjectInfo(int nSectorID,int ObjectID);
+	Sector::ObjectInfo GetMyObjectInfo(int nSectorID, int nObjectType,int ObjectID);
 
 	void Update_ObjectInfo(Sector::ObjectInfo);
 	

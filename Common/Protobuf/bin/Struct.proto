@@ -24,6 +24,8 @@ message Object_Pos
 	D3DVECTOR vPos=2;
 	uint32	zoneID=3;
 	uint32	secID=4;
+	uint32	ObjectType=5;
+
 
 
 	// Ω∫≈» ¡§∫∏...

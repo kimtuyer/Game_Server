@@ -24,7 +24,7 @@ public:
 
 
 	void Insert_Target(Protocol::Object_Pos info);
-	void Insert_TargetList(vector<Sector::ObjectInfo>list);
+	void Update_TargetList(vector<Protocol::Object_Pos>list);
 	void Delete_Target(Protocol::Object_Pos info);
 	void Delete_TargetList(vector<Sector::ObjectInfo>list);
 	void Clear_TargetList();

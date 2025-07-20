@@ -52,6 +52,8 @@ message S_MOVE_ACK
 	uint64 sendTime=1;
 	bool success = 2;
 	uint32	 sectorid=3;
+	uint32	 zoneid=4;
+
 
 }
 

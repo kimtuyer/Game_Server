@@ -124,7 +124,8 @@ namespace LOCK
 		Player = 1,
 		Monster = 2,
 		Die = 3,
-		End = 4
+		Insert_M=4,
+		End,
 
 	};
 }

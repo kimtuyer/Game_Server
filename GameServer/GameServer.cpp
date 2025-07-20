@@ -381,6 +381,8 @@ void DoRenderingJob()
 
 			GConsoleViewer->renderFrame();
 #endif
+
+			std::this_thread::sleep_for(std::chrono::milliseconds(1));
 			//락 프리 기법 렌더링
 			//GConsoleViewer->processUpdates();
 		}

@@ -17,7 +17,7 @@ public:
     RandomMove();
 
     // 새로운 위치 계산
-    std::pair<float, float> getNextPosition(int nZoneid, float currentX, float currentY);
+    std::pair<float, float> getNextPosition(int nZoneid, float currentX, float currentY,int nObjectType);
 
     // 특정 존 내의 랜덤한 초기 위치 생성
     std::pair<float, float> getRandomInitialPosition() {

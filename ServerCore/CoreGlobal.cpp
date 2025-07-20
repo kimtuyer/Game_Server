@@ -39,7 +39,7 @@ public:
 		GDBJobTimer = new JobTimer();
 		GDBQueue = new GlobalQueue();
 		//GZoneLogicQueue.resize(g_nZoneCount);
-		for (int i = 1; i <= g_nZoneCount; i++)
+		for (int i = 0; i <= g_nZoneCount; i++)
 			GZoneLogicQueue.push_back(new GlobalQueue);
 		//GBroadQueue = new GlobalQueue();
 		//GBroadCastTimer = new JobTimer();

@@ -230,8 +230,50 @@ bool Handle_C_MOVE(PacketSessionRef& session, Protocol::C_MOVE& pkt)
 
 	int nCurSectorID = pPlayer->GetSectorID();
 	int nPrevSectorID = nCurSectorID;
-	if (Zone->UpdateSectorID(nCurSectorID, vPos))
+	int nPrefZone = nZoneid;
+	if (Zone->UpdateSectorID(nCurSectorID, nZoneid,Object::Player,vPos))
 	{
+
+#ifdef __SEAMLESS__
+
+		/*
+			이동한 섹터가, 다른 존의 섹터면?
+			내 존 및 섹터내에서 삭제 및
+			해당 존 섹터로의 추가는, 해당 존 메시지큐로 전달!
+		*/
+		Sector::ObjectInfo info;
+		{
+			info.nSectorID = nCurSectorID;
+			info.nObjectID = pkt.playerid();
+			info.vPos.x = vPos.x();
+			info.vPos.y = vPos.y();
+			info.nObjectType = Object::Player;
+			info.nZoneID = nZoneid;
+			//Zone->Insert_PlayertoSector(info);
+
+		}
+
+		if (nPrefZone != nZoneid)
+		{
+			//존 패킷큐에서 꺼내 처리시, 같은 존 담당 스레드에서 처리하니 여기서 삭제가능?
+
+			CZoneRef newZone = GZoneManager->GetZone(nZoneid);
+			if (Zone == nullptr)
+				return false;
+			newZone->DoLogicJob(nZoneid, &CZone::Insert_PlayertoSector, info);
+			//newZone->DoLogicJob(nMoveZone, &CZone::_Enter, Object::Player, &pPlayer);
+			Zone->Remove(Object::Player, info.nObjectID);
+		}
+		else
+		{
+			//Sector 변경
+			Zone->Insert_PlayertoSector(info);	
+		}
+		//이전에 위치했던 섹터id로 변경후 제거
+		info.nSectorID = nPrevSectorID;
+		Zone->Remove_PlayertoSector(info);
+		//섹터 위치 변경
+#else
 		//Sector 변경
 		
 		Sector::ObjectInfo info;
@@ -268,11 +310,13 @@ bool Handle_C_MOVE(PacketSessionRef& session, Protocol::C_MOVE& pkt)
 
 		//섹터 위치 변경
 #endif
+#endif // __SEAMLESS__
 		//섹터 위치 변경시에만 알려줌.
 		Protocol::S_MOVE_ACK moveackpkt;
 		moveackpkt.set_sendtime(pkt.sendtime());
 		moveackpkt.set_success(true);
 		moveackpkt.set_sectorid(nCurSectorID);
+		moveackpkt.set_zoneid(nZoneid);
 
 #ifdef __ZONE_THREAD__
 		auto sendBuffer = ClientPacketHandler::MakeSendBuffer(moveackpkt, nZoneid);

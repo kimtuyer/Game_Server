@@ -171,6 +171,7 @@ bool CSector::Insert(int nObjectType, ObjectRef& Object)
 {
 	int lock = lock::Object;
 	WRITE_LOCK_IDX(lock);
+	Object->SetSectorID(m_nSectorID);
 	m_nlistObject[nObjectType].insert({ Object->ObjectID(),Object });
 	
 	return true;
@@ -350,6 +351,8 @@ ObjectInfoList CSector::PlayerInfoList()
 			{
 				Sector::ObjectInfo info;
 				info = sData.second->GetObjectInfo();
+				if (info.nObjectType == 0)
+					cout << "" << endl;
 				list.insert({ info.nObjectID, info });
 			}
 		}
@@ -372,6 +375,8 @@ ObjectInfoList CSector::MonsterInfoList()
 			{
 				Sector::ObjectInfo info;
 				info = sData.second->GetObjectInfo();
+				if (info.nObjectType == 0)
+					cout << "" << endl;
 				list.insert({ info.nObjectID, info });
 			}
 		}

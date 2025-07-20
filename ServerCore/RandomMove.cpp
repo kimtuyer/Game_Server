@@ -11,7 +11,7 @@ stepDist(0, MAX_STEP)
 
 }
 
-std::pair<float, float> RandomMove::getNextPosition(int nZoneid, float currentX, float currentY)
+std::pair<float, float> RandomMove::getNextPosition(int nZoneid, float currentX, float currentY,int nObjectType)
 {
     float angle = angleDist(gen);  // 랜덤 각도
     float step = stepDist(gen);    // 랜덤 이동 거리
@@ -62,12 +62,38 @@ std::pair<float, float> RandomMove::getNextPosition(int nZoneid, float currentX,
         ZONE_HEIGHT = 5 * Zone::ZONE_HEIGHT;
     }
 
+#ifdef __SEAMLESS__
+    ////플레이어에 한해서만 다른 존 섹터로 이동가능
+    //if (nObjectType == Object::Monster)
+    //{
+    //    float minx = ZONE_WIDTH - Zone::ZONE_WIDTH + 1.0f;
+    //    float miny = ZONE_HEIGHT - Zone::ZONE_HEIGHT + 1.0f;
+
+    //    // 존 경계 체크 및 보정
+    //    newX = std::clamp(newX, minx, ZONE_WIDTH - 1.0f);
+    //    newY = std::clamp(newY, miny, ZONE_HEIGHT - 1.0f);
+
+    //}
+    //else
+    {
+        float minx = 1.0f;
+        float miny = 1.0f;
+
+        float max_x = Zone::ZONE_WIDTH * Zone::ZONES_PER_ROW;
+        float max_y = Zone::ZONE_HEIGHT * Zone::ZONES_PER_COL;
+
+        // 존 경계 체크 및 보정
+        newX = std::clamp(newX, minx, max_x);
+        newY = std::clamp(newY, miny, max_y);
+    }
+#else
     float minx = ZONE_WIDTH - Zone::ZONE_WIDTH+1.0f;
     float miny = ZONE_HEIGHT - Zone::ZONE_HEIGHT+1.0f;
 
     // 존 경계 체크 및 보정
     newX = std::clamp(newX, minx, ZONE_WIDTH - 1.0f);
     newY = std::clamp(newY, miny, ZONE_HEIGHT - 1.0f);
+#endif // __SEAMLESS__
 
     return { newX, newY };
 }

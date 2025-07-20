@@ -151,6 +151,9 @@ public:
 		info.vPos.x = m_vPos.x();
 		info.vPos.y = m_vPos.y();
 		info.vPos.z = m_vPos.z();
+		info.nZoneID = m_nZoneID;
+		info.nExp = m_nExp;
+		info.nGold = m_nGold;
 
 			
 		return info;

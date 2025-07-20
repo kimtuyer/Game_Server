@@ -6,6 +6,7 @@
 #include "ClientPacketHandler.h"
 #include "CSector.h"
 #include "CZone_Manager.h"
+#include "CPlayerManager.h"
 
 using namespace Zone;
 static int g_nSectorID = 1;
@@ -61,13 +62,16 @@ CZone::CZone(int nMaxUserCnt, int nZoneID, Protocol::D3DVECTOR vPos)
 			m_mapSector.insert({ nSectorid,index });
 #else
 			m_listSector.insert({ g_nSectorID,MakeShared<CSector>(g_nSectorID,m_nZoneID,startpos) });
+
 #endif // __DOP__
 
 			g_nSectorID++;
 		}
 
+#ifdef __SEAMLESS__
 	//인접한 존 리스트 생성
 	Set_Neighbor_list();
+#endif
 //	// 인접 섹터  리스트 구하기
 //#ifdef __DOP__
 //	for (int i=0; i<m_vecSector.size(); i++)
@@ -288,6 +292,36 @@ bool CZone::_Enter(ObjectType eObjectType, PlayerRef& object)
 	return true;
 }
 
+bool CZone::_EnterMonster(ObjectType eObjectType , ObjectRef object)
+{
+	int lock = lock::Object;
+	WRITE_LOCK_IDX(lock);
+
+
+	if (object == nullptr)
+	{
+		//cout << "_EnterMonster" << endl;
+	}
+
+	if (eObjectType <  Object::Player || eObjectType > Object::Monster)
+		return false;
+
+	auto it = m_nlistObject.find(eObjectType);
+	if (it == m_nlistObject.end())
+	{
+		ObjectList list;
+		list.insert({ object->ObjectID(), object });
+		m_nlistObject.insert({ eObjectType, list });
+	}
+	else
+	{
+		m_nlistObject[eObjectType].insert({ object->ObjectID(), object });
+	}
+
+
+	return true;
+}
+
 void CZone::Remove(ObjectType eObjectType, int objectID)
 {
 	if (eObjectType <  Object::ObjectType::Player || eObjectType > Object::ObjectType::Monster)
@@ -300,21 +334,20 @@ void CZone::Remove(ObjectType eObjectType, int objectID)
 		auto it = m_nlistObject.find(eObjectType);
 		if (it != m_nlistObject.end())
 		{
-			auto& listObject = (*it).second;
+			auto listObject = (*it).second;
 			auto iter = listObject.find(objectID);
 			if (iter != listObject.end())
 			{
 #ifdef __DOP__
 				auto Sector = GetSector((*iter).second->GetSectorID());
-
 #else
-
 				auto Sector = GetSectorRef((*iter).second->GetSectorID());
 #endif // __DOP__
+				listObject.erase(iter);
 				if (Sector == nullptr)
 					return;
-				Sector->Delete(Object::Player, objectID);
-				listObject.erase(iter);
+				Sector->Delete(eObjectType, objectID);
+				//listObject.erase(iter);
 			}
 			//for (auto iter = listObject.begin(); iter != listObject.end();)
 			//{
@@ -396,32 +429,7 @@ void CZone::Update()
 #else
 		if (Sector == nullptr)
 			continue;
-		Sector->Update();
-
-#ifdef __SEAMLESS__
-		auto adjsectorlist = Sector->GetAdjSectorlist();
-		//해당 섹터 정보 필요한 존은?
-		for (auto [SecID,Data] : adjsectorlist)
-		{
-			int nZoneID = Data.first;
-			//같은 존의 섹터는 continue;
-			if (nZoneID == m_nZoneID)
-				continue;
-
-			//이웃 존에게 필요한 내 섹터 객체정보 넘겨주기
-			/*
-				
-			*/		
-			//이때 업데이트필요한 유저만 식별 가능?
-			auto Playerlist= Sector->PlayerInfoList();
-			DoLogicJob(nZoneID,&CZone::Update_AdjSector,sectorID, nZoneID, Playerlist);	
-
-			auto Monsetlist = Sector->MonsterInfoList();
-			DoLogicJob(nZoneID, &CZone::Update_AdjSector, sectorID, nZoneID, Monsetlist);
-
-		}
-#endif // __SEAMLESS__
-		
+		Sector->Update();		
 
 #endif	
 	}
@@ -431,10 +439,13 @@ void CZone::Update()
 	/*
 		이 섹터들과 이웃한 섹터에 위치한 유저들에게 알려줘야함!
 	*/
+
 	Send_AdjSector_ObjList();
+
 #endif // __SEAMLESS__
 
 	//삽입 삭제 리스트 각 섹터에 위치한 플레이어들에게 전송
+
 	Send_SectorInsertObject();
 
 	Send_SectorRemoveObject();
@@ -446,9 +457,7 @@ void CZone::Update()
 #endif
 	//Send_MonsterUpdateList();
 
-#ifdef __SEAMLESS__
 /*
-
  내 섹터정보 필요한 존이 누구인지, 몇번 섹터정보가 필요한지 여부
  알아야함.
 
@@ -461,22 +470,36 @@ void CZone::Update()
  3. 이전에 가진 컨테이너와 비교하면서 Remove, Insert 객체 리스트 구성
 
 */
+#ifdef __SEAMLESS__
 
-	for (auto nZone : m_setAdjZone)
+	for (auto& [sectorID, Sector] : m_listSector)
 	{
-		/*
-			이웃 존에게 필요한 내 섹터정보 알림.
-			1번존과 이웃한 2번존이 필요한 내 섹터정보?
+		auto adjsectorlist = Sector->GetAdjSectorlist();
+		//해당 섹터 정보 필요한 존은?
+		for (auto [SecID, Data] : adjsectorlist)
+		{
+			int nZoneID = Data.first;
+			//같은 존의 섹터는 continue;
+			if (nZoneID == m_nZoneID)
+				continue;
 
-		
-		*/
+			//이웃 존에게 필요한 내 섹터 객체정보 넘겨주기
+			/*
 
-		
-		DoLogicJob(nZone, &CZone::AddPacketCount);
+			*/
+			//이때 업데이트필요한 유저만 식별 가능?
+			CZoneRef AdjZone = GZoneManager->GetZone(nZoneID);
+			if (AdjZone == nullptr)
+				continue;
 
+			auto Playerlist = Sector->PlayerInfoList();
+			AdjZone->DoLogicJob(nZoneID, &CZone::Update_AdjSector, sectorID, nZoneID, Playerlist);
+
+			auto Monsetlist = Sector->MonsterInfoList();
+			AdjZone->DoLogicJob(nZoneID, &CZone::Update_AdjSector, sectorID, nZoneID, Monsetlist);
+
+		}
 	}
-
-
 #endif // __SEAMLESS__
 
 
@@ -525,12 +548,15 @@ void CZone::Update()
 #endif // __ZONE_THREAD__
 
 }
-
+#ifdef __SEAMLESS__
 void CZone::Update_AdjSector(int nSectorID, int nZone, map<ObjectID, Sector::ObjectInfo>adjSectorInfoList)
 {
 	/*
 		이웃한 다른 섹터의 정보를 받아 새로 업뎃해야함.	
 	*/
+	/*int lock = lock::Object;
+	WRITE_LOCK_IDX(lock);*/
+
 	auto Objlist = AdjObjectList[nSectorID];
 	map<ObjectID, Sector::ObjectInfo> RemoveList;
 	for (auto [ObjectID, Objinfo] : Objlist)
@@ -545,9 +571,12 @@ void CZone::Update_AdjSector(int nSectorID, int nZone, map<ObjectID, Sector::Obj
 	
 
 	}
-	//새로 들어온 몹 추가 및 갱신
+	//경계섹터 새로 들어온 몹 추가 및 갱신
 	for (auto [ObjectID, Objinfo] : adjSectorInfoList)
 	{
+		if (Objinfo.nObjectType == 0)
+			//cout << "" << endl;
+
 		if (AdjObjectList[nSectorID].contains(ObjectID))
 		{
 			AdjObjectList[nSectorID][ObjectID] = Objinfo;
@@ -557,8 +586,8 @@ void CZone::Update_AdjSector(int nSectorID, int nZone, map<ObjectID, Sector::Obj
 	}
 
 
-	//이전에 갖고있던 경계 섹터의 몹정보가 없을 경우, 삭제리스트 넣어 갱신!
-	Remove_AdjObjectList.insert({ nSectorID,RemoveList });
+	////이전에 갖고있던 경계 섹터의 몹정보가 없을 경우, 삭제리스트 넣어 갱신!
+	//Remove_AdjObjectList.insert({ nSectorID,RemoveList });
 
 	//AdjObjectList.clear();
 	//AdjObjectList.insert({ nSectorID,adjSectorInfoList });
@@ -566,6 +595,7 @@ void CZone::Update_AdjSector(int nSectorID, int nZone, map<ObjectID, Sector::Obj
 
 
 }
+#endif // __SEAMLESS__
 
 void CZone::Update_Player()
 {
@@ -646,9 +676,10 @@ void CZone::Send_SectorInsertObject(int beginSectorID, int endSectorID)
 			bool bSend = false;
 			for (auto& ObjectInfo : sData)
 			{
-				ObjectRef Object = m_nlistObject[ObjectInfo.nObjectType][ObjectInfo.nObjectID];
-				if (Object == nullptr)
+				
+				if(m_nlistObject[ObjectInfo.nObjectType].contains(ObjectInfo.nObjectID) == false)
 					continue;
+				ObjectRef Object = m_nlistObject[ObjectInfo.nObjectType][ObjectInfo.nObjectID];
 #ifdef __DOP__
 				Sector::MonsterData sData;
 				{
@@ -678,6 +709,12 @@ void CZone::Send_SectorInsertObject(int beginSectorID, int endSectorID)
 				Protocol::D3DVECTOR* vPos = objectPos.mutable_vpos();
 				vPos->set_x(ObjectInfo.vPos.x);
 				vPos->set_y(ObjectInfo.vPos.y);
+
+				objectPos.set_zoneid(ObjectInfo.nZoneID);
+				objectPos.set_secid(ObjectInfo.nSectorID);
+				if (ObjectInfo.nObjectType == 0)
+					//cout << "" << endl;
+				objectPos.set_objecttype(ObjectInfo.nObjectType);
 
 				objpkt.add_pos()->CopyFrom(objectPos);
 			}
@@ -742,9 +779,11 @@ void CZone::Send_SectorRemoveObject(int beginSectorID, int endSectorID)
 			bool bSend = false;
 			for (auto& ObjectInfo : sData)
 			{
-				ObjectRef Object = m_nlistObject[ObjectInfo.nObjectType][ObjectInfo.nObjectID];
-				if (Object == nullptr)
+
+				if (m_nlistObject[ObjectInfo.nObjectType].contains(ObjectInfo.nObjectID) == false)
 					continue;
+
+				ObjectRef Object = m_nlistObject[ObjectInfo.nObjectType][ObjectInfo.nObjectID];				
 #ifdef __DOP__				
 				Sector->Delete_Monster(ObjectInfo.nObjectID);
 #else
@@ -926,11 +965,19 @@ void CZone::Send_SectorRemovePlayer(int beginSectorID, int endSectorID)
 			{
 				if (nCnt <= 0)
 					break;
+				/*
+					해당 유저 존이동해, 앞서 존에서 이미 삭제, 섹터에서도 삭제할 경우
+					아래에서 유저 조회시 false나올것.
+				*/
+				if (m_nlistObject[ObjectInfo.nObjectType].contains(ObjectInfo.nObjectID) )
+				{
+					Sector->Delete(ObjectInfo.nObjectType, ObjectInfo.nObjectID);
 
-				ObjectRef Object = m_nlistObject[ObjectInfo.nObjectType][ObjectInfo.nObjectID];
+				}
+			/*	ObjectRef Object = m_nlistObject[ObjectInfo.nObjectType][ObjectInfo.nObjectID];
 				if (Object == nullptr)
-					continue;
-				Sector->Delete(ObjectInfo.nObjectType, Object->ObjectID());
+					continue;*/
+				//Sector->Delete(ObjectInfo.nObjectType, Object->ObjectID());
 
 				float dist = Util::distance(ObjectInfo.vPos.x, ObjectInfo.vPos.y, Player->GetPos().x(), Player->GetPos().y());
 
@@ -1022,6 +1069,11 @@ void CZone::Update_Pos(Object::ObjectType eObjectType, int nObjectID, const Prot
 			지금은 일단 모두  업데이트.
 
 		*/
+		auto Object = m_nlistObject[eObjectType][nObjectID];
+		if (Object == nullptr)
+		{
+			//cout << "" << endl;
+		}
 		m_nlistObject[eObjectType][nObjectID]->SetPos(vPos);
 	}
 }
@@ -1038,7 +1090,7 @@ bool CZone::Enter()
 	return m_nlistObject[Object::Player].size() < m_nMaxUserCnt;
 }
 
-bool CZone::UpdateSectorID(OUT int& nSectorID, Protocol::D3DVECTOR vPos)
+bool CZone::UpdateSectorID(OUT int& nSectorID, OUT int& nMoveZone, int nObjectType, Protocol::D3DVECTOR vPos)
 {
 #ifdef __DOP__
 	CSector* Sector = GetSector(nSectorID);//m_listSector[SectorID];
@@ -1062,6 +1114,15 @@ bool CZone::UpdateSectorID(OUT int& nSectorID, Protocol::D3DVECTOR vPos)
 		현재 있는 섹터 기준으로 둘러싼 8분위 섹터만 구해 그중 속하는지 확인
 	*/
 	//for(int i=)
+	if (nObjectType == Object::Player)
+	{
+		//cout << "" << endl;
+	}
+	else
+	{
+		//cout << "" << endl;
+
+	}
 	auto Adjlist = Sector->GetAdjSectorlist();
 	for (auto& [SectorID, Data] : Adjlist)
 	{
@@ -1071,12 +1132,25 @@ bool CZone::UpdateSectorID(OUT int& nSectorID, Protocol::D3DVECTOR vPos)
 		float Max_y = Data.second.y() + Zone::Sector_HEIGHT / 2;
 		float Min_y = Data.second.y() - Zone::Sector_HEIGHT / 2;
 
-		if ((Min_x <= Data.second.x() && Data.second.x() <= Max_x) &&
-			Min_y <= Data.second.y() && Data.second.y() <= Max_y)
+		if ((Min_x <= vPos.x() && vPos.x() <= Max_x) &&
+			Min_y <= vPos.y() && vPos.y() <= Max_y)
 		{
+			if (Data.first != m_nZoneID)
+				nMoveZone = Data.first;
+
 			nSectorID = SectorID;
 			return true;
 		}
+
+	/*	if ((Min_x <= Data.second.x() && Data.second.x() <= Max_x) &&
+			Min_y <= Data.second.y() && Data.second.y() <= Max_y)
+		{
+			if (Data.first != m_nZoneID)
+				nMoveZone = Data.first;
+
+			nSectorID = SectorID;
+			return true;
+		}*/
 	}
 
 	return false;
@@ -1279,7 +1353,7 @@ void CZone::_Set_AdjSector(float x, float y, CSectorRef SectorRef)
 #endif
 {
 	//int nSectorID = 0;
-	auto SectorIDExit = [&](float x, float y,OUT int zoneID) ->int
+	auto SectorIDExit = [&](float x, float y,OUT int& zoneID) ->int
 		{
 			int nSectorID = 0;
 #ifdef __DOP__			
@@ -1313,6 +1387,7 @@ void CZone::_Set_AdjSector(float x, float y, CSectorRef SectorRef)
 #endif	
 			}
 		
+#ifdef __SEAMLESS__
 			//이웃한 존의 섹터리스트
 			for (auto& ZoneID : m_setAdjZone)
 			{
@@ -1338,7 +1413,7 @@ void CZone::_Set_AdjSector(float x, float y, CSectorRef SectorRef)
 
 				}
 			}
-
+#endif
 
 			return nSectorID;
 		};
@@ -1356,22 +1431,22 @@ void CZone::_Set_AdjSector(float x, float y, CSectorRef SectorRef)
 
 void CZone::Insert_ObjecttoSector(Sector::ObjectInfo object)
 {
-	int lock = lock::Monster;
-	WRITE_LOCK_IDX(lock);
+	/*int lock = lock::Insert_M;
+	WRITE_LOCK_IDX(lock);*/
 	m_InsertList[object.nSectorID].push_back(object);
 }
 
 void CZone::Remove_ObjecttoSector(Sector::ObjectInfo object)
 {
-	int lock = lock::Monster;
+	int lock = lock::Insert_M;
 	WRITE_LOCK_IDX(lock);
 	m_RemoveList[object.nSectorID].push_back(object);
 }
 
 void CZone::Insert_PlayertoSector(Sector::ObjectInfo object)
 {
-	int lock = lock::Player;
-	WRITE_LOCK_IDX(lock);
+	/*int lock = lock::Player;
+	WRITE_LOCK_IDX(lock);*/
 	m_PlayerInsertList[object.nSectorID].push_back(object);
 	//m_listSector[sectorID]->Insert(Object::Player, Player);
 }
@@ -1390,7 +1465,7 @@ void CZone::Send_SectorInsertObject()
 	map<SectorID, vector<Sector::ObjectInfo>> InsertList;
 	{
 		//swap후 원본 컨테이너는 clear상태, 이후에 들어온 데이터는 다음tick에 처리!
-		int lock = lock::Monster;
+		int lock = lock::Insert_M;
 		WRITE_LOCK_IDX(lock);
 		InsertList.swap(m_InsertList);
 	}
@@ -1427,9 +1502,21 @@ void CZone::Send_SectorInsertObject()
 			bool bSend = false;
 			for (auto& ObjectInfo : sData)
 			{
+				if (m_nlistObject[ObjectInfo.nObjectType].contains(ObjectInfo.nObjectID) == false)
+				{
+					//먼저 존에 몬스터객체 추가 완료시 아래문은 탈수없음!
+					Protocol::D3DVECTOR m_vStartpos;
+					m_vStartpos.set_x(ObjectInfo.vPos.x);
+					m_vStartpos.set_y(ObjectInfo.vPos.y);
+					m_vStartpos.set_z(ObjectInfo.vPos.z);
+
+					MonsterRef Monster = MakeShared<CMonster>(ObjectInfo.nObjectID, m_nZoneID, ObjectInfo.nSectorID, m_vStartpos, true);
+					//Object = Monster;
+
+					m_nlistObject[Object::Monster].insert({ ObjectInfo.nObjectID,Monster });
+					//continue;
+				}
 				ObjectRef Object = m_nlistObject[ObjectInfo.nObjectType][ObjectInfo.nObjectID];
-				if (Object == nullptr)
-					continue;
 #ifdef __DOP__
 				Sector::MonsterData sData;
 				{
@@ -1460,6 +1547,7 @@ void CZone::Send_SectorInsertObject()
 
 				objectPos.set_secid(ObjectInfo.nSectorID);
 				objectPos.set_zoneid(ObjectInfo.nZoneID);
+				objectPos.set_objecttype(ObjectInfo.nObjectType);
 
 				objpkt.add_pos()->CopyFrom(objectPos);
 			}
@@ -1544,7 +1632,18 @@ void CZone::Send_SectorRemoveObject()
 		CSectorRef Sector = m_listSector[SectorID];
 #endif
 		if (Sector->Empty_Player())
+		{
+			//유저가 없는데, 해당 섹터에서 몹이 다른 섹터로 이동해 삭제해야 할 경우
+			for (auto& ObjectInfo : sData)
+			{
+				if (m_nlistObject[ObjectInfo.nObjectType].contains(ObjectInfo.nObjectID) == false)
+					continue;
+
+				Sector->Delete(ObjectInfo.nObjectType, ObjectInfo.nObjectID);
+			}
+
 			continue;
+		}
 
 #ifdef __BROADCAST_DISTANCE__
 		//auto distance = [](float source_x, float source_y, float target_x, float target_y)->float
@@ -1565,13 +1664,12 @@ void CZone::Send_SectorRemoveObject()
 			bool bSend = false;
 			for (auto& ObjectInfo : sData)
 			{
-				ObjectRef Object = m_nlistObject[ObjectInfo.nObjectType][ObjectInfo.nObjectID];
-				if (Object == nullptr)
+				if(m_nlistObject[ObjectInfo.nObjectType].contains(ObjectInfo.nObjectID)==false)
 					continue;
 #ifdef __DOP__				
 				Sector->Delete_Monster(ObjectInfo.nObjectID);
 #else
-				Sector->Delete(ObjectInfo.nObjectType, Object->ObjectID());
+				Sector->Delete(ObjectInfo.nObjectType, ObjectInfo.nObjectID);
 #endif
 				float dist = Util::distance(ObjectInfo.vPos.x, ObjectInfo.vPos.y, Player->GetPos().x(), Player->GetPos().y());
 
@@ -1674,40 +1772,69 @@ void CZone::Send_SectorInsertPlayer()
 		CSectorRef Sector = m_listSector[SectorID];
 
 #ifdef __SEAMLESS__
-		//이웃한 섹터일 경우,현재 존에서 유저 삭제후,
-		//해당 존 큐로 유저 삽입 job 푸쉬
-		if (Sector == nullptr)
-		{
-			bool bInSector = false;
-			int nZoneID = 0;
-			for (auto ZoneInex : m_setAdjZone)
-			{
-				auto ZoneSP = GZoneManager->GetZone(ZoneInex);
-				if (ZoneSP->IsSector(SectorID))
-				{
-					bInSector = true;
-					nZoneID = ZoneInex;
-					break;
-				}
-			}
-			if (bInSector == false)
-				continue;
+		////이웃한 섹터일 경우,현재 존에서 유저 삭제후,
+		////해당 존 큐로 유저 삽입 job 푸쉬
+		//if (Sector == nullptr)
+		//{
+		//	bool bInSector = false;
+		//	int nZoneID = 0;
+		//	for (auto ZoneInex : m_setAdjZone)
+		//	{
+		//		auto ZoneSP = GZoneManager->GetZone(ZoneInex);
+		//		if (ZoneSP->IsSector(SectorID))
+		//		{
+		//			bInSector = true;
+		//			nZoneID = ZoneInex;
+		//			break;
+		//		}
+		//	}
+		//	if (bInSector == false)
+		//		continue;
 
-			if (m_setAdjZone.contains(SectorID) == false)
-				continue; //에러 출력!
+		//	if (m_setAdjZone.contains(SectorID) == false)
+		//		continue; //에러 출력!
 
-			AdjZone_InsertList[SectorID] = sData;
-			//해당 존 큐로 푸쉬!
-			DoLogicJob(nZoneID,&CZone::SectorInsertPlayerJob, AdjZone_InsertList);
-				
-			continue;
-		}
+		//	AdjZone_InsertList[SectorID] = sData;
+		//	//해당 존 큐로 푸쉬!
+		//	DoLogicJob(nZoneID,&CZone::SectorInsertPlayerJob, AdjZone_InsertList);
+		//		
+		//	continue;
+		//}
 #endif // __SEAMLESS__
 
 
 #endif	
 		if (Sector->Empty_Player())
+		{
+			//해당 섹터에 기존 유저 없을시, 새로 들어온 유저만 추가
+			for (auto& ObjectInfo : sData)
+			{
+				if (m_nlistObject[ObjectInfo.nObjectType].contains(ObjectInfo.nObjectID) == false)
+				{
+					PlayerRef pPlayer = GPlayerManager->Player(ObjectInfo.nObjectID);
+					if (pPlayer == nullptr)
+						continue;
+
+					pPlayer->SetZoneID(ObjectInfo.nZoneID);
+					pPlayer->SetSectorID(ObjectInfo.nSectorID);
+
+					//다른 존에서 넘어온 유저면 새로 추가
+					if (_Enter(Object::Player, pPlayer) == false)
+						continue;
+					ObjectRef Object = pPlayer;
+					Sector->Insert(ObjectInfo.nObjectType, Object);
+
+				}
+				else
+				{
+					ObjectRef pObject = Object(Object::Player, ObjectInfo.nObjectID);
+					pObject->SetSectorID(ObjectInfo.nSectorID);
+	
+					Sector->Insert(ObjectInfo.nObjectType, pObject);
+				}
+			}
 			continue;
+		}
 
 		//auto distance = [](float source_x, float source_y, float target_x, float target_y)->float
 		//	{
@@ -1738,10 +1865,25 @@ void CZone::Send_SectorInsertPlayer()
 				if (nCnt <= 0)
 					break;
 #endif
-				ObjectRef Object = m_nlistObject[ObjectInfo.nObjectType][ObjectInfo.nObjectID];
-				if (Object == nullptr)
+
+				if (m_nlistObject[ObjectInfo.nObjectType].contains(ObjectInfo.nObjectID) == false)
+				{
+					PlayerRef pPlayer = GPlayerManager->Player(ObjectInfo.nObjectID);
+					if (pPlayer == nullptr)
+						continue;
+
+					pPlayer->SetZoneID(ObjectInfo.nZoneID);
+					pPlayer->SetSectorID(ObjectInfo.nSectorID);
+
+					//다른 존에서 넘어온 유저면 새로 추가
+					if (_Enter(Object::Player, pPlayer) == false)
+						continue;
+				}
+
+				ObjectRef pObject = Object(Object::Player, ObjectInfo.nObjectID);
+				if (pObject == nullptr)
 					continue;
-				Sector->Insert(ObjectInfo.nObjectType, Object);
+				Sector->Insert(ObjectInfo.nObjectType, pObject);
 
 				float dist = Util::distance(ObjectInfo.vPos.x, ObjectInfo.vPos.y, Player->GetPos().x(), Player->GetPos().y());
 
@@ -1803,10 +1945,9 @@ void CZone::Send_SectorInsertPlayer()
 					DoTimer(0,&CZone::BroadCast, BroadCastlist,sendBuffer);
 			}
 #endif
-		}
-	
+		}		
 
-	}
+	}	
 }
 
 void CZone::Send_SectorRemovePlayer()
@@ -1832,37 +1973,36 @@ void CZone::Send_SectorRemovePlayer()
 		CSectorRef Sector = m_listSector[SectorID];
 #endif
 #ifdef __SEAMLESS__
-		//이웃한 섹터일 경우,현재 존에서 유저 삭제후,
-		//해당 존 큐로 유저 삽입 job 푸쉬
-		if (Sector == nullptr)
-		{
-			bool bInSector = false;
-			int nZoneID = 0;
-			for (auto ZoneInex : m_setAdjZone)
-			{
-				auto ZoneSP = GZoneManager->GetZone(ZoneInex);
-				if (ZoneSP->IsSector(SectorID))
-				{
-					bInSector = true;
-					nZoneID = ZoneInex;
-				}
-			}
-			if (bInSector == false)
-				continue;
+		////이웃한 섹터일 경우,현재 존에서 유저 삭제후,
+		////해당 존 큐로 유저 삽입 job 푸쉬
+		//if (Sector == nullptr)
+		//{
+		//	bool bInSector = false;
+		//	int nZoneID = 0;
+		//	for (auto ZoneInex : m_setAdjZone)
+		//	{
+		//		auto ZoneSP = GZoneManager->GetZone(ZoneInex);
+		//		if (ZoneSP->IsSector(SectorID))
+		//		{
+		//			bInSector = true;
+		//			nZoneID = ZoneInex;
+		//		}
+		//	}
+		//	if (bInSector == false)
+		//		continue;
 
-			if (m_setAdjZone.contains(SectorID) == false)
-				continue; //에러 출력!
+		//	if (m_setAdjZone.contains(SectorID) == false)
+		//		continue; //에러 출력!
 
-			AdjZone_RemoveList[SectorID] = sData;
-			//해당 존 큐로 푸쉬!
-			DoLogicJob(nZoneID, &CZone::SectorInsertPlayerJob, AdjZone_RemoveList);
+		//	AdjZone_RemoveList[SectorID] = sData;
+		//	//해당 존 큐로 푸쉬!
+		//	DoLogicJob(nZoneID, &CZone::SectorInsertPlayerJob, AdjZone_RemoveList);
 
-			continue;
-		}
+		//	continue;
+		//}
 #endif // __SEAMLESS__
 
-
-		if (Sector->Empty_Player())
+		if (Sector->Empty_Player())		
 			continue;
 
 		//auto distance = [](float source_x, float source_y, float target_x, float target_y)->float
@@ -1895,10 +2035,13 @@ void CZone::Send_SectorRemovePlayer()
 				if (nCnt <= 0)
 				break;
 #endif
-				ObjectRef Object = m_nlistObject[ObjectInfo.nObjectType][ObjectInfo.nObjectID];
-				if (Object == nullptr)
+				if (m_nlistObject[ObjectInfo.nObjectType].contains(ObjectInfo.nObjectID) == false)
 					continue;
-				Sector->Delete(ObjectInfo.nObjectType, Object->ObjectID());
+
+				/*ObjectRef Object = m_nlistObject[ObjectInfo.nObjectType][ObjectInfo.nObjectID];
+				if (Object == nullptr)
+					continue;*/
+				Sector->Delete(ObjectInfo.nObjectType, ObjectInfo.nObjectID);
 
 				float dist = Util::distance(ObjectInfo.vPos.x, ObjectInfo.vPos.y, Player->GetPos().x(), Player->GetPos().y());
 
@@ -1970,8 +2113,13 @@ void CZone::Send_SectorRemovePlayer()
 		}
 	}
 }
+#ifdef __SEAMLESS__
 void CZone::Send_AdjSector_ObjList()
 {
+
+	/*int lock = lock::Object;
+	WRITE_LOCK_IDX(lock);*/
+
 	/*
 		아래 섹터와 이웃한 내 색터 구하기
 		그 섹터 위치한 유저들에게 아래 정보 전하기!
@@ -2003,17 +2151,19 @@ void CZone::Send_AdjSector_ObjList()
 				int nCnt = BroadCast_Cnt;
 #endif
 				bool bSend = false;
-				for (auto& [ObjID,ObjectInfo] : ObjList)
+				for (auto [ObjID,ObjectInfo] : ObjList)
 				{
 #ifdef __BROADCAST_LOADBALANCE__
 #else
 					if (nCnt <= 0)
 						break;
 #endif
-					ObjectRef Object = m_nlistObject[ObjectInfo.nObjectType][ObjectInfo.nObjectID];
+
+					//이웃한 경계의 다른 존 섹터의 몹이므로 추가 필요x
+					/*ObjectRef Object = m_nlistObject[ObjectInfo.nObjectType][ObjectInfo.nObjectID];
 					if (Object == nullptr)
 						continue;
-					Sector->Insert(ObjectInfo.nObjectType, Object);
+					Sector->Insert(ObjectInfo.nObjectType, Object);*/
 
 					float dist = Util::distance(ObjectInfo.vPos.x, ObjectInfo.vPos.y, Player->GetPos().x(), Player->GetPos().y());
 
@@ -2030,6 +2180,12 @@ void CZone::Send_AdjSector_ObjList()
 					Protocol::D3DVECTOR* vPos = objectPos.mutable_vpos();
 					vPos->set_x(ObjectInfo.vPos.x);
 					vPos->set_y(ObjectInfo.vPos.y);
+					
+					objectPos.set_secid(ObjectInfo.nSectorID);
+					objectPos.set_zoneid(ObjectInfo.nZoneID);
+					if (ObjectInfo.nObjectType == 0)
+						//cout << "" << endl;
+					objectPos.set_objecttype(ObjectInfo.nObjectType);
 
 					objpkt.add_pos()->CopyFrom(objectPos);
 				}
@@ -2303,7 +2459,7 @@ void CZone::SectorRemovePlayerJob(map<SectorID, vector<Sector::ObjectInfo>>Remov
 
 
 }
-Sector::ObjectInfo CZone::GetObjectInfo(int nSectorID, int nObjectID)
+Sector::ObjectInfo CZone::GetAdjObjectInfo(int nSectorID, int nObjectID)
 {
 	Sector::ObjectInfo info;
 	if (AdjObjectList.contains(nSectorID))
@@ -2311,8 +2467,28 @@ Sector::ObjectInfo CZone::GetObjectInfo(int nSectorID, int nObjectID)
 		if (AdjObjectList[nSectorID].contains(nObjectID))
 			info = AdjObjectList[nSectorID][nObjectID];
 	}
+	else
+	{
+		//cout << "" << endl;
+
+	}
 	return info;
 }
+Sector::ObjectInfo CZone::GetMyObjectInfo(int nSectorID, int nObjectType,int ObjectID)
+{
+	Sector::ObjectInfo info;
+	auto pObject = Object(Object::Monster, ObjectID);
+	if (pObject)
+	{
+		info= pObject->GetObjectInfo();
+		return info;
+	}
+
+	//오브젝트 타입=0 원인 못찾아 일단 몬스터 고정
+		return info;
+}
+#endif __SEAMLESS__
+
 void CZone::Update_ObjectInfo(Sector::ObjectInfo info)
 {
 	m_nlistObject[info.nObjectType][info.nObjectID]->Update(info);
@@ -2345,6 +2521,7 @@ int CZone::get_zone_id(int row, int col)
 	}
 	return row * ZONES_PER_ROW + col + 1; // 1-based ID로 변환
 }
+#ifdef __SEAMLESS__
 
 void CZone::Set_Neighbor_list()
 {
@@ -2386,3 +2563,4 @@ void CZone::Set_Neighbor_list()
 
 
 }
+#endif

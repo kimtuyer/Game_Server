@@ -220,7 +220,7 @@ void CMonster::AI_Move()
 	//}
 	int curSectorID = m_nSectorID;
 
-	auto vNextPos = GRandomMove->getNextPosition(m_nZoneID, m_vPos.x(), m_vPos.y());
+	auto vNextPos = GRandomMove->getNextPosition(m_nZoneID, m_vPos.x(), m_vPos.y(),Object::Monster);
 	m_vPos.set_x(vNextPos.first);
 	m_vPos.set_y(vNextPos.second);
 
@@ -231,9 +231,61 @@ void CMonster::AI_Move()
 //#endif
 
 	CZoneRef Zone = GZoneManager->GetZone(m_nZoneID);
+	int nPrevZone = m_nZoneID;
 	Zone->Update_Pos(Object::Monster, m_nObjectID, m_vPos);
-	if (Zone->UpdateSectorID(m_nSectorID, m_vPos))
+	if (Zone->UpdateSectorID(m_nSectorID, m_nZoneID,Object::Monster, m_vPos))
 	{
+
+#ifdef __SEAMLESS__
+		Sector::ObjectInfo info;
+		{
+			info.nSectorID = m_nSectorID;
+			info.nObjectID = m_nObjectID;
+			info.vPos.x = m_vPos.x();
+			info.vPos.y = m_vPos.y();
+			info.nObjectType = ObjectType();
+
+			info.nZoneID = m_nZoneID;
+			if (info.nObjectType == 0)
+				cout << "" << endl;
+
+		}
+		if (nPrevZone != m_nZoneID)
+		{
+			ObjectRef pMonster = Zone->Object(Object::Monster, m_nObjectID);
+			if (pMonster == nullptr)
+			{
+				//Send_SectorRemoveObject 에서 해당 섹터의 유저가 없기때문에
+				//유저리스트 for문을 타지않아, 해당 섹터에서 몹을 삭제하지않아 여기를 탐
+				//cout << "AI_Move Error" << endl;
+				cout << "AI_Move Error" << endl;
+
+			}
+			else
+			{
+				//cout << "몹 존재!" << endl;
+
+			}
+			CZoneRef newZone = GZoneManager->GetZone(m_nZoneID);
+			newZone->DoLogicJob(m_nZoneID, &CZone::_EnterMonster, (int)Object::Monster, pMonster);
+			newZone->DoLogicJob(m_nZoneID, &CZone::Insert_ObjecttoSector, info);
+
+			Zone->Remove(Object::Monster, info.nObjectID);
+		}
+		else
+		{
+			
+			Zone->Insert_ObjecttoSector(info);
+
+		}
+		//이전에 위치했던 섹터id로 변경후 제거
+		info.nSectorID = curSectorID;
+		info.nZoneID = nPrevZone;
+
+		Zone->Remove_ObjecttoSector(info);
+		//섹터 위치 변경
+
+#else
 		Sector::ObjectInfo info;
 		{
 			info.nSectorID = m_nSectorID;
@@ -252,7 +304,17 @@ void CMonster::AI_Move()
 		Zone->Remove_ObjecttoSector(info);
 		//섹터 위치 변경
 
+
+
+
+#endif
+
+
+
 	}
+
+
+
 
 	m_eState = Object::Idle;
 
