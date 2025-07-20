@@ -96,8 +96,7 @@ void CClientPlayer::AI_Idle()
 			pkt.set_sendtime(GetTickCount64());
 			pkt.set_skillid(1);
 			pkt.set_targetid(m_targetInfo.id());
-			if (m_targetInfo.objecttype() == 0)
-				//cout << "" << endl;
+			
 			pkt.set_objecttype(m_targetInfo.objecttype());
 
 			pkt.set_targetsecid(m_targetInfo.secid());
@@ -134,10 +133,10 @@ void CClientPlayer::AI_Move()
 	//float y = m_vPos.y() + Zone::ZONE_WIDTH / second * (Tick::AI_TICK * 0.001);
 	auto vNextPos = GRandomMove->getNextPosition(m_nZoneID, m_vPos.x(), m_vPos.y(),Object::Player);
 
-	if (vNextPos.first == m_vPos.x() && vNextPos.second == m_vPos.y())
-	{
-		//cout << "" << endl;
-	}
+	//if (vNextPos.first == m_vPos.x() && vNextPos.second == m_vPos.y())
+	//{
+	//	//cout << "" << endl;
+	//}
 
 	m_vPos.set_x(vNextPos.first);
 	m_vPos.set_y(vNextPos.second);

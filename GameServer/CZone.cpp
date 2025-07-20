@@ -11,7 +11,7 @@
 using namespace Zone;
 static int g_nSectorID = 1;
 CZone::CZone(int nMaxUserCnt, int nZoneID, Protocol::D3DVECTOR vPos)
-	:m_bActivate(false), m_nMaxUserCnt(nMaxUserCnt), m_nZoneID(nZoneID)
+	:m_bActivate(false), m_nMaxUserCnt(nMaxUserCnt), m_nZoneID(nZoneID), m_nBeginSecID(0), m_nEndSecID(0)
 	, m_vStartpos(vPos)
 {
 	m_nUserCnt.store(0);
@@ -31,6 +31,7 @@ CZone::CZone(int nMaxUserCnt, int nZoneID, Protocol::D3DVECTOR vPos)
 	m_vecSector.resize(SECTORS_PER_SIDE * SECTORS_PER_SIDE);
 #endif
 	//int nSectorid = 1;
+	m_nBeginSecID = g_nSectorID;
 	for (int HEIGHT = 1; HEIGHT <= SECTORS_PER_SIDE; HEIGHT++)	//콘솔 세로 1줄 개수
 		for (int WIDTH = 1; WIDTH <= SECTORS_PER_SIDE; WIDTH++) //콘솔 가로 1줄 개수
 		{
@@ -68,53 +69,58 @@ CZone::CZone(int nMaxUserCnt, int nZoneID, Protocol::D3DVECTOR vPos)
 			g_nSectorID++;
 		}
 
+	m_nEndSecID = g_nSectorID - 1;
 #ifdef __SEAMLESS__
 	//인접한 존 리스트 생성
 	Set_Neighbor_list();
-#endif
+
+#else
+
 //	// 인접 섹터  리스트 구하기
-//#ifdef __DOP__
-//	for (int i=0; i<m_vecSector.size(); i++)
-//#else
-//	for (auto& [sectorID, Sector] : m_listSector)
-//#endif	
-//	{
-//#ifdef __DOP__
-//		float currnet_x = m_vecSector[i].StartPos().x();
-//		float currnet_y = m_vecSector[i].StartPos().y();
-//#else
-//		float currnet_x = Sector->StartPos().x();
-//		float currnet_y = Sector->StartPos().y();
-//#endif	
-//		int SectorID = 0;
-//#ifdef __DOP__
-//		CSectorRef pSector = MakeShared<CSector>(Sector);
-//#endif
-//#ifdef __DOP__
-//		auto Dir = [&](CSector& pSector)
-//#else
-//		auto Dir = [&]()
-//#endif
-//			{
-//				for (auto& [x, y] : directions)
-//				{
-//					float new_x = x + currnet_x;
-//					float new_y = y + currnet_y;
-//#ifdef __DOP__
-//					Set_AdjSector(new_x, new_y, pSector);
-//
-//#else	
-//					Set_AdjSector(new_x, new_y, Sector);
-//#endif
-//				}
-//			};
-//#ifdef __DOP__
-//		Dir(m_vecSector[i]);
-//#else
-//		Dir();
-//
-//#endif
-//	}
+#ifdef __DOP__
+	for (int i=0; i<m_vecSector.size(); i++)
+#else
+	for (auto& [sectorID, Sector] : m_listSector)
+#endif	
+	{
+#ifdef __DOP__
+		float currnet_x = m_vecSector[i].StartPos().x();
+		float currnet_y = m_vecSector[i].StartPos().y();
+#else
+		float currnet_x = Sector->StartPos().x();
+		float currnet_y = Sector->StartPos().y();
+#endif	
+		int SectorID = 0;
+#ifdef __DOP__
+		CSectorRef pSector = MakeShared<CSector>(Sector);
+#endif
+#ifdef __DOP__
+		auto Dir = [&](CSector& pSector)
+#else
+		auto Dir = [&]()
+#endif
+			{
+				for (auto& [x, y] : directions)
+				{
+					float new_x = x + currnet_x;
+					float new_y = y + currnet_y;
+#ifdef __DOP__
+					Set_AdjSector(new_x, new_y, pSector);
+
+#else	
+					_Set_AdjSector(new_x, new_y, Sector);
+#endif
+				}
+			};
+#ifdef __DOP__
+		Dir(m_vecSector[i]);
+#else
+		Dir();
+
+#endif
+	}
+#endif //__SEAMLESS__
+
 
 	//	//위
 	//	x = currnet_x;
@@ -258,7 +264,15 @@ void CZone::SetAdjSector()
 
 bool CZone::_Enter(ObjectType eObjectType, PlayerRef& object)
 {
-	int lock = lock::Object;
+	int lock = lock::Player;
+	if (eObjectType == Object::Monster)
+	{
+		lock = lock::Monster;
+	}
+	else if (eObjectType == Object::Player)
+	{
+		lock = lock::Player;
+	}
 	WRITE_LOCK_IDX(lock);
 
 	if (eObjectType <  Object::Player || eObjectType > Object::Monster)
@@ -574,8 +588,7 @@ void CZone::Update_AdjSector(int nSectorID, int nZone, map<ObjectID, Sector::Obj
 	//경계섹터 새로 들어온 몹 추가 및 갱신
 	for (auto [ObjectID, Objinfo] : adjSectorInfoList)
 	{
-		if (Objinfo.nObjectType == 0)
-			//cout << "" << endl;
+		
 
 		if (AdjObjectList[nSectorID].contains(ObjectID))
 		{
@@ -1087,7 +1100,8 @@ bool CZone::Enter()
 {
 	int lock = lock::Player;
 	READ_LOCK_IDX(lock);
-	return m_nlistObject[Object::Player].size() < m_nMaxUserCnt;
+	return m_nUserCnt < m_nMaxUserCnt;
+	//return m_nlistObject[Object::Player].size() < m_nMaxUserCnt;
 }
 
 bool CZone::UpdateSectorID(OUT int& nSectorID, OUT int& nMoveZone, int nObjectType, Protocol::D3DVECTOR vPos)
@@ -1163,7 +1177,13 @@ int CZone::GetInitSectorID()
 		std::mt19937 gen(rd());
 
 		// 1~max 섹터id를 랜덤으로 불러와 해당 섹터의 좌표로 몬스터를 배치.
-		std::uniform_int_distribution<int> SectorList(1, Sector_Count);   // 0 ~ MAX_STEP
+		 
+		int nzone=m_nZoneID;
+		std::uniform_int_distribution<int> SectorList(m_nBeginSecID, m_nEndSecID);   // 0 ~ MAX_STEP
+
+
+		//심리스 구현 하기전엔 섹터 번호 구간이 모든 존이 1~Sector_Count 로 같았음.
+		//std::uniform_int_distribution<int> SectorList(1, Sector_Count);   // 0 ~ MAX_STEP
 		return  SectorList(gen);
 		//auto Sector = m_listSector[sectorID];
 	}

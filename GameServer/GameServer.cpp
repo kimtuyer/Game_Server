@@ -169,18 +169,34 @@ void DoZoneJob(ServerServiceRef& service, int ZoneID)
 		if (timeUntilNextUpdate > 0) {
 			uint64 endTime = timeUntilNextUpdate + GetTickCount64();
 
+#ifdef __SEAMLESS__	
 			LEndTickCount = endTime;
+#endif
+			bool bPacketJob = false;
+			int nzone=ZoneID;
 			while (GetTickCount64() < endTime)
 			{
 #ifdef __ZONE_THREAD_VER1__
 				PacketInfo job;
 				if (ZonePacketQueue->jobs.try_pop(job))
-					ClientPacketHandler::HandlePacket(job.m_session, job.m_buffer, job.m_len);
 				{
-					
-					ThreadManager::DoZoneQueueWork(ZoneID);
+					ClientPacketHandler::HandlePacket(job.m_session, job.m_buffer, job.m_len);
+					bPacketJob = true;
+				}
+#ifdef __SEAMLESS__	
+				else
+				{
 					std::this_thread::sleep_for(std::chrono::milliseconds(1));
 				}
+				ThreadManager::DoZoneQueueWork(ZoneID);
+#else
+				else
+				{
+					
+					//ThreadManager::DoZoneQueueWork(ZoneID);
+					std::this_thread::sleep_for(std::chrono::milliseconds(1));
+				}
+#endif
 #endif // __ZONE_THREAD_VER1__
 #ifdef __ZONE_THREAD_VER2__
 				//if (service->GetIocpCore()->Dispatch(10) == true)

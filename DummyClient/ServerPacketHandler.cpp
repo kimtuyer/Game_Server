@@ -169,9 +169,7 @@ bool Handle_S_OBJ_LIST(PacketSessionRef& session, Protocol::S_OBJ_LIST& pkt)
 	for (int i = 0; i < size; i++)
 	{
 		//Sector::ObjectInfo info;
-		Protocol::Object_Pos object = pkt.pos(i);
-		if (object.objecttype() == 0)
-			//cout << "S_OBJ_LIST 타입 없" << endl;
+		Protocol::Object_Pos object = pkt.pos(i);	
 		gameSession->_currentPlayer->Insert_Target(object);
 	}
 	gameSession->_currentPlayer->SetSearchOn(true); //주변 오브젝트 탐색가능
@@ -270,8 +268,7 @@ bool Handle_S_ALL_OBJ_LIST(PacketSessionRef& session, Protocol::S_ALL_OBJ_LIST& 
 	{
 		//Sector::ObjectInfo info;
 		Protocol::Object_Pos object = pkt.pos(i);
-		if (object.objecttype() == 0)
-			//cout << "Handle_S_ALL_OBJ_LIST 타입 없" << endl;
+		
 		vecObjectlist.emplace_back(object);
 	}
 	gameSession->_currentPlayer->Update_TargetList(vecObjectlist);

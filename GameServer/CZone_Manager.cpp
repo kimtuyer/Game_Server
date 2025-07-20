@@ -95,10 +95,13 @@ void CZone_Manager::Init(const int nZoneCount, int nZoneUserMax )
 
 			nZoneid++;
 		}
+
+#ifdef __SEAMLESS__
 	for (auto& Zone : m_listZone)
 	{
 		Zone.second.get()->SetAdjSector();
 	}
+#endif // __SEAMLESS__
 
 	/*
 	!!!!!존 매니저단위에서 존을 돌리지말고, 존 단위에서 타이머를 돌려서

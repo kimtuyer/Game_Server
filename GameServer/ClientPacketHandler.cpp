@@ -139,7 +139,11 @@ bool Handle_C_ENTER_ZONE(PacketSessionRef& session, Protocol::C_ENTER_ZONE& pkt)
 		if (Sector == nullptr)
 			return false;
 #else
-		CSectorRef Sector = GZoneManager->GetZone(nZoneid)->GetSectorRef(pkt.sectorid());
+
+		auto Zone = GZoneManager->GetZone(nZoneid);	
+		int nEnterSecID=Zone->GetInitSectorID();
+
+		CSectorRef Sector = Zone->GetSectorRef(nEnterSecID);
 
 #endif // __DOP__
 		if (Sector == nullptr)
@@ -158,7 +162,7 @@ bool Handle_C_ENTER_ZONE(PacketSessionRef& session, Protocol::C_ENTER_ZONE& pkt)
 
 			enterpkt.set_success(true);
 			enterpkt.set_zoneid(nZoneid);
-			enterpkt.set_sectorid(enterpkt.sectorid());
+			enterpkt.set_sectorid(nEnterSecID);
 
 			
 			ObjectRef pObject = (pPlayer);

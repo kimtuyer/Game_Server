@@ -207,6 +207,10 @@ private:	//오브젝트 리스트도 맵 or set이 나은가?
 	int			m_nMaxUserCnt;
 	atomic<int>	m_nUserCnt;
 	atomic<int> m_nPacketCnt;
+
+	int m_nBeginSecID;
+	int m_nEndSecID;
+
 #ifdef __DOP__
 	vector<CSector>m_vecSector;
 	map<SectorID, int>m_mapSector;
