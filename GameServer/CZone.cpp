@@ -1354,14 +1354,15 @@ void CZone::BroadCast_Player(Protocol::S_MOVE_PLAYER& movepkt)
 	}
 }
 
-void CZone::BroadCast(vector<CPlayer*> list, SendBufferRef sendBuffer)
+void CZone::BroadCast(vector<ObjectRef> list, SendBufferRef sendBuffer)
 {
 	for (auto player : list)
 	{
 		if (player->GetActivate() == false)
 			continue;
 
-		player->ownerSession.lock()->Send(sendBuffer);
+		CPlayer* pPlayer = static_cast<CPlayer*>(player.get());
+		pPlayer->ownerSession.lock()->Send(sendBuffer);
 	}
 
 }
@@ -1866,7 +1867,7 @@ void CZone::Send_SectorInsertPlayer()
 
 		int nSendCnt = 0;
 		int nPlayerCnt = Playerlist.size();
-		vector<CPlayer*> BroadCastlist;
+		vector<ObjectRef> BroadCastlist;
 		for (auto& [playerid, Player] : Playerlist)
 		{
 			int64 nowtime = GetTickCount64();
@@ -1943,7 +1944,7 @@ void CZone::Send_SectorInsertPlayer()
 
 #ifdef __BROADCAST_LOADBALANCE__
 				if (nPlayerCnt >= BroadCast_Cnt)
-					BroadCastlist.push_back(pPlayer);
+					BroadCastlist.push_back(Player);
 				else
 					pPlayer->ownerSession.lock()->Send(sendBuffer);
 #else
@@ -2035,7 +2036,7 @@ void CZone::Send_SectorRemovePlayer()
 		auto Playerlist = Sector->PlayerList();
 		int nSendCnt = 0;
 		int nPlayerCnt = Playerlist.size();
-		vector<CPlayer*> BroadCastlist;
+		vector<ObjectRef> BroadCastlist;
 		for (auto& [playerid, Player] : Playerlist)
 		{
 			int64 nowtime = GetTickCount64();
@@ -2108,7 +2109,7 @@ void CZone::Send_SectorRemovePlayer()
 			{
 #ifdef __BROADCAST_LOADBALANCE__
 				if (nPlayerCnt >= BroadCast_Cnt)
-					BroadCastlist.push_back(pPlayer);
+					BroadCastlist.push_back(Player);
 				else
 					pPlayer->ownerSession.lock()->Send(sendBuffer);
 #else
@@ -2159,7 +2160,7 @@ void CZone::Send_AdjSector_ObjList()
 
 			int nSendCnt = 0;
 			int nPlayerCnt = Playerlist.size();
-			vector<CPlayer*> BroadCastlist;
+			vector<ObjectRef> BroadCastlist;
 			for (auto& [playerid, Player] : Playerlist)
 			{
 				int64 nowtime = GetTickCount64();
@@ -2229,7 +2230,7 @@ void CZone::Send_AdjSector_ObjList()
 
 #ifdef __BROADCAST_LOADBALANCE__
 					if (nPlayerCnt >= BroadCast_Cnt)
-						BroadCastlist.push_back(pPlayer);
+						BroadCastlist.push_back(Player);
 					else
 						pPlayer->ownerSession.lock()->Send(sendBuffer);
 #else
@@ -2278,7 +2279,7 @@ void CZone::SectorInsertPlayerJob(map<SectorID, vector<Sector::ObjectInfo>>Inser
 		auto Playerlist = Sector->PlayerList();
 		int nSendCnt = 0;
 		int nPlayerCnt = Playerlist.size();
-		vector<CPlayer*> BroadCastlist;
+		vector<ObjectRef> BroadCastlist;
 		for (auto& [playerid, Player] : Playerlist)
 		{
 			int64 nowtime = GetTickCount64();
@@ -2340,7 +2341,7 @@ void CZone::SectorInsertPlayerJob(map<SectorID, vector<Sector::ObjectInfo>>Inser
 
 #ifdef __BROADCAST_LOADBALANCE__
 				if (nPlayerCnt >= BroadCast_Cnt)
-					BroadCastlist.push_back(pPlayer);
+					BroadCastlist.push_back(Player);
 				else
 					pPlayer->ownerSession.lock()->Send(sendBuffer);
 #else
@@ -2379,7 +2380,7 @@ void CZone::SectorRemovePlayerJob(map<SectorID, vector<Sector::ObjectInfo>>Remov
 		auto Playerlist = Sector->PlayerList();
 		int nSendCnt = 0;
 		int nPlayerCnt = Playerlist.size();
-		vector<CPlayer*> BroadCastlist;
+		vector<ObjectRef> BroadCastlist;
 		for (auto& [playerid, Player] : Playerlist)
 		{
 			int64 nowtime = GetTickCount64();
@@ -2449,7 +2450,7 @@ void CZone::SectorRemovePlayerJob(map<SectorID, vector<Sector::ObjectInfo>>Remov
 			{
 #ifdef __BROADCAST_LOADBALANCE__
 				if (nPlayerCnt >= BroadCast_Cnt)
-					BroadCastlist.push_back(pPlayer);
+					BroadCastlist.push_back(Player);
 				else
 					pPlayer->ownerSession.lock()->Send(sendBuffer);
 #else
