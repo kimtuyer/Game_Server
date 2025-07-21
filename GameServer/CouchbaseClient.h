@@ -50,8 +50,10 @@ public:
 	void connect();
 
 	void upsert(document* doc);
+	void upsertSP(shared_ptr<document> doc);
 
 	void get(const std::string key, document* doc);
+	void getSP(const std::string key, shared_ptr<document> doc);
 
 	void QueryExecute(const std::string query, document doc);
 

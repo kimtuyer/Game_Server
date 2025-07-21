@@ -54,9 +54,8 @@ void DoDBJob()
 		ThreadManager::DistributeDBJobs();
 
 		//DB job 처리
-		ThreadManager::DoDBQueueWork();
-
-		std::this_thread::sleep_for(std::chrono::milliseconds(1));
+		if(ThreadManager::DoDBQueueWork()==false)
+			std::this_thread::sleep_for(std::chrono::milliseconds(1));
 
 	}
 }
@@ -112,9 +111,10 @@ void BroadCastJob(ServerServiceRef& service,bool bIOCP=false)
 
 			if (ThreadManager::DoGlobalQueueWork())
 				LJobCount++;
+			else
+				std::this_thread::sleep_for(std::chrono::milliseconds(1));
 
-			//std::this_thread::sleep_for(std::chrono::milliseconds(GetTickCount64()-endtime));
-			std::this_thread::sleep_for(std::chrono::milliseconds(1));
+			//std::this_thread::sleep_for(std::chrono::milliseconds(1));
 
 		}
 	}
@@ -503,6 +503,9 @@ int main()
 				else if (i < g_nZoneCount + nIOCPThreadCnt+nBroadThreadCnt)
 					BroadCastJob(service);
 				else
+					DoDBJob();
+#else
+				else if (i < g_nZoneCount + nIOCPThreadCnt + nDBThreadCnt)
 					DoDBJob();
 #endif
 #else

@@ -17,7 +17,7 @@ void JobQueue::Push(JobRef job, bool pushOnly)
 		// 이미 실행중인 JobQueue가 없으면 실행
 		if (LCurrentJobQueue == nullptr && pushOnly == false)
 		{
-			Execute(JobType::GLOBAL_JOB);
+			Execute(1,JobType::GLOBAL_JOB);
 		}
 		else
 		{
@@ -106,7 +106,7 @@ void JobQueue::PushLogicJob(int ZoneID,JobRef job)
 //}
 
 // 1) 일감이 너~무 몰리면?
-void JobQueue::Execute(int JobType)
+void JobQueue::Execute(int nZoneID,int JobType)
 {
 	LCurrentJobQueue = this;
 
@@ -126,16 +126,29 @@ void JobQueue::Execute(int JobType)
 			return;
 		}
 
-		const uint64 now = ::GetTickCount64();
-		if (now >= LEndTickCount)
+		if (JobType == JobType::Zone_Job)
 		{
-			if (JobType == JobType::GLOBAL_JOB)
+			const uint64 now = ::GetTickCount64();
+			if (now >= LEndTickCount)
 			{
 				LCurrentJobQueue = nullptr;
-				// 여유 있는 다른 쓰레드가 실행하도록 GlobalQueue에 넘긴다
-				GGlobalQueue->Push(shared_from_this());
+
+				//if (JobType == JobType::GLOBAL_JOB)
+				//{
+				//	// 여유 있는 다른 쓰레드가 실행하도록 GlobalQueue에 넘긴다
+				//	GGlobalQueue->Push(shared_from_this());
+				//}
+				//else if (JobType == JobType::DB_JOB)
+				//{
+				//	GDBQueue->Push(shared_from_this());
+				//}
+				if (JobType == JobType::Zone_Job)
+				{
+					GZoneLogicQueue[nZoneID]->Push(shared_from_this());
+				}
+
+				break;
 			}
-			break;
 		}
 	}
 }

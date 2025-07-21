@@ -84,7 +84,7 @@ public:
 
 
 
-	void					Execute(int jobType);
+	void					Execute(int nZoneID,int jobType);
 
 
 

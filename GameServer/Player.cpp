@@ -167,7 +167,12 @@ bool CPlayer::Attack(Protocol::C_ATTACK& pkt)
 				m_nKillcount++;
 #ifdef  __COUCHBASE_DB__
 				CouchbaseClient* pDBConnect = g_CouchbaseManager->GetConnection(LThreadId);
+
+#ifdef __COUCHBASE_DB_ASYNC__
+				auto doc = make_shared<document>();
+#else
 				document* doc = new document;
+#endif // __COUCHBASE_DB_ASYNC__
 				doc->threadID = LThreadId;
 				doc->cas = nCas;
 				doc->key = to_string(playerId);
@@ -180,7 +185,7 @@ bool CPlayer::Attack(Protocol::C_ATTACK& pkt)
 					doc->value = j.dump();
 
 #ifdef __COUCHBASE_DB_ASYNC__
-					pDBConnect->DoAsyncDB(&CouchbaseClient::upsert, doc);
+					pDBConnect->DoAsyncDB(&CouchbaseClient::upsertSP, doc);
 #else
 					pDBConnect->upsert(doc);
 #endif // __COUCHBASE_DB_ASYNC__
@@ -196,7 +201,7 @@ bool CPlayer::Attack(Protocol::C_ATTACK& pkt)
 					//"SELECT EXISTS(SELECT 1 FROM `default` USE KEYS [\"" + doc.key + "\"]);";
 				//std::string query = "SELECT EXISTS(SELECT 1 FROM `default` USE KEYS [\"" + key_to_check + "\"]);";
 #ifdef __COUCHBASE_DB_ASYNC__
-					pDBConnect->DoAsyncDB(&CouchbaseClient::upsert, doc);
+					pDBConnect->DoAsyncDB(&CouchbaseClient::upsertSP, doc);
 #else
 					pDBConnect->upsert(doc);
 #endif // __COUCHBASE_DB_ASYNC__

@@ -94,9 +94,10 @@ static void store_callback(lcb_INSTANCE* instance, int cbtype, const lcb_RESPSTO
 
 			context->cas = cas;
 	
+			shared_ptr<document>pContext(context);
 			//cas값 새로 받아서 업뎃 재시도
 			CouchbaseClient* pDBConnect = g_CouchbaseManager->GetConnection(LThreadId);
-			pDBConnect->DoAsync(&CouchbaseClient::upsert, context);
+			pDBConnect->DoAsyncDB(&CouchbaseClient::upsertSP, pContext);
 			/*
 
 			*/
@@ -147,10 +148,11 @@ static void get_callback(lcb_INSTANCE*, int cbtype, const lcb_RESPGET* resp)
 			std::cerr << "CAS 불일치! 다른 클라이언트가 문서를 수정했습니다." << std::endl;
 
 			document* context = static_cast<document*>(cookie);
+			shared_ptr<document>pContext(context);
 			context->cas = caskey;
 		
 			//cas값 새로 받아서 업뎃 재시도
-			pDBConnect->DoAsync(&CouchbaseClient::get, context->key, context);
+			pDBConnect->DoAsyncDB(&CouchbaseClient::getSP, context->key, pContext);
 		}
 		return;
 	}
@@ -252,6 +254,46 @@ void CouchbaseClient::upsert(document* doc)
 	}
 }
 
+void CouchbaseClient::upsertSP(shared_ptr<document> doc)
+{
+	doc->sendTime = GetTickCount64();
+	{
+		lcb_CMDSTORE* cmd;
+		lcb_cmdstore_create(&cmd, LCB_STORE_UPSERT);
+		lcb_cmdstore_key(cmd, doc->key.c_str(), doc->key.size());
+		lcb_cmdstore_value(cmd, doc->value.c_str(), doc->value.size());
+
+		if (doc->cas != 0)
+			lcb_cmdstore_cas(cmd, doc->cas);//이전에 처음문서
+
+		document* doc_copy = new document;
+		doc_copy->cas = doc->cas;
+		doc_copy->threadID = doc->threadID;
+		doc_copy->type = doc->type;
+		doc_copy->sendTime = doc->sendTime;
+		doc_copy->value = doc->value;
+		doc_copy->key = doc->key;
+
+
+		lcb_STATUS status = lcb_store(instance, doc_copy, cmd);
+		lcb_cmdstore_destroy(cmd);
+
+		if (status != LCB_SUCCESS) {
+			std::cerr << "Couchbase 문서 업데이트 실패: " << std::string(lcb_strerror_short(status)) << std::endl;
+
+			//throw std::runtime_error("Failed to schedule upsert: " +
+				//std::string(lcb_strerror_short(status)));
+		}
+
+		status = lcb_wait(instance, LCB_WAIT_DEFAULT);
+		//status = lcb_wait(instance, LCB_WAIT_DEFAULT);
+		if (status != LCB_SUCCESS) {
+			throw std::runtime_error("Failed to upsert: " +
+				std::string(lcb_strerror_short(status)));
+		}
+	}
+}
+
 void CouchbaseClient::get(const std::string key, document* doc)
 {
 	CouchbaseClient* pDBConnect = g_CouchbaseManager->GetConnection(LThreadId);
@@ -265,6 +307,46 @@ void CouchbaseClient::get(const std::string key, document* doc)
 	{
 		std::lock_guard<std::mutex> lock(cookie_mutex); // 뮤텍스 잠금
 		status = lcb_get(instance, doc, cmd);
+	}
+	lcb_cmdget_destroy(cmd);
+
+	if (status != LCB_SUCCESS) {
+		throw std::runtime_error("Failed to schedule get: " +
+			std::string(lcb_strerror_short(status)));
+	}
+
+	status = lcb_wait(instance, LCB_WAIT_DEFAULT);
+
+	//status = lcb_wait(instance, eWaitType);
+	if (status != LCB_SUCCESS) {
+		throw std::runtime_error("Failed to get: " +
+			std::string(lcb_strerror_short(status)));
+	}
+}
+
+void CouchbaseClient::getSP(const std::string key, shared_ptr<document> doc)
+{
+	CouchbaseClient* pDBConnect = g_CouchbaseManager->GetConnection(LThreadId);
+
+	doc->sendTime = GetTickCount64();
+
+	lcb_CMDGET* cmd;
+	lcb_cmdget_create(&cmd);
+	lcb_cmdget_key(cmd, key.c_str(), key.size());
+	lcb_STATUS status;
+	{
+		std::lock_guard<std::mutex> lock(cookie_mutex); // 뮤텍스 잠금
+
+		document* doc_copy = new document;
+		doc_copy->cas = doc->cas;
+		doc_copy->threadID = doc->threadID;
+		doc_copy->type = doc->type;
+		doc_copy->sendTime = doc->sendTime;
+		doc_copy->value = doc->value;
+		doc_copy->key = doc->key;
+
+
+		status = lcb_get(instance, doc_copy, cmd);
 	}
 	lcb_cmdget_destroy(cmd);
 

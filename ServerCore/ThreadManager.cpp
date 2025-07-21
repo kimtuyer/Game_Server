@@ -56,9 +56,9 @@ bool ThreadManager::DoGlobalQueueWork()
 {
 	while (true)
 	{
-		uint64 now = ::GetTickCount64();
+		/*uint64 now = ::GetTickCount64();
 		if (now > LEndTickCount)
-			break;
+			break;*/
 
 		JobQueueRef jobQueue = GGlobalQueue->Pop();
 		if (jobQueue == nullptr)
@@ -67,7 +67,7 @@ bool ThreadManager::DoGlobalQueueWork()
 			break;
 		}
 
-		jobQueue->Execute(JobType::GLOBAL_JOB);
+		jobQueue->Execute(1,JobType::GLOBAL_JOB);
 		return true;
 	}
 }
@@ -93,7 +93,7 @@ bool ThreadManager::DoDBQueueWork()
 			break;
 		}
 
-		jobQueue->Execute(JobType::DB_JOB);
+		jobQueue->Execute(1,JobType::DB_JOB);
 		return true;
 	}
 }
@@ -118,7 +118,7 @@ bool ThreadManager::DoZoneQueueWork(int nZoneID)
 			break;
 		}
 
-		jobQueue->Execute(JobType::Zone_Job);
+		jobQueue->Execute( nZoneID,JobType::Zone_Job);
 		return true;
 	}
 }
