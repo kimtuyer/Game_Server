@@ -568,8 +568,8 @@ void CZone::Update_AdjSector(int nSectorID, int nZone, map<ObjectID, Sector::Obj
 	/*
 		이웃한 다른 섹터의 정보를 받아 새로 업뎃해야함.	
 	*/
-	/*int lock = lock::Object;
-	WRITE_LOCK_IDX(lock);*/
+	int lock = lock::Object;
+	WRITE_LOCK_IDX(lock);
 
 	auto Objlist = AdjObjectList[nSectorID];
 	map<ObjectID, Sector::ObjectInfo> RemoveList;
@@ -725,8 +725,7 @@ void CZone::Send_SectorInsertObject(int beginSectorID, int endSectorID)
 
 				objectPos.set_zoneid(ObjectInfo.nZoneID);
 				objectPos.set_secid(ObjectInfo.nSectorID);
-				if (ObjectInfo.nObjectType == 0)
-					//cout << "" << endl;
+			
 				objectPos.set_objecttype(ObjectInfo.nObjectType);
 
 				objpkt.add_pos()->CopyFrom(objectPos);
@@ -2140,6 +2139,8 @@ void CZone::Send_AdjSector_ObjList()
 
 	/*int lock = lock::Object;
 	WRITE_LOCK_IDX(lock);*/
+	int lock = lock::Object;
+	WRITE_LOCK_IDX(lock);
 
 	/*
 		아래 섹터와 이웃한 내 색터 구하기
@@ -2203,9 +2204,7 @@ void CZone::Send_AdjSector_ObjList()
 					vPos->set_y(ObjectInfo.vPos.y);
 					
 					objectPos.set_secid(ObjectInfo.nSectorID);
-					objectPos.set_zoneid(ObjectInfo.nZoneID);
-					if (ObjectInfo.nObjectType == 0)
-						//cout << "" << endl;
+					objectPos.set_zoneid(ObjectInfo.nZoneID);					
 					objectPos.set_objecttype(ObjectInfo.nObjectType);
 
 					objpkt.add_pos()->CopyFrom(objectPos);
