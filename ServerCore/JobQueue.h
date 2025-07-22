@@ -1,6 +1,7 @@
 #pragma once
 #include "Job.h"
 #include "LockQueue.h"
+#include "LockFreeQueue.h"
 #include "JobTimer.h"
 
 /*--------------
@@ -100,5 +101,7 @@ public:
 protected:
 	LockQueue<JobRef>		_jobs;
 	Atomic<int32>			_jobCount = 0;
+
+	LockFreeQueue<JobRef>	_freeJobs;
 };
 

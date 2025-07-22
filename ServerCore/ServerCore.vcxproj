@@ -174,10 +174,12 @@
     <ClInclude Include="Enum.h" />
     <ClInclude Include="function.h" />
     <ClInclude Include="GlobalQueue.h" />
+    <ClInclude Include="GLockFreeQueue.h" />
     <ClInclude Include="IocpCore.h" />
     <ClInclude Include="IocpEvent.h" />
     <ClInclude Include="Job.h" />
     <ClInclude Include="JobTimer.h" />
+    <ClInclude Include="LockFreeQueue.h" />
     <ClInclude Include="LockQueue.h" />
     <ClInclude Include="JobQueue.h" />
     <ClInclude Include="Listener.h" />
@@ -210,10 +212,12 @@
     <ClCompile Include="CSingleton.cpp" />
     <ClCompile Include="DeadLockProfiler.cpp" />
     <ClCompile Include="GlobalQueue.cpp" />
+    <ClCompile Include="GLockFreeQueue.cpp" />
     <ClCompile Include="IocpCore.cpp" />
     <ClCompile Include="IocpEvent.cpp" />
     <ClCompile Include="Job.cpp" />
     <ClCompile Include="JobTimer.cpp" />
+    <ClCompile Include="LockFreeQueue.cpp" />
     <ClCompile Include="LockQueue.cpp" />
     <ClCompile Include="JobQueue.cpp" />
     <ClCompile Include="Listener.cpp" />

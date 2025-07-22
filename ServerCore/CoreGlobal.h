@@ -1,11 +1,21 @@
 #pragma once
+#include "Dev_define.h"
 #include <vector>
+#ifdef __LOCKFREE__
+extern class GLockFreeQueue;
+#endif
 extern class ThreadManager*		GThreadManager;
 extern class Memory*			GMemory;
 extern class SendBufferManager* GSendBufferManager;
 extern class GlobalQueue*		GGlobalQueue;
 extern class GlobalQueue* GDBQueue;
+
+#ifdef __LOCKFREE__
+extern  std::vector<GLockFreeQueue*> GZoneLogicQueue;
+#else
 extern  std::vector<GlobalQueue*> GZoneLogicQueue;
+#endif // __LOCKFREE__
+
 extern class JobTimer*			GJobTimer;
 extern class JobTimer*			GDBJobTimer;
 extern  std::vector<JobTimer*> GZoneJobTimer;

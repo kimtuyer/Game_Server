@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "JobQueue.h"
 #include "GlobalQueue.h"
+#include "GLockFreeQueue.h"
 
 /*--------------
 	JobQueue
@@ -42,7 +43,12 @@ void JobQueue::PushDB(JobRef job)
 void JobQueue::PushLogicJob(int ZoneID,JobRef job)
 {
 	const int32 prevCount = _jobCount.fetch_add(1);
+#ifdef __LOCKFREE__
+	_freeJobs.LockFree_Push(job);
+#else
 	_jobs.Push(job); // WRITE_LOCK
+#endif // __LOCKFREE__
+
 	if (prevCount == 0)
 	{
 		{
@@ -132,16 +138,7 @@ void JobQueue::Execute(int nZoneID,int JobType)
 			if (now >= LEndTickCount)
 			{
 				LCurrentJobQueue = nullptr;
-
-				//if (JobType == JobType::GLOBAL_JOB)
-				//{
-				//	// 여유 있는 다른 쓰레드가 실행하도록 GlobalQueue에 넘긴다
-				//	GGlobalQueue->Push(shared_from_this());
-				//}
-				//else if (JobType == JobType::DB_JOB)
-				//{
-				//	GDBQueue->Push(shared_from_this());
-				//}
+			
 				if (JobType == JobType::Zone_Job)
 				{
 					GZoneLogicQueue[nZoneID]->Push(shared_from_this());

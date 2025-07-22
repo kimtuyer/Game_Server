@@ -135,6 +135,12 @@
       <Filter>Utils</Filter>
     </ClInclude>
     <ClInclude Include="ConsoleMapViewer.h" />
+    <ClInclude Include="LockFreeQueue.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="GLockFreeQueue.h">
+      <Filter>Job</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CorePch.cpp">
@@ -223,5 +229,11 @@
       <Filter>Utils</Filter>
     </ClCompile>
     <ClCompile Include="ConsoleMapViewer.cpp" />
+    <ClCompile Include="LockFreeQueue.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="GLockFreeQueue.cpp">
+      <Filter>Job</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

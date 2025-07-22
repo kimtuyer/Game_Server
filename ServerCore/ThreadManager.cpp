@@ -3,7 +3,7 @@
 #include "CoreTLS.h"
 #include "CoreGlobal.h"
 #include "GlobalQueue.h"
-
+#include "GLockFreeQueue.h"
 /*------------------
 	ThreadManager
 -------------------*/
