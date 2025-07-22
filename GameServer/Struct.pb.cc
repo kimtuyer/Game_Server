@@ -50,7 +50,10 @@ PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT D3DVECTORDefaultTypeInternal _D
 constexpr Object_Pos::Object_Pos(
   ::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized)
   : vpos_(nullptr)
-  , id_(uint64_t{0u}){}
+  , id_(uint64_t{0u})
+  , zoneid_(0u)
+  , secid_(0u)
+  , objecttype_(0u){}
 struct Object_PosDefaultTypeInternal {
   constexpr Object_PosDefaultTypeInternal()
     : _instance(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized{}) {}
@@ -90,6 +93,9 @@ const ::PROTOBUF_NAMESPACE_ID::uint32 TableStruct_Struct_2eproto::offsets[] PROT
   ~0u,  // no _weak_field_map_
   PROTOBUF_FIELD_OFFSET(::Protocol::Object_Pos, id_),
   PROTOBUF_FIELD_OFFSET(::Protocol::Object_Pos, vpos_),
+  PROTOBUF_FIELD_OFFSET(::Protocol::Object_Pos, zoneid_),
+  PROTOBUF_FIELD_OFFSET(::Protocol::Object_Pos, secid_),
+  PROTOBUF_FIELD_OFFSET(::Protocol::Object_Pos, objecttype_),
 };
 static const ::PROTOBUF_NAMESPACE_ID::internal::MigrationSchema schemas[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
   { 0, -1, sizeof(::Protocol::Player)},
@@ -108,16 +114,17 @@ const char descriptor_table_protodef_Struct_2eproto[] PROTOBUF_SECTION_VARIABLE(
   "Player\022\n\n\002id\030\001 \001(\004\022\014\n\004name\030\002 \001(\t\022(\n\nplay"
   "erType\030\003 \001(\0162\024.Protocol.PlayerType\022\r\n\005le"
   "vel\030\004 \001(\r\",\n\tD3DVECTOR\022\t\n\001x\030\001 \001(\002\022\t\n\001y\030\002"
-  " \001(\002\022\t\n\001z\030\003 \001(\002\";\n\nObject_Pos\022\n\n\002id\030\001 \001("
-  "\004\022!\n\004vPos\030\002 \001(\0132\023.Protocol.D3DVECTORb\006pr"
-  "oto3"
+  " \001(\002\022\t\n\001z\030\003 \001(\002\"n\n\nObject_Pos\022\n\n\002id\030\001 \001("
+  "\004\022!\n\004vPos\030\002 \001(\0132\023.Protocol.D3DVECTOR\022\016\n\006"
+  "zoneID\030\003 \001(\r\022\r\n\005secID\030\004 \001(\r\022\022\n\nObjectTyp"
+  "e\030\005 \001(\rb\006proto3"
   ;
 static const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable*const descriptor_table_Struct_2eproto_deps[1] = {
   &::descriptor_table_Enum_2eproto,
 };
 static ::PROTOBUF_NAMESPACE_ID::internal::once_flag descriptor_table_Struct_2eproto_once;
 const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_Struct_2eproto = {
-  false, false, 244, descriptor_table_protodef_Struct_2eproto, "Struct.proto", 
+  false, false, 295, descriptor_table_protodef_Struct_2eproto, "Struct.proto", 
   &descriptor_table_Struct_2eproto_once, descriptor_table_Struct_2eproto_deps, 1, 3,
   schemas, file_default_instances, TableStruct_Struct_2eproto::offsets,
   file_level_metadata_Struct_2eproto, file_level_enum_descriptors_Struct_2eproto, file_level_service_descriptors_Struct_2eproto,
@@ -688,15 +695,17 @@ Object_Pos::Object_Pos(const Object_Pos& from)
   } else {
     vpos_ = nullptr;
   }
-  id_ = from.id_;
+  ::memcpy(&id_, &from.id_,
+    static_cast<size_t>(reinterpret_cast<char*>(&objecttype_) -
+    reinterpret_cast<char*>(&id_)) + sizeof(objecttype_));
   // @@protoc_insertion_point(copy_constructor:Protocol.Object_Pos)
 }
 
 void Object_Pos::SharedCtor() {
 ::memset(reinterpret_cast<char*>(this) + static_cast<size_t>(
     reinterpret_cast<char*>(&vpos_) - reinterpret_cast<char*>(this)),
-    0, static_cast<size_t>(reinterpret_cast<char*>(&id_) -
-    reinterpret_cast<char*>(&vpos_)) + sizeof(id_));
+    0, static_cast<size_t>(reinterpret_cast<char*>(&objecttype_) -
+    reinterpret_cast<char*>(&vpos_)) + sizeof(objecttype_));
 }
 
 Object_Pos::~Object_Pos() {
@@ -730,7 +739,9 @@ void Object_Pos::Clear() {
     delete vpos_;
   }
   vpos_ = nullptr;
-  id_ = uint64_t{0u};
+  ::memset(&id_, 0, static_cast<size_t>(
+      reinterpret_cast<char*>(&objecttype_) -
+      reinterpret_cast<char*>(&id_)) + sizeof(objecttype_));
   _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
@@ -751,6 +762,27 @@ const char* Object_Pos::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID:
       case 2:
         if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 18)) {
           ptr = ctx->ParseMessage(_internal_mutable_vpos(), ptr);
+          CHK_(ptr);
+        } else goto handle_unusual;
+        continue;
+      // uint32 zoneID = 3;
+      case 3:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 24)) {
+          zoneid_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
+          CHK_(ptr);
+        } else goto handle_unusual;
+        continue;
+      // uint32 secID = 4;
+      case 4:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 32)) {
+          secid_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
+          CHK_(ptr);
+        } else goto handle_unusual;
+        continue;
+      // uint32 ObjectType = 5;
+      case 5:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 40)) {
+          objecttype_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
           CHK_(ptr);
         } else goto handle_unusual;
         continue;
@@ -797,6 +829,24 @@ failure:
         2, _Internal::vpos(this), target, stream);
   }
 
+  // uint32 zoneID = 3;
+  if (this->zoneid() != 0) {
+    target = stream->EnsureSpace(target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteUInt32ToArray(3, this->_internal_zoneid(), target);
+  }
+
+  // uint32 secID = 4;
+  if (this->secid() != 0) {
+    target = stream->EnsureSpace(target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteUInt32ToArray(4, this->_internal_secid(), target);
+  }
+
+  // uint32 ObjectType = 5;
+  if (this->objecttype() != 0) {
+    target = stream->EnsureSpace(target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteUInt32ToArray(5, this->_internal_objecttype(), target);
+  }
+
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::InternalSerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
@@ -825,6 +875,27 @@ size_t Object_Pos::ByteSizeLong() const {
     total_size += 1 +
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::UInt64Size(
         this->_internal_id());
+  }
+
+  // uint32 zoneID = 3;
+  if (this->zoneid() != 0) {
+    total_size += 1 +
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::UInt32Size(
+        this->_internal_zoneid());
+  }
+
+  // uint32 secID = 4;
+  if (this->secid() != 0) {
+    total_size += 1 +
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::UInt32Size(
+        this->_internal_secid());
+  }
+
+  // uint32 ObjectType = 5;
+  if (this->objecttype() != 0) {
+    total_size += 1 +
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::UInt32Size(
+        this->_internal_objecttype());
   }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
@@ -864,6 +935,15 @@ void Object_Pos::MergeFrom(const Object_Pos& from) {
   if (from.id() != 0) {
     _internal_set_id(from._internal_id());
   }
+  if (from.zoneid() != 0) {
+    _internal_set_zoneid(from._internal_zoneid());
+  }
+  if (from.secid() != 0) {
+    _internal_set_secid(from._internal_secid());
+  }
+  if (from.objecttype() != 0) {
+    _internal_set_objecttype(from._internal_objecttype());
+  }
 }
 
 void Object_Pos::CopyFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) {
@@ -888,8 +968,8 @@ void Object_Pos::InternalSwap(Object_Pos* other) {
   using std::swap;
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
   ::PROTOBUF_NAMESPACE_ID::internal::memswap<
-      PROTOBUF_FIELD_OFFSET(Object_Pos, id_)
-      + sizeof(Object_Pos::id_)
+      PROTOBUF_FIELD_OFFSET(Object_Pos, objecttype_)
+      + sizeof(Object_Pos::objecttype_)
       - PROTOBUF_FIELD_OFFSET(Object_Pos, vpos_)>(
           reinterpret_cast<char*>(&vpos_),
           reinterpret_cast<char*>(&other->vpos_));

@@ -508,6 +508,9 @@ class Object_Pos final :
   enum : int {
     kVPosFieldNumber = 2,
     kIdFieldNumber = 1,
+    kZoneIDFieldNumber = 3,
+    kSecIDFieldNumber = 4,
+    kObjectTypeFieldNumber = 5,
   };
   // .Protocol.D3DVECTOR vPos = 2;
   bool has_vpos() const;
@@ -536,6 +539,33 @@ class Object_Pos final :
   void _internal_set_id(::PROTOBUF_NAMESPACE_ID::uint64 value);
   public:
 
+  // uint32 zoneID = 3;
+  void clear_zoneid();
+  ::PROTOBUF_NAMESPACE_ID::uint32 zoneid() const;
+  void set_zoneid(::PROTOBUF_NAMESPACE_ID::uint32 value);
+  private:
+  ::PROTOBUF_NAMESPACE_ID::uint32 _internal_zoneid() const;
+  void _internal_set_zoneid(::PROTOBUF_NAMESPACE_ID::uint32 value);
+  public:
+
+  // uint32 secID = 4;
+  void clear_secid();
+  ::PROTOBUF_NAMESPACE_ID::uint32 secid() const;
+  void set_secid(::PROTOBUF_NAMESPACE_ID::uint32 value);
+  private:
+  ::PROTOBUF_NAMESPACE_ID::uint32 _internal_secid() const;
+  void _internal_set_secid(::PROTOBUF_NAMESPACE_ID::uint32 value);
+  public:
+
+  // uint32 ObjectType = 5;
+  void clear_objecttype();
+  ::PROTOBUF_NAMESPACE_ID::uint32 objecttype() const;
+  void set_objecttype(::PROTOBUF_NAMESPACE_ID::uint32 value);
+  private:
+  ::PROTOBUF_NAMESPACE_ID::uint32 _internal_objecttype() const;
+  void _internal_set_objecttype(::PROTOBUF_NAMESPACE_ID::uint32 value);
+  public:
+
   // @@protoc_insertion_point(class_scope:Protocol.Object_Pos)
  private:
   class _Internal;
@@ -545,6 +575,9 @@ class Object_Pos final :
   typedef void DestructorSkippable_;
   ::Protocol::D3DVECTOR* vpos_;
   ::PROTOBUF_NAMESPACE_ID::uint64 id_;
+  ::PROTOBUF_NAMESPACE_ID::uint32 zoneid_;
+  ::PROTOBUF_NAMESPACE_ID::uint32 secid_;
+  ::PROTOBUF_NAMESPACE_ID::uint32 objecttype_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_Struct_2eproto;
 };
@@ -833,6 +866,66 @@ inline void Object_Pos::set_allocated_vpos(::Protocol::D3DVECTOR* vpos) {
   }
   vpos_ = vpos;
   // @@protoc_insertion_point(field_set_allocated:Protocol.Object_Pos.vPos)
+}
+
+// uint32 zoneID = 3;
+inline void Object_Pos::clear_zoneid() {
+  zoneid_ = 0u;
+}
+inline ::PROTOBUF_NAMESPACE_ID::uint32 Object_Pos::_internal_zoneid() const {
+  return zoneid_;
+}
+inline ::PROTOBUF_NAMESPACE_ID::uint32 Object_Pos::zoneid() const {
+  // @@protoc_insertion_point(field_get:Protocol.Object_Pos.zoneID)
+  return _internal_zoneid();
+}
+inline void Object_Pos::_internal_set_zoneid(::PROTOBUF_NAMESPACE_ID::uint32 value) {
+  
+  zoneid_ = value;
+}
+inline void Object_Pos::set_zoneid(::PROTOBUF_NAMESPACE_ID::uint32 value) {
+  _internal_set_zoneid(value);
+  // @@protoc_insertion_point(field_set:Protocol.Object_Pos.zoneID)
+}
+
+// uint32 secID = 4;
+inline void Object_Pos::clear_secid() {
+  secid_ = 0u;
+}
+inline ::PROTOBUF_NAMESPACE_ID::uint32 Object_Pos::_internal_secid() const {
+  return secid_;
+}
+inline ::PROTOBUF_NAMESPACE_ID::uint32 Object_Pos::secid() const {
+  // @@protoc_insertion_point(field_get:Protocol.Object_Pos.secID)
+  return _internal_secid();
+}
+inline void Object_Pos::_internal_set_secid(::PROTOBUF_NAMESPACE_ID::uint32 value) {
+  
+  secid_ = value;
+}
+inline void Object_Pos::set_secid(::PROTOBUF_NAMESPACE_ID::uint32 value) {
+  _internal_set_secid(value);
+  // @@protoc_insertion_point(field_set:Protocol.Object_Pos.secID)
+}
+
+// uint32 ObjectType = 5;
+inline void Object_Pos::clear_objecttype() {
+  objecttype_ = 0u;
+}
+inline ::PROTOBUF_NAMESPACE_ID::uint32 Object_Pos::_internal_objecttype() const {
+  return objecttype_;
+}
+inline ::PROTOBUF_NAMESPACE_ID::uint32 Object_Pos::objecttype() const {
+  // @@protoc_insertion_point(field_get:Protocol.Object_Pos.ObjectType)
+  return _internal_objecttype();
+}
+inline void Object_Pos::_internal_set_objecttype(::PROTOBUF_NAMESPACE_ID::uint32 value) {
+  
+  objecttype_ = value;
+}
+inline void Object_Pos::set_objecttype(::PROTOBUF_NAMESPACE_ID::uint32 value) {
+  _internal_set_objecttype(value);
+  // @@protoc_insertion_point(field_set:Protocol.Object_Pos.ObjectType)
 }
 
 #ifdef __GNUC__

@@ -431,7 +431,6 @@ void CZone::Update()
 	//}
 ///////////////////////////////////////////////////////////////
 	int zone = m_nZoneID;
-#ifdef __SECTOR_UPDATE__
 #ifdef __DOP__
 	for (auto& Sector : m_vecSector)
 #else	
@@ -527,46 +526,7 @@ void CZone::Update()
 	}
 #endif // __SEAMLESS__
 
-
-#endif
 	///////////////////////////////////////////////////////////////////////////
-#ifdef __SECTOR_UPDATE__
-#else
-
-	vector<CMonster*> vecMonsterlist;
-	{
-		READ_LOCK;
-		for (auto& [objectid, Object] : m_nlistObject[Object::Monster])
-		{
-			//if (ObjectType != (int)Object::Monster)
-				//continue;
-			if (Object->GetActivate() == false)
-				continue;
-			CMonster* pMonster = static_cast<CMonster*>(Object.get());
-			vecMonsterlist.push_back(pMonster);
-			//pMonster->Update();
-		}
-	}
-
-	for (auto& pMonster : vecMonsterlist)
-	{
-		pMonster->Update();
-	}
-
-	/*
-	 몬스터 업뎃후 실시간 좌표 주변 유저에게 동기화
-
-	 현재 몹 개수는 존당 200개, 다만 해당 몹 데이터 전부를 다 보낼필요는 없음.
-	 유저입장에선 자신과같은 영역(카메라보이는)에 있는 몹정보만 받아서 출력하면됨
-
-	 일단 섹터적용했단 가정하에 30개의 몹정보만 전송
-
-	*/
-	//Send_MonsterUpdateList();
-	Send_PlayerUpdateList();
-#endif
-
-	//ZoneManager에서 모든 zone update 호출중
 #ifdef __ZONE_THREAD__
 #else
 	DoTimer(Tick::AI_TICK, &CZone::Update);
@@ -585,13 +545,10 @@ void CZone::Update_AdjSector(int nSectorID, int nZone, map<ObjectID, Sector::Obj
 	int nThreadID = LThreadId;
 
 	auto Objlist = AdjObjectList[nSectorID];
-	map<ObjectID, Sector::ObjectInfo> RemoveList;
 	for (auto [ObjectID, Objinfo] : Objlist)
 	{
 		if (adjSectorInfoList.contains(ObjectID) == false)
 		{
-			RemoveList.insert({ ObjectID,Objinfo });
-
 			//경계 오브젝트리스트 에서도 삭제!
 			AdjObjectList[nSectorID].erase(ObjectID);
 		}
@@ -611,12 +568,7 @@ void CZone::Update_AdjSector(int nSectorID, int nZone, map<ObjectID, Sector::Obj
 			AdjObjectList[nSectorID].insert({ ObjectID,Objinfo });
 	}
 
-
 	////이전에 갖고있던 경계 섹터의 몹정보가 없을 경우, 삭제리스트 넣어 갱신!
-	//Remove_AdjObjectList.insert({ nSectorID,RemoveList });
-
-	//AdjObjectList.clear();
-	//AdjObjectList.insert({ nSectorID,adjSectorInfoList });
 
 
 
