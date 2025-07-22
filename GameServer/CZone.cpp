@@ -1737,7 +1737,6 @@ void CZone::Send_SectorInsertPlayer()
 {
 	//섹터리스트 복사해와서 lock 줄여야하나?
 	map<SectorID, vector<Sector::ObjectInfo>> InsertList;
-	map<SectorID, vector<Sector::ObjectInfo>> AdjZone_InsertList;
 
 	{
 		//swap후 원본 컨테이너는 clear상태, 이후에 들어온 데이터는 다음tick에 처리!
@@ -1755,38 +1754,6 @@ void CZone::Send_SectorInsertPlayer()
 			continue;
 #else
 		CSectorRef Sector = m_listSector[SectorID];
-
-#ifdef __SEAMLESS__
-		////이웃한 섹터일 경우,현재 존에서 유저 삭제후,
-		////해당 존 큐로 유저 삽입 job 푸쉬
-		//if (Sector == nullptr)
-		//{
-		//	bool bInSector = false;
-		//	int nZoneID = 0;
-		//	for (auto ZoneInex : m_setAdjZone)
-		//	{
-		//		auto ZoneSP = GZoneManager->GetZone(ZoneInex);
-		//		if (ZoneSP->IsSector(SectorID))
-		//		{
-		//			bInSector = true;
-		//			nZoneID = ZoneInex;
-		//			break;
-		//		}
-		//	}
-		//	if (bInSector == false)
-		//		continue;
-
-		//	if (m_setAdjZone.contains(SectorID) == false)
-		//		continue; //에러 출력!
-
-		//	AdjZone_InsertList[SectorID] = sData;
-		//	//해당 존 큐로 푸쉬!
-		//	DoLogicJob(nZoneID,&CZone::SectorInsertPlayerJob, AdjZone_InsertList);
-		//		
-		//	continue;
-		//}
-#endif // __SEAMLESS__
-
 
 #endif	
 		if (Sector->Empty_Player())
@@ -1957,35 +1924,6 @@ void CZone::Send_SectorRemovePlayer()
 #else
 		CSectorRef Sector = m_listSector[SectorID];
 #endif
-#ifdef __SEAMLESS__
-		////이웃한 섹터일 경우,현재 존에서 유저 삭제후,
-		////해당 존 큐로 유저 삽입 job 푸쉬
-		//if (Sector == nullptr)
-		//{
-		//	bool bInSector = false;
-		//	int nZoneID = 0;
-		//	for (auto ZoneInex : m_setAdjZone)
-		//	{
-		//		auto ZoneSP = GZoneManager->GetZone(ZoneInex);
-		//		if (ZoneSP->IsSector(SectorID))
-		//		{
-		//			bInSector = true;
-		//			nZoneID = ZoneInex;
-		//		}
-		//	}
-		//	if (bInSector == false)
-		//		continue;
-
-		//	if (m_setAdjZone.contains(SectorID) == false)
-		//		continue; //에러 출력!
-
-		//	AdjZone_RemoveList[SectorID] = sData;
-		//	//해당 존 큐로 푸쉬!
-		//	DoLogicJob(nZoneID, &CZone::SectorInsertPlayerJob, AdjZone_RemoveList);
-
-		//	continue;
-		//}
-#endif // __SEAMLESS__
 
 		if (Sector->Empty_Player())		
 			continue;
@@ -2102,8 +2040,6 @@ void CZone::Send_SectorRemovePlayer()
 void CZone::Send_AdjSector_ObjList()
 {
 
-	/*int lock = lock::Object;
-	WRITE_LOCK_IDX(lock);*/
 	/*int lock = lock::Object;
 	WRITE_LOCK_IDX(lock);*/
 
