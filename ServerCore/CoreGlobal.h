@@ -8,6 +8,8 @@ extern class GlobalQueue* GDBQueue;
 extern  std::vector<GlobalQueue*> GZoneLogicQueue;
 extern class JobTimer*			GJobTimer;
 extern class JobTimer*			GDBJobTimer;
+extern  std::vector<JobTimer*> GZoneJobTimer;
+
 //extern class JobTimer*			GBroadCastTimer;
 //extern class GlobalQueue*		GBroadQueue;
 

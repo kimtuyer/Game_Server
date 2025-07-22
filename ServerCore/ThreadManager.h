@@ -29,6 +29,7 @@ public:
 
 
 	static bool DoZoneQueueWork(int nZoneID);
+	static void DistributeZoneJobs(int nZoneID);
 
 
 	//array<unique_ptr<ZoneQueue>, Zone::g_nZoneCount+1> zoneQueues;

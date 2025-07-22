@@ -122,4 +122,10 @@ bool ThreadManager::DoZoneQueueWork(int nZoneID)
 		return true;
 	}
 }
+void ThreadManager::DistributeZoneJobs(int nZoneID)
+{
+	const uint64 now = ::GetTickCount64();
+
+	GZoneJobTimer[nZoneID]->ZoneJob_Distribute(nZoneID,now);
+}
 /*												*/

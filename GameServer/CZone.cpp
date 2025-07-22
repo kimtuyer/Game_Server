@@ -489,6 +489,7 @@ void CZone::Update()
 	for (auto& [sectorID, Sector] : m_listSector)
 	{
 		auto adjsectorlist = Sector->GetAdjSectorlist();
+		int nSendZoneID = 0;
 		//해당 섹터 정보 필요한 존은?
 		for (auto [SecID, Data] : adjsectorlist)
 		{
@@ -496,6 +497,12 @@ void CZone::Update()
 			//같은 존의 섹터는 continue;
 			if (nZoneID == m_nZoneID)
 				continue;
+
+			//해당 섹터정보를 이미 보낸 존은 Pass
+			if (nSendZoneID == nZoneID)
+				continue;
+
+			nSendZoneID = nZoneID;
 
 			//이웃 존에게 필요한 내 섹터 객체정보 넘겨주기
 			/*
@@ -507,10 +514,14 @@ void CZone::Update()
 				continue;
 
 			auto Playerlist = Sector->PlayerInfoList();
-			AdjZone->DoLogicJob(nZoneID, &CZone::Update_AdjSector, sectorID, nZoneID, Playerlist);
+			if(Playerlist.empty()== false)
+				AdjZone->DoZoneJobTimer(1000, nZoneID, &CZone::Update_AdjSector, sectorID, nZoneID, Playerlist);
+				//AdjZone->DoLogicJob(nZoneID, &CZone::Update_AdjSector, sectorID, nZoneID, Playerlist);
 
 			auto Monsetlist = Sector->MonsterInfoList();
-			AdjZone->DoLogicJob(nZoneID, &CZone::Update_AdjSector, sectorID, nZoneID, Monsetlist);
+			if (Monsetlist.empty() == false)
+				AdjZone->DoZoneJobTimer(1000, nZoneID, &CZone::Update_AdjSector, sectorID, nZoneID, Monsetlist);
+				//AdjZone->DoLogicJob(nZoneID, &CZone::Update_AdjSector, sectorID, nZoneID, Monsetlist);
 
 		}
 	}
@@ -568,8 +579,10 @@ void CZone::Update_AdjSector(int nSectorID, int nZone, map<ObjectID, Sector::Obj
 	/*
 		이웃한 다른 섹터의 정보를 받아 새로 업뎃해야함.	
 	*/
-	int lock = lock::Object;
-	WRITE_LOCK_IDX(lock);
+	/*int lock = lock::Object;
+	WRITE_LOCK_IDX(lock);*/
+
+	int nThreadID = LThreadId;
 
 	auto Objlist = AdjObjectList[nSectorID];
 	map<ObjectID, Sector::ObjectInfo> RemoveList;
@@ -2139,8 +2152,8 @@ void CZone::Send_AdjSector_ObjList()
 
 	/*int lock = lock::Object;
 	WRITE_LOCK_IDX(lock);*/
-	int lock = lock::Object;
-	WRITE_LOCK_IDX(lock);
+	/*int lock = lock::Object;
+	WRITE_LOCK_IDX(lock);*/
 
 	/*
 		아래 섹터와 이웃한 내 색터 구하기

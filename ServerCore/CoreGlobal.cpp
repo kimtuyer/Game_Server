@@ -19,6 +19,8 @@ vector<GlobalQueue*>		GZoneLogicQueue;// = nullptr;
 
 JobTimer*			GJobTimer = nullptr;
 JobTimer*			GDBJobTimer = nullptr;
+vector<JobTimer*>		GZoneJobTimer;// = nullptr;
+
 //JobTimer*			GBroadCastTimer = nullptr;
 //GlobalQueue*		GBroadQueue = nullptr;
 RandomMove* GRandomMove = nullptr;
@@ -41,6 +43,9 @@ public:
 		//GZoneLogicQueue.resize(g_nZoneCount);
 		for (int i = 0; i <= g_nZoneCount; i++)
 			GZoneLogicQueue.push_back(new GlobalQueue);
+		for (int i = 0; i <= g_nZoneCount; i++)
+			GZoneJobTimer.push_back(new JobTimer);
+		//GZoneJobTimer
 		//GBroadQueue = new GlobalQueue();
 		//GBroadCastTimer = new JobTimer();
 

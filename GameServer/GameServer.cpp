@@ -188,6 +188,8 @@ void DoZoneJob(ServerServiceRef& service, int ZoneID)
 				{
 					std::this_thread::sleep_for(std::chrono::milliseconds(1));
 				}
+				ThreadManager::DistributeZoneJobs(ZoneID);
+
 				ThreadManager::DoZoneQueueWork(ZoneID);
 #else
 				else

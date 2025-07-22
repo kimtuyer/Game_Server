@@ -351,8 +351,7 @@ ObjectInfoList CSector::PlayerInfoList()
 			{
 				Sector::ObjectInfo info;
 				info = sData.second->GetObjectInfo();
-				if (info.nObjectType == 0)
-					cout << "" << endl;
+				
 				list.insert({ info.nObjectID, info });
 			}
 		}
@@ -375,8 +374,7 @@ ObjectInfoList CSector::MonsterInfoList()
 			{
 				Sector::ObjectInfo info;
 				info = sData.second->GetObjectInfo();
-				if (info.nObjectType == 0)
-					cout << "" << endl;
+				
 				list.insert({ info.nObjectID, info });
 			}
 		}
