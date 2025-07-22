@@ -137,7 +137,30 @@ bool CPlayer::Attack(Protocol::C_ATTACK& pkt)
 
 				}
 				else
+				{
 					Zone->Update_ObjectInfo(targetInfo);
+					
+				}
+
+				S_ATTACK_REACT_ACK reactpkt;
+				reactpkt.set_attackobjectid(m_nObjectID);
+				reactpkt.set_attackobjecttype(Object::Player);
+				reactpkt.set_sendtime(GetTickCount64());
+				reactpkt.set_skillid(1);
+				reactpkt.set_targetobjectid(targetInfo.nObjectID);
+				reactpkt.set_targetobjecttype(targetInfo.nObjectType);
+				auto vPos = reactpkt.mutable_pos();
+				vPos->set_x(m_vPos.x());
+				vPos->set_y(m_vPos.y());
+				vPos->set_z(m_vPos.z());
+
+				/*
+					해당 유저가 위치한 섹터 및 둘러싼 이웃섹터의 유저들에게 전투결과 브로드캐스팅
+
+				*/
+				Zone->BroadCast_Player(m_nSectorID, reactpkt);
+
+
 
 			}
 #else

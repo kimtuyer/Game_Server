@@ -140,6 +140,8 @@ public:
 
 	void BroadCast_Player(Protocol::S_MOVE_PLAYER& movepkt);
 
+	void BroadCast_Player(int nSectorID,Protocol::S_ATTACK_REACT_ACK& reactPkt);
+
 	void BroadCast(vector<ObjectRef> list, SendBufferRef sendBuffer);
 
 

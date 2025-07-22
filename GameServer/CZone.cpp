@@ -1318,6 +1318,64 @@ void CZone::BroadCast_Player(Protocol::S_MOVE_PLAYER& movepkt)
 	}
 }
 
+void CZone::BroadCast_Player(int nSectorID,Protocol::S_ATTACK_REACT_ACK& reactPkt)
+{
+	auto sendBuffer = ClientPacketHandler::MakeSendBuffer(reactPkt, m_nZoneID);
+
+	auto Sector = m_listSector[nSectorID];
+	if (Sector == nullptr)
+		return;
+	
+	int nAttPlayerID = reactPkt.attackobjectid();
+	vector<ObjectRef> BroadList;
+	auto MySectorPlayers = Sector->PlayerList();
+	for (auto [ObjectID, ObjectInfo] : MySectorPlayers)
+	{
+		if (ObjectID == nAttPlayerID)
+			continue;
+
+		float dist = Util::distance(ObjectInfo->GetPos().x(), ObjectInfo->GetPos().y(), reactPkt.pos().x(), reactPkt.pos().y());
+
+		if (dist > BroadCast_Distance)
+		{
+			continue;
+		}
+		BroadList.push_back(ObjectInfo);
+
+	}
+
+	auto AdjSectorlist = Sector->GetAdjSectorlist();
+	for (auto [SecID, Data] : AdjSectorlist)
+	{
+		//if (Data.first == m_nZoneID)
+		{
+			auto AdjSector = m_listSector[SecID];
+			if (AdjSector == nullptr)
+				continue;
+			auto Playerlist = AdjSector->PlayerList();
+
+			for (auto [ObjectID, ObjectInfo] : Playerlist)
+			{
+
+				float dist = Util::distance(ObjectInfo->GetPos().x(), ObjectInfo->GetPos().y(), reactPkt.pos().x(), reactPkt.pos().y());
+
+				if (dist > BroadCast_Distance)
+				{
+					continue;
+				}
+				BroadList.push_back(ObjectInfo);
+			}
+
+
+		}
+		
+
+	}
+
+	DoTimer(100, &CZone::BroadCast, BroadList, sendBuffer);
+
+}
+
 void CZone::BroadCast(vector<ObjectRef> list, SendBufferRef sendBuffer)
 {
 	for (auto player : list)

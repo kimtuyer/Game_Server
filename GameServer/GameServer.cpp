@@ -105,7 +105,6 @@ void BroadCastJob(ServerServiceRef& service,bool bIOCP=false)
 			LJobCount = 0;
 		}
 
-		//if (GetTickCount64() < endtime)
 		{
 			ThreadManager::DistributeReservedJobs();
 
@@ -114,7 +113,6 @@ void BroadCastJob(ServerServiceRef& service,bool bIOCP=false)
 			else
 				std::this_thread::sleep_for(std::chrono::milliseconds(1));
 
-			//std::this_thread::sleep_for(std::chrono::milliseconds(1));
 
 		}
 	}

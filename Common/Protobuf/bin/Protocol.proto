@@ -100,6 +100,10 @@ message S_ATTACK_REACT_ACK
 	uint32 AttackObjectID = 3;
 	uint32 TargetObjectType=4;
 	uint32 TargetObjectID = 5;
+	uint32 SkillID = 6;
+	D3DVECTOR pos=7;
+
+
 }
 
 message S_OBJ_LIST
