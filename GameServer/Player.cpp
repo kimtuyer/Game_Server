@@ -133,7 +133,8 @@ bool CPlayer::Attack(Protocol::C_ATTACK& pkt)
 				//타겟이 다른 존 일경우, 해당 존으로 상태정보 알림!
 				if (bSameZone == false)
 				{
-					TargetZone->DoLogicJob(TargetZone->ZoneID(), &CZone::Update_ObjectInfo, targetInfo);
+					TargetZone->DoZoneJobTimer(0,TargetZone->ZoneID(), &CZone::Update_ObjectInfo, targetInfo);
+					//TargetZone->DoLogicJob(TargetZone->ZoneID(), &CZone::Update_ObjectInfo, targetInfo);
 
 				}
 				else

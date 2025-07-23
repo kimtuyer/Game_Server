@@ -144,6 +144,8 @@ public:
 
 	void BroadCast(vector<ObjectRef> list, SendBufferRef sendBuffer);
 
+	void BroadCast_Req(vector<SectorID>list, Protocol::S_ATTACK_REACT_ACK reactPkt);
+
 
 	void	SetStartpos(Protocol::D3DVECTOR vPos)
 	{

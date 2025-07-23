@@ -11,7 +11,7 @@ auto RTT = [](int64 nowtime, int64 arrivetime, string packetName)
 {
 	int64 responstime = nowtime - arrivetime;
 
-	if (responstime >100)
+	if (responstime > Tick::g_nRTT)
 	{
 
 		cout << packetName << ":  RTT 응답 시간 :" << responstime <<"ms " << endl;

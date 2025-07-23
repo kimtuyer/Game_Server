@@ -264,7 +264,9 @@ bool Handle_C_MOVE(PacketSessionRef& session, Protocol::C_MOVE& pkt)
 			CZoneRef newZone = GZoneManager->GetZone(nZoneid);
 			if (Zone == nullptr)
 				return false;
-			newZone->DoLogicJob(nZoneid, &CZone::Insert_PlayertoSector, info);
+			newZone->DoZoneJobTimer(0,nZoneid, &CZone::Insert_PlayertoSector, info);
+
+			//newZone->DoLogicJob(nZoneid, &CZone::Insert_PlayertoSector, info);
 			//newZone->DoLogicJob(nMoveZone, &CZone::_Enter, Object::Player, &pPlayer);
 			Zone->Remove(Object::Player, info.nObjectID);
 		}

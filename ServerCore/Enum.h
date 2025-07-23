@@ -13,6 +13,8 @@ namespace Tick
 		RENDERING_TICK=100,
 
 	};
+
+	static const int g_nRTT = 125;
 }
 
 namespace JobType
@@ -46,7 +48,7 @@ namespace Zone
 {
 	static const	int	g_nZoneCount = 20;
 #ifdef __10000_USER_ZONE__
-	static	const	int g_nZoneUserMax = 500; //5000 테스트시 존당 최소 250이상 설정필요
+	static	const	int g_nZoneUserMax = 300; //5000 테스트시 존당 최소 250이상 설정필요
 #else
 	static	const	int g_nZoneUserMax = 250; //5000 테스트시 존당 최소 250이상 설정필요
 #endif // __10000_USER_ZONE__
@@ -71,7 +73,7 @@ namespace Zone
 	static const int  Sector_PER_COL = 4;
 
 	static const int  BroadCast_Cnt = 20; //7  //20 기본값 ->존큐버전 5000성공
-	static const float  BroadCast_Distance = 3.5;
+	static const float  BroadCast_Distance = 2; //3.5;
 
 
 	enum ZoneJob

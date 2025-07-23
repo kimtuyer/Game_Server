@@ -43,11 +43,11 @@ void JobQueue::PushDB(JobRef job)
 void JobQueue::PushLogicJob(int ZoneID,JobRef job)
 {
 	const int32 prevCount = _jobCount.fetch_add(1);
-#ifdef __LOCKFREE__
+#ifdef __ZONEQUEUE_LOCKFREE__
 	_freeJobs.LockFree_Push(job);
 #else
 	_jobs.Push(job); // WRITE_LOCK
-#endif // __LOCKFREE__
+#endif // __ZONEQUEUE_LOCKFREE__
 
 	if (prevCount == 0)
 	{

@@ -15,11 +15,11 @@ Memory*				GMemory = nullptr;
 SendBufferManager*	GSendBufferManager = nullptr;
 GlobalQueue*		GGlobalQueue = nullptr;
 GlobalQueue*		GDBQueue = nullptr;
-#ifdef __LOCKFREE__
+#ifdef __ZONEQUEUE_LOCKFREE__
 vector<GLockFreeQueue*>		GZoneLogicQueue;// = nullptr;
 #else
 vector<GlobalQueue*>		GZoneLogicQueue;// = nullptr;
-#endif // __LOCKFREE__
+#endif // __ZONEQUEUE_LOCKFREE__
 
 
 JobTimer*			GJobTimer = nullptr;
@@ -47,11 +47,11 @@ public:
 		GDBQueue = new GlobalQueue();
 		//GZoneLogicQueue.resize(g_nZoneCount);
 		for (int i = 0; i <= g_nZoneCount; i++)
-#ifdef __LOCKFREE__
+#ifdef __ZONEQUEUE_LOCKFREE__
 			GZoneLogicQueue.push_back(new GLockFreeQueue);
 #else
 			GZoneLogicQueue.push_back(new GlobalQueue);
-#endif // __LOCKFREE__
+#endif // __ZONEQUEUE_LOCKFREE__
 		for (int i = 0; i <= g_nZoneCount; i++)
 			GZoneJobTimer.push_back(new JobTimer);
 		//GZoneJobTimer

@@ -264,6 +264,8 @@ void CZone::SetAdjSector()
 
 bool CZone::_Enter(ObjectType eObjectType, PlayerRef& object)
 {
+#ifdef __LOCKFREE__	
+#else
 	int lock = lock::Player;
 	if (eObjectType == Object::Monster)
 	{
@@ -274,6 +276,7 @@ bool CZone::_Enter(ObjectType eObjectType, PlayerRef& object)
 		lock = lock::Player;
 	}
 	WRITE_LOCK_IDX(lock);
+#endif // __LOCKFREE__
 
 	if (eObjectType <  Object::Player || eObjectType > Object::Monster)
 		return false;
@@ -308,8 +311,11 @@ bool CZone::_Enter(ObjectType eObjectType, PlayerRef& object)
 
 bool CZone::_EnterMonster(ObjectType eObjectType , ObjectRef object)
 {
+#ifdef __LOCKFREE__
+#else
 	int lock = lock::Object;
 	WRITE_LOCK_IDX(lock);
+#endif // __LOCKFREE__
 
 
 	if (object == nullptr)
@@ -342,8 +348,11 @@ void CZone::Remove(ObjectType eObjectType, int objectID)
 		return;
 
 	{
+#ifdef __LOCKFREE__
+#else
 		int lock = lock::Object;
 		WRITE_LOCK_IDX(lock);
+#endif // __LOCKFREE__
 
 		auto it = m_nlistObject.find(eObjectType);
 		if (it != m_nlistObject.end())
@@ -392,6 +401,7 @@ void CZone::Remove(ObjectType eObjectType, int objectID)
 
 ObjectRef CZone::Object(ObjectType type, int objectID)
 {
+
 	int lock = 0;
 	switch (type)
 	{
@@ -411,7 +421,10 @@ ObjectRef CZone::Object(ObjectType type, int objectID)
 	}
 
 	{
+#ifdef __LOCKFREE__
+#else
 		READ_LOCK_IDX(lock);
+#endif // __LOCKFREE__
 
 		auto pObjectRef = m_nlistObject[type].find(objectID);
 		if (pObjectRef == m_nlistObject[type].end())
@@ -1322,10 +1335,10 @@ void CZone::BroadCast_Player(int nSectorID,Protocol::S_ATTACK_REACT_ACK& reactPk
 {
 	auto sendBuffer = ClientPacketHandler::MakeSendBuffer(reactPkt, m_nZoneID);
 
-	auto Sector = m_listSector[nSectorID];
+	auto Sector = GetSectorRef(nSectorID);
 	if (Sector == nullptr)
 		return;
-	
+
 	int nAttPlayerID = reactPkt.attackobjectid();
 	vector<ObjectRef> BroadList;
 	auto MySectorPlayers = Sector->PlayerList();
@@ -1344,34 +1357,75 @@ void CZone::BroadCast_Player(int nSectorID,Protocol::S_ATTACK_REACT_ACK& reactPk
 
 	}
 
+	
+	map<Zone_ID,vector<SectorID>> AdjZonelist;
 	auto AdjSectorlist = Sector->GetAdjSectorlist();
 	for (auto [SecID, Data] : AdjSectorlist)
 	{
 		//if (Data.first == m_nZoneID)
 		{
-			auto AdjSector = m_listSector[SecID];
-			if (AdjSector == nullptr)
-				continue;
-			auto Playerlist = AdjSector->PlayerList();
-
-			for (auto [ObjectID, ObjectInfo] : Playerlist)
+			if (m_listSector.contains(SecID) == false)
 			{
-
-				float dist = Util::distance(ObjectInfo->GetPos().x(), ObjectInfo->GetPos().y(), reactPkt.pos().x(), reactPkt.pos().y());
-
-				if (dist > BroadCast_Distance)
+				for (auto AdjZoneID : m_setAdjZone)
 				{
-					continue;
-				}
-				BroadList.push_back(ObjectInfo);
-			}
+					auto AdjZone=GZoneManager->GetZone(AdjZoneID);
 
+					if (AdjZone == nullptr)
+						continue;
+					if (AdjZone->IsSector(SecID) == false)
+						continue;
+
+					AdjZonelist[AdjZoneID].push_back(SecID);
+
+				}
+				//다른 존 이웃 섹터는 해당 존의 메시지큐로 섹터id 및 패킷 전송,
+				//해당 존에서 메시지큐 받고,해당섹터내 브로드거리 해당 유저에게 캐스팅
+				/*
+				2.여기서 lock을 걸고 이웃섹터의 유저리스트를 불러와 브로드캐스팅
+				*/
+
+				
+			}
+			else
+			{
+				auto AdjSector = GetSectorRef(nSectorID);
+				if (AdjSector == nullptr)
+					continue;
+				auto Playerlist = AdjSector->PlayerList();
+
+				for (auto [ObjectID, ObjectInfo] : Playerlist)
+				{
+
+					float dist = Util::distance(ObjectInfo->GetPos().x(), ObjectInfo->GetPos().y(), reactPkt.pos().x(), reactPkt.pos().y());
+
+					if (dist > BroadCast_Distance)
+					{
+						continue;
+					}
+					BroadList.push_back(ObjectInfo);
+				}
+			}
 
 		}
 		
 
 	}
 
+	for ( auto [ZoneID, list] : AdjZonelist)
+	{
+		if (list.empty())
+			continue;
+
+		auto Zone=GZoneManager->GetZone(ZoneID);
+		
+		vector<SectorID> templist= list;
+		Zone->DoZoneJobTimer(100, ZoneID, &CZone::BroadCast_Req, templist, reactPkt);
+
+
+
+	}
+
+	//현재 내 주변 9섹터기준 1~200명대 브로드 잡힘
 	DoTimer(100, &CZone::BroadCast, BroadList, sendBuffer);
 
 }
@@ -1386,6 +1440,38 @@ void CZone::BroadCast(vector<ObjectRef> list, SendBufferRef sendBuffer)
 		CPlayer* pPlayer = static_cast<CPlayer*>(player.get());
 		pPlayer->ownerSession.lock()->Send(sendBuffer);
 	}
+
+}
+
+void CZone::BroadCast_Req(vector<SectorID> list, Protocol::S_ATTACK_REACT_ACK reactPkt)
+{
+	auto sendBuffer = ClientPacketHandler::MakeSendBuffer(reactPkt, m_nZoneID);
+	vector<ObjectRef> BroadcastPlayers;
+	for (auto SecID : list)
+	{
+		auto Sector = m_listSector.find(SecID);
+		if (Sector == m_listSector.end())
+			continue;
+
+		auto Playerlist=(*Sector).second->PlayerList();
+
+		for (auto [PlayerID, Player] : Playerlist)
+		{			
+			float dist = Util::distance(Player->GetPos().x(), Player->GetPos().y(), reactPkt.pos().x(), reactPkt.pos().y());
+
+			if (dist > BroadCast_Distance)
+			{
+				continue;
+			}
+	
+			BroadcastPlayers.push_back(Player);
+			/*CPlayer* pPlayer = static_cast<CPlayer*>(Player.get());
+			pPlayer->ownerSession.lock()->Send(sendBuffer);*/
+
+		}
+
+	}
+	DoTimer(0, &CZone::BroadCast, BroadcastPlayers, sendBuffer);
 
 }
 
@@ -1481,8 +1567,11 @@ void CZone::Insert_ObjecttoSector(Sector::ObjectInfo object)
 
 void CZone::Remove_ObjecttoSector(Sector::ObjectInfo object)
 {
+#ifdef __LOCKFREE__
+#else
 	int lock = lock::Insert_M;
 	WRITE_LOCK_IDX(lock);
+#endif // __LOCKFREE__
 	m_RemoveList[object.nSectorID].push_back(object);
 }
 
@@ -1496,8 +1585,11 @@ void CZone::Insert_PlayertoSector(Sector::ObjectInfo object)
 
 void CZone::Remove_PlayertoSector(Sector::ObjectInfo object)
 {
+#ifdef __LOCKFREE__
+#else
 	int lock = lock::Player;
 	WRITE_LOCK_IDX(lock);
+#endif // __LOCKFREE__
 	m_PlayerRemoveList[object.nSectorID].push_back(object);
 	//m_listSector[sectorID]->Delete(Object::Player, Player);
 }
@@ -1507,9 +1599,12 @@ void CZone::Send_SectorInsertObject()
 	//섹터리스트 복사해와서 lock 줄여야하나?
 	map<SectorID, vector<Sector::ObjectInfo>> InsertList;
 	{
+#ifdef __LOCKFREE__
 		//swap후 원본 컨테이너는 clear상태, 이후에 들어온 데이터는 다음tick에 처리!
+#else
 		int lock = lock::Insert_M;
 		WRITE_LOCK_IDX(lock);
+#endif // __LOCKFREE__
 		InsertList.swap(m_InsertList);
 	}
 	//WRITE_LOCK;
@@ -1659,9 +1754,12 @@ void CZone::Send_SectorRemoveObject()
 {
 	map<SectorID, vector<Sector::ObjectInfo>> RemoveList;
 	{
+#ifdef __LOCKFREE__
+#else
 		//swap후 원본 컨테이너는 clear상태, 이후에 들어온 데이터는 다음tick에 처리!
 		int lock = lock::Monster;
 		WRITE_LOCK_IDX(lock);
+#endif // __LOCKFREE__
 		RemoveList.swap(m_RemoveList);
 	}
 	//WRITE_LOCK;
@@ -1797,9 +1895,12 @@ void CZone::Send_SectorInsertPlayer()
 	map<SectorID, vector<Sector::ObjectInfo>> InsertList;
 
 	{
+#ifdef __LOCKFREE__
+#else
 		//swap후 원본 컨테이너는 clear상태, 이후에 들어온 데이터는 다음tick에 처리!
 		int lock = lock::Player;
 		WRITE_LOCK_IDX(lock);
+#endif // __LOCKFREE__
 		InsertList.swap(m_PlayerInsertList);
 	}
 	//WRITE_LOCK;
@@ -1966,9 +2067,13 @@ void CZone::Send_SectorRemovePlayer()
 	map<SectorID, vector<Sector::ObjectInfo>> AdjZone_RemoveList;
 
 	{
+
+#ifdef __LOCKFREE__
+#else
 		//swap후 원본 컨테이너는 clear상태, 이후에 들어온 데이터는 다음tick에 처리!
 		int lock = lock::Player;
 		WRITE_LOCK_IDX(lock);
+#endif // __LOCKFREE__
 		RemoveList.swap(m_PlayerRemoveList);
 	}
 	//int nCnt = 0;

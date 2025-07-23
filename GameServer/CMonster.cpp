@@ -267,8 +267,8 @@ void CMonster::AI_Move()
 
 			}
 			CZoneRef newZone = GZoneManager->GetZone(m_nZoneID);
-			newZone->DoLogicJob(m_nZoneID, &CZone::_EnterMonster, (int)Object::Monster, pMonster);
-			newZone->DoLogicJob(m_nZoneID, &CZone::Insert_ObjecttoSector, info);
+			newZone->DoZoneJobTimer(0,m_nZoneID, &CZone::_EnterMonster, (int)Object::Monster, pMonster);
+			newZone->DoZoneJobTimer(0,m_nZoneID, &CZone::Insert_ObjecttoSector, info);
 
 			Zone->Remove(Object::Monster, info.nObjectID);
 		}

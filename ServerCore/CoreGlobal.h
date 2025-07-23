@@ -1,7 +1,7 @@
 #pragma once
 #include "Dev_define.h"
 #include <vector>
-#ifdef __LOCKFREE__
+#ifdef __ZONEQUEUE_LOCKFREE__
 extern class GLockFreeQueue;
 #endif
 extern class ThreadManager*		GThreadManager;
@@ -10,11 +10,11 @@ extern class SendBufferManager* GSendBufferManager;
 extern class GlobalQueue*		GGlobalQueue;
 extern class GlobalQueue* GDBQueue;
 
-#ifdef __LOCKFREE__
+#ifdef __ZONEQUEUE_LOCKFREE__
 extern  std::vector<GLockFreeQueue*> GZoneLogicQueue;
 #else
 extern  std::vector<GlobalQueue*> GZoneLogicQueue;
-#endif // __LOCKFREE__
+#endif // __ZONEQUEUE_LOCKFREE__
 
 extern class JobTimer*			GJobTimer;
 extern class JobTimer*			GDBJobTimer;
